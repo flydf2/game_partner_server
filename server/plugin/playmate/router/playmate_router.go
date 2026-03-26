@@ -26,5 +26,6 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		expertRouter.POST("/:id/follow", api.ApiGroupApp.PlaymateApi.FollowExpert)
 		expertRouter.DELETE("/:id/follow", api.ApiGroupApp.PlaymateApi.UnfollowExpert)
 		expertRouter.GET("/:id/reviews", api.ApiGroupApp.ReviewApi.GetExpertReviews)
+		expertRouter.GET("/:id/voice", api.ApiGroupApp.PlaymateApi.GetExpertVoice)
 	}
 }

@@ -162,20 +162,20 @@ func (s *PlaymateService) GetExpertDetail(id uint) (map[string]interface{}, erro
 
 	// 构建响应
 	detail := map[string]interface{}{
-		"id":           playmate.ID,
-		"nickname":     playmate.Nickname,
-		"avatar":       playmate.Avatar,
-		"rating":       playmate.Rating,
-		"price":        playmate.Price,
-		"likes":        playmate.Likes,
-		"tags":         strings.Split(playmate.Tags, ","),
-		"isOnline":     playmate.IsOnline,
-		"game":         playmate.Game,
-		"rank":         playmate.Rank,
-		"gender":       playmate.Gender,
-		"description":  playmate.Description,
-		"level":        playmate.Level,
-		"title":        playmate.Title,
+		"id":          playmate.ID,
+		"nickname":    playmate.Nickname,
+		"avatar":      playmate.Avatar,
+		"rating":      playmate.Rating,
+		"price":       playmate.Price,
+		"likes":       playmate.Likes,
+		"tags":        strings.Split(playmate.Tags, ","),
+		"isOnline":    playmate.IsOnline,
+		"game":        playmate.Game,
+		"rank":        playmate.Rank,
+		"gender":      playmate.Gender,
+		"description": playmate.Description,
+		"level":       playmate.Level,
+		"title":       playmate.Title,
 		"stats": map[string]interface{}{
 			"winRate":   85,
 			"followers": 12000,
@@ -280,4 +280,32 @@ func (s *PlaymateService) GetSearchSuggestions(keyword string) ([]string, error)
 	}
 
 	return filteredSuggestions, nil
+}
+
+// GetExpertVoice 获取专家语音
+func (s *PlaymateService) GetExpertVoice(expertID uint) (map[string]string, error) {
+	var voiceIntroduction model.PlaymateVoiceIntroduction
+	if err := global.GVA_DB.Where("playmate_id = ?", expertID).First(&voiceIntroduction).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]string{
+				"url":      "",
+				"duration": "0",
+			}, nil
+		}
+		return nil, err
+	}
+
+	return map[string]string{
+		"url":      voiceIntroduction.URL,
+		"duration": voiceIntroduction.Duration,
+	}, nil
+}
+
+// GetSkills 获取所有技能列表
+func (s *PlaymateService) GetSkills() ([]model.PlaymateSkill, error) {
+	var skills []model.PlaymateSkill
+	if err := global.GVA_DB.Find(&skills).Error; err != nil {
+		return nil, err
+	}
+	return skills, nil
 }

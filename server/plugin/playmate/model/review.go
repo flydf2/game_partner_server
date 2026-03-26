@@ -16,8 +16,13 @@ type Review struct {
 	PlaymateID uint          `json:"playmateId"`
 	Rating    int            `json:"rating"`
 	Content   string         `json:"content"`
-	Images    string         `json:"images"` // 用逗号分隔的图片URL
+	Images    string         `gorm:"type:varchar(4096)" json:"images"` // 用逗号分隔的图片URL
 	Tags      string         `json:"tags"`   // 用逗号分隔的标签
+}
+
+// TableName 设置Review表名
+func (Review) TableName() string {
+	return "game_partner_reviews"
 }
 
 // Withdrawal 提现模型
@@ -34,4 +39,9 @@ type Withdrawal struct {
 	Status      string         `json:"status"` // pending, processing, completed, failed
 	CompletedAt *time.Time     `json:"completedAt"`
 	FailedReason string        `json:"failedReason"`
+}
+
+// TableName 设置Withdrawal表名
+func (Withdrawal) TableName() string {
+	return "game_partner_withdrawals"
 }

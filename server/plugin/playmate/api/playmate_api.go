@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 )
 
 // PlaymateApi 陪玩API
@@ -30,7 +30,7 @@ type PlaymateApi struct{}
 // @Param    page       query    int     false "页码"
 // @Param    pageSize   query    int     false "每页数量"
 // @Success  200        {object} response.Response{data=[]model.Playmate, pagination=map[string]int64} "获取成功"
-// @Router   /playmates [get]
+// @Router   /playmate/playmates [get]
 func (a *PlaymateApi) GetPlaymates(c *gin.Context) {
 	var search request.PlaymateSearch
 	if err := c.ShouldBindQuery(&search); err != nil {
@@ -49,7 +49,7 @@ func (a *PlaymateApi) GetPlaymates(c *gin.Context) {
 	if pageSize <= 0 {
 		pageSize = 10
 	}
-	
+
 	response.OkWithDetailed(gin.H{
 		"data": playmates,
 		"pagination": gin.H{
@@ -68,7 +68,7 @@ func (a *PlaymateApi) GetPlaymates(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "专家ID"
 // @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
-// @Router   /experts/{id} [get]
+// @Router   /playmate/experts/{id} [get]
 func (a *PlaymateApi) GetExpertDetail(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -94,7 +94,7 @@ func (a *PlaymateApi) GetExpertDetail(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "专家ID"
 // @Success  200  {object} response.Response{message=string} "关注成功"
-// @Router   /experts/{id}/follow [post]
+// @Router   /playmate/experts/{id}/follow [post]
 func (a *PlaymateApi) FollowExpert(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -123,7 +123,7 @@ func (a *PlaymateApi) FollowExpert(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "专家ID"
 // @Success  200  {object} response.Response{message=string} "取消关注成功"
-// @Router   /experts/{id}/follow [delete]
+// @Router   /playmate/experts/{id}/follow [delete]
 func (a *PlaymateApi) UnfollowExpert(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -154,7 +154,7 @@ func (a *PlaymateApi) UnfollowExpert(c *gin.Context) {
 // @Param    page     query     int     false "页码"
 // @Param    pageSize query     int     false "每页数量"
 // @Success  200      {object} response.Response{data=[]model.Review, pagination=map[string]int64} "获取成功"
-// @Router   /experts/{id}/reviews [get]
+// @Router   /playmate/experts/{id}/reviews [get]
 func (a *PlaymateApi) GetExpertReviews(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -192,7 +192,7 @@ func (a *PlaymateApi) GetExpertReviews(c *gin.Context) {
 // @Param    page     query    int     false "页码"
 // @Param    pageSize query    int     false "每页数量"
 // @Success  200      {object} response.Response{data=[]model.Playmate, pagination=map[string]int64} "搜索成功"
-// @Router   /playmates/search [get]
+// @Router   /playmate/playmates/search [get]
 func (a *PlaymateApi) SearchPlaymates(c *gin.Context) {
 	keyword := c.Query("keyword")
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -228,7 +228,7 @@ func (a *PlaymateApi) SearchPlaymates(c *gin.Context) {
 // @Produce  application/json
 // @Param    keyword  query    string  true "搜索关键词"
 // @Success  200      {object} response.Response{data=[]string} "获取成功"
-// @Router   /playmates/suggestions [get]
+// @Router   /playmate/playmates/suggestions [get]
 func (a *PlaymateApi) GetSearchSuggestions(c *gin.Context) {
 	keyword := c.Query("keyword")
 
@@ -249,7 +249,7 @@ func (a *PlaymateApi) GetSearchSuggestions(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "陪玩ID"
 // @Success  200  {object} response.Response{data=model.Playmate} "获取成功"
-// @Router   /playmates/{id} [get]
+// @Router   /playmate/playmates/{id} [get]
 func (a *PlaymateApi) GetPlaymateById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -275,7 +275,7 @@ func (a *PlaymateApi) GetPlaymateById(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      model.Playmate  true "陪玩信息"
 // @Success  200   {object}  response.Response{data=model.Playmate} "创建成功"
-// @Router   /playmates [post]
+// @Router   /playmate/playmates [post]
 func (a *PlaymateApi) CreatePlaymate(c *gin.Context) {
 	var playmate model.Playmate
 	if err := c.ShouldBindJSON(&playmate); err != nil {
@@ -301,7 +301,7 @@ func (a *PlaymateApi) CreatePlaymate(c *gin.Context) {
 // @Param    id    path      uint            true "陪玩ID"
 // @Param    data  body      model.Playmate  true "陪玩信息"
 // @Success  200   {object}  response.Response{data=model.Playmate} "更新成功"
-// @Router   /playmates/{id} [put]
+// @Router   /playmate/playmates/{id} [put]
 func (a *PlaymateApi) UpdatePlaymate(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -334,7 +334,7 @@ func (a *PlaymateApi) UpdatePlaymate(c *gin.Context) {
 // @Produce  application/json
 // @Param    id  path      uint    true "陪玩ID"
 // @Success  200 {object}  response.Response{message=string} "删除成功"
-// @Router   /playmates/{id} [delete]
+// @Router   /playmate/playmates/{id} [delete]
 func (a *PlaymateApi) DeletePlaymate(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -350,4 +350,48 @@ func (a *PlaymateApi) DeletePlaymate(c *gin.Context) {
 	}
 
 	response.OkWithMessage("删除成功", c)
+}
+
+// GetExpertVoice 获取专家语音
+// @Tags     Playmate
+// @Summary  获取专家语音
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "专家ID"
+// @Success  200  {object} response.Response{data=map[string]string} "获取成功"
+// @Router   /playmate/experts/{id}/voice [get]
+func (a *PlaymateApi) GetExpertVoice(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	voice, err := service.ServiceGroupApp.PlaymateService.GetExpertVoice(uint(id))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(voice, "获取成功", c)
+}
+
+// GetSkills 获取技能列表
+// @Tags     Playmate
+// @Summary  获取技能列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Success  200  {object} response.Response{data=[]model.PlaymateSkill} "获取成功"
+// @Router   /playmate/skills [get]
+func (a *PlaymateApi) GetSkills(c *gin.Context) {
+	skills, err := service.ServiceGroupApp.PlaymateService.GetSkills()
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(skills, "获取成功", c)
 }

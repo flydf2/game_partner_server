@@ -3,10 +3,10 @@ package api
 import (
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
+	"github.com/gin-gonic/gin"
 )
 
 type ReviewApi struct{}
@@ -19,7 +19,7 @@ type ReviewApi struct{}
 // @Produce  application/json
 // @Param    data body     request.SubmitReviewRequest true "评价信息"
 // @Success  200  {object} response.Response{msg=string} "提交评价成功"
-// @Router   /reviews [post]
+// @Router   /playmate/reviews [post]
 func (a *ReviewApi) SubmitReview(c *gin.Context) {
 	var req request.SubmitReviewRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -41,13 +41,13 @@ func (a *ReviewApi) SubmitReview(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    expertId path     string true "专家ID"
+// @Param    id path     string true "专家ID"
 // @Param    page     query    int    false "页码"
 // @Param    pageSize query    int    false "每页数量"
 // @Success  200  {object} response.Response "获取专家评价列表成功"
-// @Router   /experts/{expertId}/reviews [get]
+// @Router   /playmate/experts/{id}/reviews [get]
 func (a *ReviewApi) GetExpertReviews(c *gin.Context) {
-	expertIdStr := c.Param("expertId")
+	expertIdStr := c.Param("id")
 	expertId, err := strconv.ParseUint(expertIdStr, 10, 32)
 	if err != nil {
 		response.FailWithMessage("参数错误", c)
@@ -76,14 +76,33 @@ func (a *ReviewApi) GetExpertReviews(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    page     query    int    false "页码"
-// @Param    pageSize query    int    false "每页数量"
-// @Success  200  {object} response.Response "获取评价列表成功"
-// @Router   /reviews [get]
+// @Param    playmateId query    uint    false "陪玩ID"
+// @Param    minRating  query    int     false "最低评分"
+// @Param    maxRating  query    int     false "最高评分"
+// @Param    game       query    string  false "游戏"
+// @Param    keyword    query    string  false "关键词"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Param    page       query    int     false "页码"
+// @Param    pageSize   query    int     false "每页数量"
+// @Success  200        {object} response.Response{data=[]model.Review,pagination=map[string]int64} "获取评价列表成功"
+// @Router   /playmate/reviews [get]
 func (a *ReviewApi) GetReviews(c *gin.Context) {
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-	reviews, total, err := service.ServiceGroupApp.ReviewService.GetReviews(page, pageSize)
+	var search request.ReviewSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 设置默认值
+	if search.Page <= 0 {
+		search.Page = 1
+	}
+	if search.PageSize <= 0 {
+		search.PageSize = 10
+	}
+
+	reviews, total, err := service.ServiceGroupApp.ReviewService.GetReviews(search)
 	if err != nil {
 		response.FailWithMessage("获取评价列表失败", c)
 		return
@@ -91,8 +110,8 @@ func (a *ReviewApi) GetReviews(c *gin.Context) {
 	response.OkWithDetailed(gin.H{
 		"data": reviews,
 		"pagination": gin.H{
-			"currentPage": page,
-			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
 			"totalCount":  total,
 		},
 	}, "获取成功", c)

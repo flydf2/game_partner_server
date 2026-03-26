@@ -69,11 +69,45 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 }
 
 // GetWithdrawalRecords 获取提现记录
-func (s *WithdrawalService) GetWithdrawalRecords(userID uint) ([]model.Withdrawal, error) {
+func (s *WithdrawalService) GetWithdrawalRecords(userID uint, search request.WithdrawalSearch) ([]model.Withdrawal, int64, error) {
 	var withdrawals []model.Withdrawal
-	if err := global.GVA_DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&withdrawals).Error; err != nil {
-		return nil, err
+	var total int64
+
+	// 构建查询
+	query := global.GVA_DB.Model(&model.Withdrawal{}).Where("user_id = ?", userID)
+
+	// 应用搜索条件
+	if search.Status != "" {
+		query = query.Where("status = ?", search.Status)
+	}
+	if search.Method != "" {
+		query = query.Where("method = ?", search.Method)
+	}
+	if search.MinAmount > 0 {
+		query = query.Where("amount >= ?", search.MinAmount)
+	}
+	if search.MaxAmount > 0 {
+		query = query.Where("amount <= ?", search.MaxAmount)
+	}
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
 	}
 
-	return withdrawals, nil
+	// 计算总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
+
+	// 执行查询
+	if err := query.Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&withdrawals).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return withdrawals, total, nil
 }

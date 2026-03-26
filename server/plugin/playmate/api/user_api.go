@@ -1,11 +1,13 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 )
 
 // UserApi 用户API
@@ -18,7 +20,7 @@ type UserApi struct{}
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=model.User} "获取成功"
-// @Router   /user/info [get]
+// @Router   /playmate/user/info [get]
 func (a *UserApi) GetUserInfo(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -39,7 +41,7 @@ func (a *UserApi) GetUserInfo(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.LoginRequest  true "登录信息"
 // @Success  200   {object} response.Response{data=map[string]interface{}} "登录成功"
-// @Router   /auth/login [post]
+// @Router   /playmate/auth/login [post]
 func (a *UserApi) Login(c *gin.Context) {
 	var req request.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -66,7 +68,7 @@ func (a *UserApi) Login(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.RegisterRequest  true "注册信息"
 // @Success  200   {object} response.Response{data=map[string]interface{}} "注册成功"
-// @Router   /auth/register [post]
+// @Router   /playmate/auth/register [post]
 func (a *UserApi) Register(c *gin.Context) {
 	var req request.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -94,7 +96,7 @@ func (a *UserApi) Register(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.UpdateProfileRequest  true "个人资料"
 // @Success  200   {object} response.Response{data=model.User} "更新成功"
-// @Router   /user/profile [put]
+// @Router   /playmate/user/profile [put]
 func (a *UserApi) UpdateProfile(c *gin.Context) {
 	var req request.UpdateProfileRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -121,7 +123,7 @@ func (a *UserApi) UpdateProfile(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=model.UserSettings} "获取成功"
-// @Router   /user/settings [get]
+// @Router   /playmate/user/settings [get]
 func (a *UserApi) GetSettings(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -143,7 +145,7 @@ func (a *UserApi) GetSettings(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.UpdateSettingsRequest  true "设置信息"
 // @Success  200   {object} response.Response{data=model.UserSettings} "更新成功"
-// @Router   /user/settings [put]
+// @Router   /playmate/user/settings [put]
 func (a *UserApi) UpdateSettings(c *gin.Context) {
 	var req request.UpdateSettingsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -170,7 +172,7 @@ func (a *UserApi) UpdateSettings(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{message=string} "登出成功"
-// @Router   /auth/logout [post]
+// @Router   /playmate/auth/logout [post]
 func (a *UserApi) Logout(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -191,7 +193,7 @@ func (a *UserApi) Logout(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=map[string]string} "刷新成功"
-// @Router   /auth/refresh [post]
+// @Router   /playmate/auth/refresh [post]
 func (a *UserApi) RefreshToken(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -214,7 +216,7 @@ func (a *UserApi) RefreshToken(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=[]model.Playmate} "获取成功"
-// @Router   /user/following [get]
+// @Router   /playmate/user/following [get]
 func (a *UserApi) GetFollowing(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -235,7 +237,7 @@ func (a *UserApi) GetFollowing(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=[]model.Playmate} "获取成功"
-// @Router   /user/favorites [get]
+// @Router   /playmate/user/favorites [get]
 func (a *UserApi) GetFavorites(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -256,7 +258,7 @@ func (a *UserApi) GetFavorites(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=[]model.UserBrowseHistory} "获取成功"
-// @Router   /user/history [get]
+// @Router   /playmate/user/history [get]
 func (a *UserApi) GetBrowseHistory(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -277,7 +279,7 @@ func (a *UserApi) GetBrowseHistory(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
-// @Router   /user/wallet [get]
+// @Router   /playmate/user/wallet [get]
 func (a *UserApi) GetWallet(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
@@ -294,5 +296,35 @@ func (a *UserApi) GetWallet(c *gin.Context) {
 		"totalIncome":  wallet.TotalIncome,
 		"totalExpense": wallet.TotalExpense,
 		"transactions": transactions,
+	}, "获取成功", c)
+}
+
+// GetUsers 获取用户列表
+// @Tags     User
+// @Summary  获取用户列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.User,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/users [get]
+func (a *UserApi) GetUsers(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	users, total, err := service.ServiceGroupApp.UserService.GetUsers(page, pageSize)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": users,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
 	}, "获取成功", c)
 }

@@ -21,6 +21,9 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 		userRouter.GET("/wallet", api.ApiGroupApp.UserApi.GetWallet)
 	}
 
+	// 获取用户列表
+	router.GET("/users", api.ApiGroupApp.UserApi.GetUsers)
+
 	authRouter := router.Group("/auth")
 	{
 		authRouter.POST("/login", api.ApiGroupApp.UserApi.Login)

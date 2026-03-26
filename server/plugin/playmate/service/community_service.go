@@ -7,26 +7,46 @@ import (
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 )
 
 // CommunityService 社区服务
 type CommunityService struct{}
 
 // GetPosts 获取社区帖子列表
-func (s *CommunityService) GetPosts(page, pageSize int) ([]model.CommunityPost, int64, error) {
+func (s *CommunityService) GetPosts(search request.CommunitySearch) ([]model.CommunityPost, int64, error) {
 	var posts []model.CommunityPost
 	var total int64
 
 	query := global.GVA_DB.Model(&model.CommunityPost{})
 
+	// 应用搜索条件
+	if search.UserID > 0 {
+		query = query.Where("user_id = ?", search.UserID)
+	}
+	if search.Game != "" {
+		query = query.Where("game = ?", search.Game)
+	}
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
+	}
+	if search.Keyword != "" {
+		query = query.Where("content LIKE ?", "%"+search.Keyword+"%")
+	}
+
 	// 计算总数
-	query.Count(&total)
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
 
-	offset := (page - 1) * pageSize
-	query = query.Offset(offset).Limit(pageSize)
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
 
-	// 执行查询
-	if err := query.Order("created_at DESC").Find(&posts).Error; err != nil {
+	// 执行查询，使用JOIN获取用户信息
+	if err := query.Joins("LEFT JOIN game_partner_users ON game_partner_community_posts.user_id = game_partner_users.id").Offset(offset).Limit(search.PageSize).Order("game_partner_community_posts.created_at DESC").Find(&posts).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -36,7 +56,7 @@ func (s *CommunityService) GetPosts(page, pageSize int) ([]model.CommunityPost, 
 // GetPostDetail 获取帖子详情
 func (s *CommunityService) GetPostDetail(postID uint) (model.CommunityPost, error) {
 	var post model.CommunityPost
-	if err := global.GVA_DB.First(&post, postID).Error; err != nil {
+	if err := global.GVA_DB.Joins("LEFT JOIN game_partner_users ON game_partner_community_posts.user_id = game_partner_users.id").First(&post, postID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.CommunityPost{}, errors.New("帖子不存在")
 		}

@@ -1,16 +1,18 @@
 package initialize
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/router"
+	"github.com/gin-gonic/gin"
 )
 
 // InitializeRouter 初始化路由
 func InitializeRouter(routerGroup *gin.RouterGroup) {
 	// 初始化API
 	api.ApiGroupApp = &api.ApiGroup{}
-	
+
+	routerGroup = routerGroup.Group("/playmate")
+
 	// 初始化RouterGroupApp
 	router.RouterGroupApp = &router.RouterGroup{}
 
@@ -49,4 +51,10 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化游戏分类路由
 	router.RouterGroupApp.InitGameCategoryRouter(routerGroup)
+
+	// 初始化奖励订单路由
+	router.RouterGroupApp.InitRewardOrderRouter(routerGroup)
+
+	// 初始化申诉路由
+	router.RouterGroupApp.InitAppealRouter(routerGroup)
 }

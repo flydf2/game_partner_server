@@ -7,19 +7,54 @@ import (
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 )
 
 // NotificationService 通知服务
 type NotificationService struct{}
 
 // GetNotifications 获取通知列表
-func (s *NotificationService) GetNotifications(userID uint) ([]model.Notification, error) {
-	var notifications []model.Notification
-	if err := global.GVA_DB.Where("user_id = ?", userID).Order("time DESC").Find(&notifications).Error; err != nil {
-		return nil, err
+func (s *NotificationService) GetNotifications(userID uint, search request.NotificationSearch) ([]model.Notification, int64, error) {
+	// 构建查询
+	query := global.GVA_DB.Model(&model.Notification{}).Where("user_id = ?", userID)
+
+	// 应用搜索条件
+	if search.Type != "" {
+		query = query.Where("type = ?", search.Type)
+	}
+	if search.Status != "" {
+		if search.Status == "read" {
+			query = query.Where("read = ?", true)
+		} else if search.Status == "unread" {
+			query = query.Where("read = ?", false)
+		}
+	}
+	if search.StartTime != "" {
+		query = query.Where("time >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("time <= ?", search.EndTime)
+	}
+	if search.Keyword != "" {
+		query = query.Where("title LIKE ? OR content LIKE ?", "%"+search.Keyword+"%", "%"+search.Keyword+"%")
 	}
 
-	return notifications, nil
+	// 计算总数
+	var total int64
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
+
+	// 执行查询
+	var notifications []model.Notification
+	if err := query.Offset(offset).Limit(search.PageSize).Order("time DESC").Find(&notifications).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return notifications, total, nil
 }
 
 // MarkAsRead 标记通知为已读

@@ -1,0 +1,7 @@
+-- 初始化游戏数据
+INSERT INTO game_partner_games (name, icon, category, image, created_at, updated_at) VALUES
+('王者荣耀', 'shield', 'moba', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCO6Fv1fyGzYvj3dZ-H2AFzfu7X6Y6_yA1taG4ZuIR2PMnd96dzALMWRYtklMtial0VLZJtSVsAP5y9m9b_xwTQoq2zVnAq5fBxhcejRsjtv0IFfLF3aOhYMHtKueVSCXz0ow78iQTjbi5HbOPPPjqeZ2tC6L9LrFZ7WoKghDYAwKmcr9P1XBCv0W5pbF7hZ5hbHCBu8G7UM2eH-_Buh3zy9Zts0inQl1gewpndP5Cqfi6i-yux-QSrRAebo6d1Z5tXpcefUZCMnE0', NOW(), NOW()),
+('LOL', 'videogame_asset', 'moba', 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwJMK-vPtlCamAbtTRphsnIFcd1mWDzm1_T7KpzrxayEqLvesNtlHnzdM4rYKM0uo9g2_54Jj3Y0EPW5FB1sDjdErswcmdN1SmvaBqTh5bJD9-J5ucaAwF12MByzHgfaBX5CqrBM321UsnOg5GpZieNcmb7SaK-iUOOlTN_jvoYnW1BDpgm3eWB-0IPh1akuOUcitl05xf5FC8iPrAgKeciCRH1Odd9DYxPNu8sE8cfOFkv7uk_HsPwBjE-FUF43lV3AZE7uLVp0I', NOW(), NOW()),
+('Valorant', 'target', 'shooting', 'https://neeko-copilot.bytedance.net/api/text2image?prompt=valorant%20game%20icon&size=400x400', NOW(), NOW()),
+('原神', 'auto_awesome', 'entertainment', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCdUkaUZGDBcCAcjxT3f9Z7kvGkPdT3w8bqDluc3iqSErfCGRjzL_0ZOcLQsR9kJ-B48g4oD0-LYMpVyMizWjSaGuOrv4IJuxr7Q9sM46dgvZLmFBazQNCInUgQSWWf7Ei_hTLzJ9zbHSg6XdbfMoeKpo2Kx7RdCyKulFDPeds0dbsHSSJqMoL89znPuERLPN2vXgzEH1c-UjXwpi61RYvSGU9GsNswjgAbWeq6oGsbLw6bfZC3vTxlIu_wBCAay7PeYyYLCQf_moM', NOW(), NOW()),
+('绝地求生', 'sports_esports', 'shooting', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBvdKZ4vBDmJiGGoIdY5uN8vk6NP2skn5qTAfHBUjn_XhnvxhinOjbExV7IZTr

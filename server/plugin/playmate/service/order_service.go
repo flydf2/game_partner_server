@@ -16,19 +16,49 @@ import (
 type OrderService struct{}
 
 // GetOrders 获取订单列表
-func (s *OrderService) GetOrders(userID uint, status string) ([]model.Order, error) {
+func (s *OrderService) GetOrders(userID uint, search request.OrderSearch) ([]model.Order, int64, error) {
 	var orders []model.Order
-	query := global.GVA_DB.Where("user_id = ?", userID)
+	var total int64
 
-	if status != "" && status != "all" {
-		query = query.Where("status = ?", status)
+	query := global.GVA_DB.Model(&model.Order{}).Where("user_id = ?", userID)
+
+	// 应用搜索条件
+	if search.Status != "" && search.Status != "all" {
+		query = query.Where("status = ?", search.Status)
+	}
+	if search.Game != "" {
+		query = query.Where("game = ?", search.Game)
+	}
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
+	}
+	if search.MinAmount > 0 {
+		query = query.Where("amount >= ?", search.MinAmount)
+	}
+	if search.MaxAmount > 0 {
+		query = query.Where("amount <= ?", search.MaxAmount)
+	}
+	if search.Keyword != "" {
+		query = query.Where("game LIKE ? OR skill LIKE ? OR order_number LIKE ?", "%"+search.Keyword+"%", "%"+search.Keyword+"%", "%"+search.Keyword+"%")
 	}
 
-	if err := query.Order("created_at DESC").Find(&orders).Error; err != nil {
-		return nil, err
+	// 计算总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
 
-	return orders, nil
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
+
+	// 执行查询
+	if err := query.Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&orders).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return orders, total, nil
 }
 
 // GetOrderDetail 获取订单详情

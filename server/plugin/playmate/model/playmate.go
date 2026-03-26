@@ -14,7 +14,7 @@ type Playmate struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 	UserID      uint           `json:"userId"`
 	Nickname    string         `json:"nickname"`
-	Avatar      string         `json:"avatar"`
+	Avatar      string         `gorm:"type:varchar(2048)" json:"avatar"`
 	Rating      float64        `json:"rating"`
 	Price       float64        `json:"price"`
 	Likes       int            `json:"likes"`
@@ -26,6 +26,11 @@ type Playmate struct {
 	Description string         `json:"description"`
 	Level       int            `json:"level"`
 	Title       string         `json:"title"`
+}
+
+// TableName 设置Playmate表名
+func (Playmate) TableName() string {
+	return "game_partner_playmates"
 }
 
 // PlaymateSkill 陪玩技能模型
@@ -40,12 +45,22 @@ type PlaymateSkill struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+// TableName 设置PlaymateSkill表名
+func (PlaymateSkill) TableName() string {
+	return "game_partner_playmate_skills"
+}
+
 // PlaymateVoiceIntroduction 语音介绍模型
 type PlaymateVoiceIntroduction struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	PlaymateID  uint      `json:"playmateId"`
-	URL         string    `json:"url"`
-	Duration    string    `json:"duration"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	PlaymateID uint      `json:"playmateId"`
+	URL        string    `json:"url"`
+	Duration   string    `json:"duration"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
+// TableName 设置PlaymateVoiceIntroduction表名
+func (PlaymateVoiceIntroduction) TableName() string {
+	return "game_partner_playmate_voice_introductions"
 }

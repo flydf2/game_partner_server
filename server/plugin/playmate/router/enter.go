@@ -13,6 +13,8 @@ type RouterGroup struct {
 	CommunityRouter
 	CategoryRouter
 	GameCategoryRouter
+	RewardOrderRouter
+	AppealRouter
 }
 
 var RouterGroupApp = new(RouterGroup)

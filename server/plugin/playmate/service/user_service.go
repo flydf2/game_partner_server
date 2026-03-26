@@ -310,3 +310,31 @@ func (s *UserService) RefreshToken(userID uint) (string, error) {
 	token := "mock_token_" + time.Now().String()
 	return token, nil
 }
+
+// GetUsers 获取用户列表
+func (s *UserService) GetUsers(page, pageSize int) ([]model.User, int64, error) {
+	var users []model.User
+	var total int64
+
+	db := global.GVA_DB.Model(&model.User{})
+
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if page <= 0 {
+		page = 1
+	}
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+
+	if err := db.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
+}

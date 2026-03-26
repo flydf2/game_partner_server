@@ -63,20 +63,46 @@ func (s *ReviewService) SubmitReview(userID uint, req request.SubmitReviewReques
 }
 
 // GetReviews 获取评价列表
-func (s *ReviewService) GetReviews(page, pageSize int) ([]model.Review, int64, error) {
+func (s *ReviewService) GetReviews(search request.ReviewSearch) ([]model.Review, int64, error) {
 	var reviews []model.Review
 	var total int64
 
-	// 计算偏移量
-	offset := (page - 1) * pageSize
+	// 构建查询
+	query := global.GVA_DB.Model(&model.Review{})
 
-	// 查询总数
-	if err := global.GVA_DB.Model(&model.Review{}).Count(&total).Error; err != nil {
+	// 应用搜索条件
+	if search.PlaymateID > 0 {
+		query = query.Where("playmate_id = ?", search.PlaymateID)
+	}
+	if search.MinRating > 0 {
+		query = query.Where("rating >= ?", search.MinRating)
+	}
+	if search.MaxRating > 0 {
+		query = query.Where("rating <= ?", search.MaxRating)
+	}
+	if search.Game != "" {
+		query = query.Where("game = ?", search.Game)
+	}
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
+	}
+	if search.Keyword != "" {
+		query = query.Where("content LIKE ? OR tags LIKE ?", "%"+search.Keyword+"%", "%"+search.Keyword+"%")
+	}
+
+	// 计算总数
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	// 查询数据
-	if err := global.GVA_DB.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&reviews).Error; err != nil {
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
+
+	// 执行查询
+	if err := query.Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&reviews).Error; err != nil {
 		return nil, 0, err
 	}
 

@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 )
 
 // OrderApi 订单API
@@ -19,16 +19,35 @@ type OrderApi struct{}
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    status  query    string  false "订单状态"
-// @Success  200     {object} response.Response{data=[]model.Order, pagination=map[string]int64} "获取成功"
-// @Router   /orders [get]
+// @Param    status     query    string  false "订单状态"
+// @Param    game       query    string  false "游戏"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Param    minAmount  query    number  false "最小金额"
+// @Param    maxAmount  query    number  false "最大金额"
+// @Param    keyword    query    string  false "关键词"
+// @Param    page       query    int     false "页码"
+// @Param    pageSize   query    int     false "每页数量"
+// @Success  200        {object} response.Response{data=[]model.Order,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/orders [get]
 func (a *OrderApi) GetOrders(c *gin.Context) {
-	status := c.Query("status")
+	var search request.OrderSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 设置默认值
+	if search.Page <= 0 {
+		search.Page = 1
+	}
+	if search.PageSize <= 0 {
+		search.PageSize = 10
+	}
 
-	orders, err := service.ServiceGroupApp.OrderService.GetOrders(userID, status)
+	userID := uint(1)
+
+	orders, total, err := service.ServiceGroupApp.OrderService.GetOrders(userID, search)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
@@ -37,9 +56,9 @@ func (a *OrderApi) GetOrders(c *gin.Context) {
 	response.OkWithDetailed(gin.H{
 		"data": orders,
 		"pagination": gin.H{
-			"currentPage": 1,
-			"totalPages":  1,
-			"totalCount":  len(orders),
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
+			"totalCount":  total,
 		},
 	}, "获取成功", c)
 }
@@ -52,7 +71,7 @@ func (a *OrderApi) GetOrders(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "订单ID"
 // @Success  200  {object} response.Response{data=model.Order} "获取成功"
-// @Router   /orders/{id} [get]
+// @Router   /playmate/orders/{id} [get]
 func (a *OrderApi) GetOrderDetail(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -78,7 +97,7 @@ func (a *OrderApi) GetOrderDetail(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.CreateOrderRequest  true "订单信息"
 // @Success  200   {object} response.Response{data=map[string]interface{}} "创建成功"
-// @Router   /orders [post]
+// @Router   /playmate/orders [post]
 func (a *OrderApi) CreateOrder(c *gin.Context) {
 	var req request.CreateOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -111,7 +130,7 @@ func (a *OrderApi) CreateOrder(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "订单ID"
 // @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
-// @Router   /orders/{id}/confirmation [get]
+// @Router   /playmate/orders/{id}/confirmation [get]
 func (a *OrderApi) GetOrderConfirmation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)

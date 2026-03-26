@@ -28,7 +28,7 @@ func InitializeDB() {
 		// 通知相关
 		&model.Notification{},
 		&model.Message{},
-		&model.ChatMessage{},
+		&model.Conversation{},
 
 		// 游戏相关
 		&model.Game{},

@@ -14,6 +14,9 @@ func (p *PlaymatePlugin) Register(engine *gin.Engine) {
 	// 初始化数据库
 	initialize.InitializeDB()
 
+	// 初始化测试数据
+	initialize.InitializeData()
+
 	// 初始化API
 	initialize.InitializeAPI()
 

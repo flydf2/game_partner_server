@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
+	"github.com/gin-gonic/gin"
 )
 
 type WithdrawalApi struct{}
@@ -17,7 +17,7 @@ type WithdrawalApi struct{}
 // @Produce  application/json
 // @Param    data body     request.SubmitWithdrawalRequest true "提现信息"
 // @Success  200  {object} response.Response{msg=string} "提交提现成功"
-// @Router   /withdrawals [post]
+// @Router   /playmate/withdrawals [post]
 func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 	var req request.SubmitWithdrawalRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -39,15 +39,45 @@ func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Success  200  {object} response.Response{data=[]model.Withdrawal} "获取提现记录成功"
-// @Router   /withdrawals [get]
+// @Param    status     query    string  false "状态"
+// @Param    method     query    string  false "提现方式"
+// @Param    minAmount  query    number  false "最小金额"
+// @Param    maxAmount  query    number  false "最大金额"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Param    page       query    int     false "页码"
+// @Param    pageSize   query    int     false "每页数量"
+// @Success  200        {object} response.Response{data=[]model.Withdrawal,pagination=map[string]int64} "获取提现记录成功"
+// @Router   /playmate/withdrawals [get]
 func (a *WithdrawalApi) GetWithdrawalRecords(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
-	withdrawals, err := service.ServiceGroupApp.WithdrawalService.GetWithdrawalRecords(userID)
+	var search request.WithdrawalSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 设置默认值
+	if search.Page <= 0 {
+		search.Page = 1
+	}
+	if search.PageSize <= 0 {
+		search.PageSize = 10
+	}
+
+	userID := uint(1)
+
+	withdrawals, total, err := service.ServiceGroupApp.WithdrawalService.GetWithdrawalRecords(userID, search)
 	if err != nil {
 		response.FailWithMessage("获取提现记录失败", c)
 		return
 	}
-	response.OkWithData(withdrawals, c)
+
+	response.OkWithDetailed(gin.H{
+		"data": withdrawals,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
