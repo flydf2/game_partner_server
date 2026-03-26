@@ -15,9 +15,9 @@ type WithdrawalService struct{}
 
 // SubmitWithdrawal 提交提现请求
 func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWithdrawalRequest) (model.Withdrawal, error) {
-	// 检查用户钱包
+	// 检查用户钱包，选择余额最大的钱包
 	var wallet model.UserWallet
-	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+	if err := global.GVA_DB.Where("user_id = ?", userID).Order("balance DESC").First(&wallet).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.Withdrawal{}, errors.New("钱包不存在")
 		}

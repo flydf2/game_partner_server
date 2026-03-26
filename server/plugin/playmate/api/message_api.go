@@ -208,6 +208,31 @@ func (a *MessageApi) MarkConversationAsRead(c *gin.Context) {
 	response.OkWithMessage("标记成功", c)
 }
 
+// MarkConversationAsReadByID 通过会话ID标记会话为已读
+// @Tags     Message
+// @Summary  通过会话ID标记会话为已读
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "会话ID"
+// @Success  200  {object} response.Response{msg=string} "标记成功"
+// @Router   /playmate/conversations/{id}/read [put]
+func (a *MessageApi) MarkConversationAsReadByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	if err := service.ServiceGroupApp.MessageService.MarkConversationAsReadByID(uint(id)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("标记成功", c)
+}
+
 // ArchiveConversation 归档会话
 // @Tags     Message
 // @Summary  归档会话

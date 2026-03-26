@@ -51,14 +51,14 @@ func (s *MessageService) GetConversations(userID uint) ([]map[string]interface{}
 	for _, conv := range conversations {
 		if user, ok := userMap[conv.OtherUserID]; ok {
 			result = append(result, map[string]interface{}{
-				"id":           conv.ID,
-				"userId":       conv.OtherUserID,
-				"userName":     user.Nickname,
-				"userAvatar":   user.Avatar,
-				"lastMessage":  conv.LastMessage,
-				"lastTime":     conv.LastTime.Format("2006-01-02 15:04"),
-				"unreadCount":  conv.UnreadCount,
-				"vipLevel":     user.VipLevel,
+				"id":          conv.ID,
+				"userId":      conv.OtherUserID,
+				"userName":    user.Nickname,
+				"userAvatar":  user.Avatar,
+				"lastMessage": conv.LastMessage,
+				"lastTime":    conv.LastTime.Format("2006-01-02 15:04"),
+				"unreadCount": conv.UnreadCount,
+				"vipLevel":    user.VipLevel,
 			})
 		}
 	}
@@ -77,9 +77,9 @@ func (s *MessageService) GetMessages(userID uint, search request.MessageSearch) 
 	}
 	if search.Status != "" {
 		if search.Status == "read" {
-			query = query.Where("read = ?", true)
+			query = query.Where("`read` = ?", true)
 		} else if search.Status == "unread" {
-			query = query.Where("read = ?", false)
+			query = query.Where("`read` = ?", false)
 		}
 	}
 	if search.SenderID > 0 {
@@ -154,14 +154,14 @@ func (s *MessageService) GetMessages(userID uint, search request.MessageSearch) 
 		if user, ok := userMap[otherUserID]; ok {
 			result = append(result, map[string]interface{}{
 				"id":          msg.ID,
-			"userId":      otherUserID,
-			"userName":    user.Nickname,
-			"userAvatar":  user.Avatar,
-			"lastMessage": msg.Content,
-			"lastTime":    msg.Time.Format("2006-01-02 15:04"),
-			"unread":      0,
-			"messageType": msg.Type,
-			"status":      msg.Status,
+				"userId":      otherUserID,
+				"userName":    user.Nickname,
+				"userAvatar":  user.Avatar,
+				"lastMessage": msg.Content,
+				"lastTime":    msg.Time.Format("2006-01-02 15:04"),
+				"unread":      0,
+				"messageType": msg.Type,
+				"status":      msg.Status,
 			})
 		}
 	}
@@ -183,7 +183,7 @@ func (s *MessageService) GetChatMessages(userID, otherUserID uint) ([]model.Chat
 	// 标记对方发送的消息为已读（使用事务确保一致性）
 	tx := global.GVA_DB.Begin()
 	if err := tx.Model(&model.Message{}).Where(
-		"from_user_id = ? AND to_user_id = ? AND read = ?",
+		"from_user_id = ? AND to_user_id = ? AND `read` = ?",
 		otherUserID, userID, false,
 	).Updates(map[string]interface{}{
 		"read":   true,
@@ -287,7 +287,7 @@ func (s *MessageService) MarkConversationAsRead(userID, otherUserID uint) error 
 	return global.GVA_DB.Transaction(func(tx *gorm.DB) error {
 		// 标记所有对方发送的消息为已读
 		if err := tx.Model(&model.Message{}).Where(
-			"from_user_id = ? AND to_user_id = ? AND read = ?",
+			"from_user_id = ? AND to_user_id = ? AND `read` = ?",
 			otherUserID, userID, false,
 		).Updates(map[string]interface{}{
 			"read":   true,
@@ -298,6 +298,35 @@ func (s *MessageService) MarkConversationAsRead(userID, otherUserID uint) error 
 
 		// 更新会话未读计数
 		return s.updateConversationUnreadCountWithTx(tx, userID, otherUserID)
+	})
+}
+
+// MarkConversationAsReadByID 通过会话ID标记会话为已读
+func (s *MessageService) MarkConversationAsReadByID(conversationID uint) error {
+	// 查找会话
+	var conversation model.Conversation
+	if err := global.GVA_DB.First(&conversation, conversationID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("会话不存在")
+		}
+		return err
+	}
+
+	// 使用事务确保一致性
+	return global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		// 标记所有对方发送的消息为已读
+		if err := tx.Model(&model.Message{}).Where(
+			"from_user_id = ? AND to_user_id = ? AND `read` = ?",
+			conversation.OtherUserID, conversation.UserID, false,
+		).Updates(map[string]interface{}{
+			"read":   true,
+			"status": "read",
+		}).Error; err != nil {
+			return err
+		}
+
+		// 更新会话未读计数
+		return s.updateConversationUnreadCountWithTx(tx, conversation.UserID, conversation.OtherUserID)
 	})
 }
 
@@ -367,7 +396,7 @@ func (s *MessageService) updateConversationUnreadCountWithTx(tx *gorm.DB, userID
 	// 计算未读消息数
 	var unreadCount int64
 	if err := tx.Model(&model.Message{}).Where(
-		"from_user_id = ? AND to_user_id = ? AND read = ?",
+		"from_user_id = ? AND to_user_id = ? AND `read` = ?",
 		otherUserID, userID, false,
 	).Count(&unreadCount).Error; err != nil {
 		return err

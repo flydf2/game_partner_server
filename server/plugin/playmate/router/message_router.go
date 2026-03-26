@@ -14,6 +14,7 @@ func (r *MessageRouter) InitMessageRouter(router *gin.RouterGroup) {
 	{
 		conversationRouter.GET("", api.ApiGroupApp.MessageApi.GetConversations)
 		conversationRouter.PUT("/read/:userId", api.ApiGroupApp.MessageApi.MarkConversationAsRead)
+		conversationRouter.PUT("/:id/read", api.ApiGroupApp.MessageApi.MarkConversationAsReadByID)
 		conversationRouter.PUT("/archive/:id", api.ApiGroupApp.MessageApi.ArchiveConversation)
 	}
 

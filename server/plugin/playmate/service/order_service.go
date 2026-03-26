@@ -207,3 +207,69 @@ func (s *OrderService) GetOrderConfirmation(orderID uint) (map[string]interface{
 
 	return confirmation, nil
 }
+
+// CancelOrder 取消订单
+func (s *OrderService) CancelOrder(orderID, userID uint) error {
+	// 查找订单
+	var order model.Order
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("订单不存在")
+		}
+		return err
+	}
+
+	// 检查订单是否属于当前用户
+	if order.UserID != userID {
+		return errors.New("无权操作此订单")
+	}
+
+	// 检查订单状态是否可以取消
+	if order.Status != "pending" && order.Status != "confirmed" {
+		return errors.New("该订单状态无法取消")
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 更新订单状态
+	order.Status = "cancelled"
+	if err := tx.Save(&order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 退款逻辑：将金额退回用户钱包
+	var wallet model.UserWallet
+	if err := tx.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 增加余额
+	wallet.Balance += order.Amount
+	if err := tx.Save(&wallet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 创建退款交易记录
+	transaction := model.Transaction{
+		UserID:      userID,
+		Type:        "refund",
+		Amount:      order.Amount,
+		Description: "订单取消退款",
+		Time:        time.Now(),
+	}
+	if err := tx.Create(&transaction).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}

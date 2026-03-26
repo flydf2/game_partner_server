@@ -27,7 +27,7 @@ func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
 	if _, err := service.ServiceGroupApp.WithdrawalService.SubmitWithdrawal(userID, req); err != nil {
-		response.FailWithMessage("提交提现失败", c)
+		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	response.OkWithMessage("提交提现成功", c)

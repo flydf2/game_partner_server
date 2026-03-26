@@ -147,3 +147,32 @@ func (a *OrderApi) GetOrderConfirmation(c *gin.Context) {
 
 	response.OkWithDetailed(confirmation, "获取成功", c)
 }
+
+// CancelOrder 取消订单
+// @Tags     Order
+// @Summary  取消订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "订单ID"
+// @Success  200  {object} response.Response{msg=string} "取消成功"
+// @Router   /playmate/orders/{id}/cancel [post]
+func (a *OrderApi) CancelOrder(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	err = service.ServiceGroupApp.OrderService.CancelOrder(uint(id), userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("订单取消成功", c)
+}
