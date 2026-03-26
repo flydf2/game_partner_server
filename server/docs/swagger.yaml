@@ -982,6 +982,8 @@ definitions:
         type: integer
       updatedAt:
         type: string
+      user:
+        $ref: '#/definitions/model.User'
       userId:
         type: integer
     type: object
@@ -989,8 +991,10 @@ definitions:
     properties:
       category:
         type: string
-      categoryId:
-        type: integer
+      categoryIds:
+        items:
+          type: integer
+        type: array
       createdAt:
         type: string
       icon:
@@ -1122,6 +1126,8 @@ definitions:
         type: string
       skill:
         type: string
+      skillId:
+        type: integer
       status:
         description: pending, completed, cancelled
         type: string
@@ -1198,6 +1204,8 @@ definitions:
       images:
         description: 用逗号分隔的图片URL
         type: string
+      orderId:
+        type: integer
       playmateId:
         type: integer
       rating:
@@ -1207,6 +1215,8 @@ definitions:
         type: string
       updatedAt:
         type: string
+      user:
+        $ref: '#/definitions/model.User'
       userId:
         type: integer
     type: object
@@ -1218,6 +1228,8 @@ definitions:
         type: string
       game:
         type: string
+      grabUser:
+        $ref: '#/definitions/model.User'
       grabUserId:
         description: 抢单用户ID
         type: integer
@@ -1236,6 +1248,8 @@ definitions:
         type: string
       updatedAt:
         type: string
+      user:
+        $ref: '#/definitions/model.User'
       userId:
         type: integer
     type: object
@@ -1261,6 +1275,19 @@ definitions:
         type: string
       vipLevel:
         type: integer
+    type: object
+  model.UserBrowseHistory:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      playmateId:
+        type: integer
+      userId:
+        type: integer
+      viewedAt:
+        type: string
     type: object
   model.UserSettings:
     properties:
@@ -1582,6 +1609,8 @@ definitions:
         type: string
       skill:
         type: string
+      skillId:
+        type: integer
     required:
     - amount
     - game
@@ -1983,6 +2012,8 @@ definitions:
         items:
           type: string
         type: array
+      orderId:
+        type: integer
       playmateId:
         type: integer
       rating:
@@ -2284,21 +2315,6 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/system.SysUser'
-    type: object
-  service.HistoryWithPlaymate:
-    properties:
-      createdAt:
-        type: string
-      id:
-        type: integer
-      playmate:
-        $ref: '#/definitions/model.Playmate'
-      playmateId:
-        type: integer
-      userId:
-        type: integer
-      viewedAt:
-        type: string
     type: object
   system.Condition:
     properties:
@@ -6058,6 +6074,33 @@ paths:
       summary: 获取会话列表
       tags:
       - Message
+  /playmate/conversations/{id}/read:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 会话ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 标记成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 通过会话ID标记会话为已读
+      tags:
+      - Message
   /playmate/conversations/archive/{id}:
     put:
       consumes:
@@ -6334,10 +6377,13 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: 分类ID
+      - collectionFormat: csv
+        description: 分类ID列表
         in: query
-        name: categoryId
-        type: integer
+        items:
+          type: integer
+        name: categoryIds
+        type: array
       - description: 状态
         in: query
         name: status
@@ -6755,6 +6801,33 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取订单详情
+      tags:
+      - Order
+  /playmate/orders/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 取消成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 取消订单
       tags:
       - Order
   /playmate/orders/{id}/confirmation:
@@ -7397,7 +7470,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/service.HistoryWithPlaymate'
+                    $ref: '#/definitions/model.UserBrowseHistory'
                   type: array
               type: object
       security:

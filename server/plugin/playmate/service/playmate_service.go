@@ -249,7 +249,8 @@ func (s *PlaymateService) GetExpertReviews(expertID uint, page, pageSize int) ([
 
 	offset := (page - 1) * pageSize
 
-	if err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&reviews).Error; err != nil {
+	// 查询评价并关联用户信息
+	if err := query.Preload("User").Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&reviews).Error; err != nil {
 		return nil, 0, err
 	}
 

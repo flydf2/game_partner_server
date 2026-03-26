@@ -46,8 +46,8 @@ func (s *RewardOrderService) GetRewardOrders(search request.RewardOrderSearch) (
 	offset := (search.Page - 1) * search.PageSize
 	query = query.Offset(offset).Limit(search.PageSize)
 
-	// 执行查询
-	if err := query.Order("created_at DESC").Find(&orders).Error; err != nil {
+	// 执行查询，关联用户信息
+	if err := query.Preload("User").Preload("GrabUser").Order("created_at DESC").Find(&orders).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -57,7 +57,7 @@ func (s *RewardOrderService) GetRewardOrders(search request.RewardOrderSearch) (
 // GetRewardOrderDetail 获取奖励订单详情
 func (s *RewardOrderService) GetRewardOrderDetail(orderID uint) (*model.RewardOrder, error) {
 	var order model.RewardOrder
-	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+	if err := global.GVA_DB.Preload("User").Preload("GrabUser").First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("订单不存在")
 		}

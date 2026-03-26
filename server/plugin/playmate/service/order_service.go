@@ -101,10 +101,17 @@ func (s *OrderService) CreateOrder(userID uint, req request.CreateOrderRequest) 
 	// 生成订单号
 	orderNumber := fmt.Sprintf("GP%s%d", time.Now().Format("20060102150405"), userID)
 
+	// 设置技能ID，默认值1
+	skillID := uint(1)
+	if req.SkillID > 0 {
+		skillID = req.SkillID
+	}
+
 	// 创建订单
 	order := model.Order{
 		UserID:       userID,
 		PlaymateID:   req.PlaymateID,
+		SkillID:      skillID,
 		Game:         req.Game,
 		Skill:        req.Skill,
 		Status:       "pending",

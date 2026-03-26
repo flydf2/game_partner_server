@@ -44,6 +44,7 @@ type UpdateSettingsRequest struct {
 // CreateOrderRequest 创建订单请求
 type CreateOrderRequest struct {
 	PlaymateID  uint    `json:"playmateId" binding:"required"`
+	SkillID     uint    `json:"skillId" binding:"omitempty"`
 	Game        string  `json:"game" binding:"required"`
 	Skill       string  `json:"skill" binding:"required"`
 	ServiceTime string  `json:"serviceTime" binding:"required"`
@@ -53,6 +54,7 @@ type CreateOrderRequest struct {
 // SubmitReviewRequest 提交评价请求
 type SubmitReviewRequest struct {
 	PlaymateID uint     `json:"playmateId" binding:"required"`
+	OrderID    uint     `json:"orderId" binding:"omitempty"`
 	Rating     int      `json:"rating" binding:"required,min=1,max=5"`
 	Content    string   `json:"content" binding:"required"`
 	Images     []string `json:"images"`
@@ -61,8 +63,8 @@ type SubmitReviewRequest struct {
 
 // SubmitWithdrawalRequest 提交提现请求
 type SubmitWithdrawalRequest struct {
-	Amount float64 `json:"amount" binding:"required,min=10,max=50000"`
-	Method string  `json:"method" binding:"required"`
+	Amount string `json:"amount" binding:"required"`
+	Method string `json:"method" binding:"required"`
 }
 
 // SendMessageRequest 发送消息请求

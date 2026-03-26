@@ -35,6 +35,7 @@ func (s *ReviewService) SubmitReview(userID uint, req request.SubmitReviewReques
 	review := model.Review{
 		UserID:     userID,
 		PlaymateID: req.PlaymateID,
+		OrderID:    req.OrderID,
 		Rating:     req.Rating,
 		Content:    req.Content,
 		Images:     strings.Join(req.Images, ","),
@@ -101,8 +102,8 @@ func (s *ReviewService) GetReviews(search request.ReviewSearch) ([]model.Review,
 	// 分页
 	offset := (search.Page - 1) * search.PageSize
 
-	// 执行查询
-	if err := query.Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&reviews).Error; err != nil {
+	// 执行查询，关联用户信息
+	if err := query.Preload("User").Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&reviews).Error; err != nil {
 		return nil, 0, err
 	}
 

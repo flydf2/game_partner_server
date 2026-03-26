@@ -14,6 +14,7 @@ type Order struct {
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 	UserID       uint           `json:"userId"`
 	PlaymateID   uint           `json:"playmateId"`
+	SkillID      uint           `gorm:"default:1" json:"skillId"`
 	Game         string         `json:"game"`
 	Skill        string         `json:"skill"`
 	Status       string         `json:"status"` // pending, completed, cancelled
@@ -52,7 +53,9 @@ type RewardOrder struct {
 	UpdatedAt     time.Time      `json:"updatedAt"`
 	DeletedAt     gorm.DeletedAt `gorm:"index" json:"-"`
 	UserID        uint           `json:"userId"`
+	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
 	GrabUserID    *uint          `json:"grabUserId"` // 抢单用户ID
+	GrabUser      *User          `gorm:"foreignKey:GrabUserID;constraint:OnDelete:CASCADE" json:"grabUser"`
 	Game          string         `json:"game"`
 	Content       string         `json:"content"`
 	Reward        float64        `json:"reward"`

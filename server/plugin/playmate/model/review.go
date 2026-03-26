@@ -13,7 +13,9 @@ type Review struct {
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 	UserID    uint           `json:"userId"`
+	User      User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
 	PlaymateID uint          `json:"playmateId"`
+	OrderID   uint           `gorm:"default:0" json:"orderId"`
 	Rating    int            `json:"rating"`
 	Content   string         `json:"content"`
 	Images    string         `gorm:"type:varchar(4096)" json:"images"` // 用逗号分隔的图片URL

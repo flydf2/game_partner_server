@@ -5672,6 +5672,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/conversations/{id}/read": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "通过会话ID标记会话为已读",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "会话ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "标记成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/experts/{id}": {
             "get": {
                 "security": [
@@ -6064,9 +6112,13 @@ const docTemplate = `{
                 "summary": "获取游戏列表",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "分类ID",
-                        "name": "categoryId",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "分类ID列表",
+                        "name": "categoryIds",
                         "in": "query"
                     },
                     {
@@ -6761,6 +6813,54 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.Order"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/playmate/orders/{id}/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "取消订单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "订单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "取消成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -7880,7 +7980,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/service.HistoryWithPlaymate"
+                                                "$ref": "#/definitions/model.UserBrowseHistory"
                                             }
                                         }
                                     }
@@ -13599,6 +13699,9 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
                 "userId": {
                     "type": "integer"
                 }
@@ -13610,8 +13713,11 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
-                "categoryId": {
-                    "type": "integer"
+                "categoryIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "createdAt": {
                     "type": "string"
@@ -13806,6 +13912,9 @@ const docTemplate = `{
                 "skill": {
                     "type": "string"
                 },
+                "skillId": {
+                    "type": "integer"
+                },
                 "status": {
                     "description": "pending, completed, cancelled",
                     "type": "string"
@@ -13920,6 +14029,9 @@ const docTemplate = `{
                     "description": "用逗号分隔的图片URL",
                     "type": "string"
                 },
+                "orderId": {
+                    "type": "integer"
+                },
                 "playmateId": {
                     "type": "integer"
                 },
@@ -13932,6 +14044,9 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "userId": {
                     "type": "integer"
@@ -13949,6 +14064,9 @@ const docTemplate = `{
                 },
                 "game": {
                     "type": "string"
+                },
+                "grabUser": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "grabUserId": {
                     "description": "抢单用户ID",
@@ -13974,6 +14092,9 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "userId": {
                     "type": "integer"
@@ -14012,6 +14133,26 @@ const docTemplate = `{
                 },
                 "vipLevel": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.UserBrowseHistory": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "playmateId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "viewedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -14470,6 +14611,9 @@ const docTemplate = `{
                 },
                 "skill": {
                     "type": "string"
+                },
+                "skillId": {
+                    "type": "integer"
                 }
             }
         },
@@ -15043,6 +15187,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "orderId": {
+                    "type": "integer"
+                },
                 "playmateId": {
                     "type": "integer"
                 },
@@ -15490,29 +15637,6 @@ const docTemplate = `{
             "properties": {
                 "user": {
                     "$ref": "#/definitions/system.SysUser"
-                }
-            }
-        },
-        "service.HistoryWithPlaymate": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "playmate": {
-                    "$ref": "#/definitions/model.Playmate"
-                },
-                "playmateId": {
-                    "type": "integer"
-                },
-                "userId": {
-                    "type": "integer"
-                },
-                "viewedAt": {
-                    "type": "string"
                 }
             }
         },

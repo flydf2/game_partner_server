@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"gorm.io/gorm"
 
@@ -24,19 +25,25 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 		return model.Withdrawal{}, err
 	}
 
+	// 转换金额字符串为float64
+	amount, err := strconv.ParseFloat(req.Amount, 64)
+	if err != nil {
+		return model.Withdrawal{}, errors.New("金额格式错误")
+	}
+
 	// 检查余额
-	if wallet.Balance < req.Amount {
+	if wallet.Balance < amount {
 		return model.Withdrawal{}, errors.New("余额不足")
 	}
 
 	// 计算手续费
-	fee := req.Amount * 0.01 // 1%手续费
-	actualAmount := req.Amount - fee
+	fee := amount * 0.01 // 1%手续费
+	actualAmount := amount - fee
 
 	// 创建提现记录
 	withdrawal := model.Withdrawal{
 		UserID:       userID,
-		Amount:       req.Amount,
+		Amount:       amount,
 		Fee:          fee,
 		ActualAmount: actualAmount,
 		Method:       req.Method,
@@ -53,8 +60,8 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 	}
 
 	// 冻结金额
-	wallet.Balance -= req.Amount
-	wallet.Frozen += req.Amount
+	wallet.Balance -= amount
+	wallet.Frozen += amount
 	if err := tx.Save(&wallet).Error; err != nil {
 		tx.Rollback()
 		return model.Withdrawal{}, err
