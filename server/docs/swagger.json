@@ -13898,6 +13898,9 @@
                 "playmateId": {
                     "type": "integer"
                 },
+                "quantity": {
+                    "type": "integer"
+                },
                 "serviceTime": {
                     "type": "string"
                 },
@@ -14585,6 +14588,7 @@
                 "amount",
                 "game",
                 "playmateId",
+                "quantity",
                 "serviceTime",
                 "skill"
             ],
@@ -14597,6 +14601,10 @@
                 },
                 "playmateId": {
                     "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "serviceTime": {
                     "type": "string"
@@ -15206,9 +15214,7 @@
             ],
             "properties": {
                 "amount": {
-                    "type": "number",
-                    "maximum": 50000,
-                    "minimum": 10
+                    "type": "string"
                 },
                 "method": {
                     "type": "string"

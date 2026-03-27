@@ -13906,6 +13906,9 @@ const docTemplate = `{
                 "playmateId": {
                     "type": "integer"
                 },
+                "quantity": {
+                    "type": "integer"
+                },
                 "serviceTime": {
                     "type": "string"
                 },
@@ -14593,6 +14596,7 @@ const docTemplate = `{
                 "amount",
                 "game",
                 "playmateId",
+                "quantity",
                 "serviceTime",
                 "skill"
             ],
@@ -14605,6 +14609,10 @@ const docTemplate = `{
                 },
                 "playmateId": {
                     "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "serviceTime": {
                     "type": "string"
@@ -15214,9 +15222,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "amount": {
-                    "type": "number",
-                    "maximum": 50000,
-                    "minimum": 10
+                    "type": "string"
                 },
                 "method": {
                     "type": "string"

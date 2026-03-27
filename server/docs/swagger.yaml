@@ -1122,6 +1122,8 @@ definitions:
         type: string
       playmateId:
         type: integer
+      quantity:
+        type: integer
       serviceTime:
         type: string
       skill:
@@ -1605,6 +1607,9 @@ definitions:
         type: string
       playmateId:
         type: integer
+      quantity:
+        minimum: 1
+        type: integer
       serviceTime:
         type: string
       skill:
@@ -1615,6 +1620,7 @@ definitions:
     - amount
     - game
     - playmateId
+    - quantity
     - serviceTime
     - skill
     type: object
@@ -2032,9 +2038,7 @@ definitions:
   request.SubmitWithdrawalRequest:
     properties:
       amount:
-        maximum: 50000
-        minimum: 10
-        type: number
+        type: string
       method:
         type: string
     required:

@@ -49,6 +49,7 @@ type CreateOrderRequest struct {
 	Skill       string  `json:"skill" binding:"required"`
 	ServiceTime string  `json:"serviceTime" binding:"required"`
 	Amount      float64 `json:"amount" binding:"required"`
+	Quantity    int     `json:"quantity" binding:"required,min=1"`
 }
 
 // SubmitReviewRequest 提交评价请求
@@ -131,6 +132,7 @@ type OrderSearch struct {
 	EndTime   string  `json:"endTime" form:"endTime"`
 	MinAmount float64 `json:"minAmount" form:"minAmount"`
 	MaxAmount float64 `json:"maxAmount" form:"maxAmount"`
+	Quantity  int     `json:"quantity" form:"quantity"`
 	Keyword   string  `json:"keyword" form:"keyword"`
 	Page      int     `json:"page" form:"page"`
 	PageSize  int     `json:"pageSize" form:"pageSize"`

@@ -24,6 +24,16 @@ func (s *UserService) GetUserInfo(userID uint) (model.User, error) {
 		}
 		return model.User{}, err
 	}
+
+	// 从钱包中获取最新的余额
+	var wallet model.UserWallet
+	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err == nil {
+		// 更新用户余额为钱包余额
+		user.Balance = wallet.Balance
+		// 保存更新后的用户信息
+		global.GVA_DB.Save(&user)
+	}
+
 	return user, nil
 }
 
@@ -40,6 +50,15 @@ func (s *UserService) Login(username, password string) (model.User, string, erro
 	// 验证密码
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return model.User{}, "", errors.New("用户名或密码错误")
+	}
+
+	// 从钱包中获取最新的余额
+	var wallet model.UserWallet
+	if err := global.GVA_DB.Where("user_id = ?", user.ID).First(&wallet).Error; err == nil {
+		// 更新用户余额为钱包余额
+		user.Balance = wallet.Balance
+		// 保存更新后的用户信息
+		global.GVA_DB.Save(&user)
 	}
 
 	// 生成token（这里简化处理，实际应该使用JWT）

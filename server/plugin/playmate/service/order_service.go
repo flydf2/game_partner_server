@@ -41,6 +41,9 @@ func (s *OrderService) GetOrders(userID uint, search request.OrderSearch) ([]mod
 	if search.MaxAmount > 0 {
 		query = query.Where("amount <= ?", search.MaxAmount)
 	}
+	if search.Quantity > 0 {
+		query = query.Where("quantity = ?", search.Quantity)
+	}
 	if search.Keyword != "" {
 		query = query.Where("game LIKE ? OR skill LIKE ? OR order_number LIKE ?", "%"+search.Keyword+"%", "%"+search.Keyword+"%", "%"+search.Keyword+"%")
 	}
@@ -109,15 +112,16 @@ func (s *OrderService) CreateOrder(userID uint, req request.CreateOrderRequest) 
 
 	// 创建订单
 	order := model.Order{
-		UserID:       userID,
-		PlaymateID:   req.PlaymateID,
-		SkillID:      skillID,
-		Game:         req.Game,
-		Skill:        req.Skill,
-		Status:       "pending",
-		ServiceTime:  req.ServiceTime,
-		Amount:       req.Amount,
-		OrderNumber:  orderNumber,
+		UserID:        userID,
+		PlaymateID:    req.PlaymateID,
+		SkillID:       skillID,
+		Game:          req.Game,
+		Skill:         req.Skill,
+		Status:        "pending",
+		ServiceTime:   req.ServiceTime,
+		Amount:        req.Amount,
+		Quantity:      req.Quantity,
+		OrderNumber:   orderNumber,
 		PaymentMethod: "alipay",
 	}
 
@@ -177,7 +181,7 @@ func (s *OrderService) GetOrderConfirmation(orderID uint) (map[string]interface{
 
 	// 计算费用
 	pricePerHour := playmate.Price
-	duration := 1 // 默认1小时
+	duration := 1                     // 默认1小时
 	serviceFee := pricePerHour * 0.05 // 服务费5%
 	totalAmount := pricePerHour*float64(duration) + serviceFee
 
@@ -195,18 +199,19 @@ func (s *OrderService) GetOrderConfirmation(orderID uint) (map[string]interface{
 
 	// 构建响应
 	confirmation := map[string]interface{}{
-		"orderId":      order.ID,
+		"orderId": order.ID,
 		"expert": map[string]interface{}{
-			"id":         playmate.ID,
-			"nickname":   playmate.Nickname,
-			"avatar":     playmate.Avatar,
-			"game":       playmate.Game,
-			"rank":       playmate.Rank,
-			"rating":     playmate.Rating,
-			"reviews":    1200,
+			"id":       playmate.ID,
+			"nickname": playmate.Nickname,
+			"avatar":   playmate.Avatar,
+			"game":     playmate.Game,
+			"rank":     playmate.Rank,
+			"rating":   playmate.Rating,
+			"reviews":  1200,
 		},
 		"pricePerHour": pricePerHour,
 		"duration":     duration,
+		"quantity":     order.Quantity,
 		"serviceFee":   serviceFee,
 		"coupon":       coupon,
 		"totalAmount":  totalAmount,
