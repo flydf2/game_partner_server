@@ -7199,7 +7199,7 @@ paths:
       summary: 提交评价
       tags:
       - Review
-  /playmate/reward-orders:
+  /playmate/reward:
     get:
       consumes:
       - application/json
@@ -7278,7 +7278,7 @@ paths:
       summary: 创建奖励订单
       tags:
       - RewardOrder
-  /playmate/reward-orders/{id}:
+  /playmate/reward/{id}:
     delete:
       consumes:
       - application/json
@@ -7363,7 +7363,7 @@ paths:
       summary: 更新奖励订单
       tags:
       - RewardOrder
-  /playmate/reward-orders/{id}/grab:
+  /playmate/reward/{id}/grab:
     post:
       consumes:
       - application/json

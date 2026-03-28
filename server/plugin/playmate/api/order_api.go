@@ -176,3 +176,134 @@ func (a *OrderApi) CancelOrder(c *gin.Context) {
 
 	response.OkWithMessage("订单取消成功", c)
 }
+
+// ConfirmOrder 确认订单
+// @Tags     Order
+// @Summary  确认订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "订单ID"
+// @Success  200  {object} response.Response{msg=string} "确认成功"
+// @Router   /playmate/orders/{id}/confirm [post]
+func (a *OrderApi) ConfirmOrder(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	err = service.ServiceGroupApp.OrderService.ConfirmOrder(uint(id), userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("订单确认成功", c)
+}
+
+// AcceptOrder 接受订单
+// @Tags     Order
+// @Summary  接受订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "订单ID"
+// @Success  200  {object} response.Response{msg=string} "接受成功"
+// @Router   /playmate/orders/{id}/accept [post]
+func (a *OrderApi) AcceptOrder(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	err = service.ServiceGroupApp.OrderService.AcceptOrder(uint(id), userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("订单接受成功", c)
+}
+
+// RejectOrder 拒绝订单
+// @Tags     Order
+// @Summary  拒绝订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "订单ID"
+// @Success  200  {object} response.Response{msg=string} "拒绝成功"
+// @Router   /playmate/orders/{id}/reject [post]
+func (a *OrderApi) RejectOrder(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	err = service.ServiceGroupApp.OrderService.RejectOrder(uint(id), userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("订单拒绝成功", c)
+}
+
+// ShareOrder 分享订单
+// @Tags     Order
+// @Summary  分享订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "订单ID"
+// @Param    data  body      map[string]string  true "分享信息，包含platform字段"
+// @Success  200  {object} response.Response{data=map[string]interface{}} "分享成功"
+// @Router   /playmate/orders/{id}/share [post]
+func (a *OrderApi) ShareOrder(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	// 绑定请求数据
+	var req map[string]string
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 获取分享平台
+	platform := req["platform"]
+	if platform == "" {
+		platform = "unknown"
+	}
+
+	// 调用服务层分享方法
+	shareData, err := service.ServiceGroupApp.OrderService.ShareOrder(uint(id), userID, platform)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(shareData, "分享成功", c)
+}

@@ -79,40 +79,6 @@ type CommentPostRequest struct {
 	Content string `json:"content" binding:"required"`
 }
 
-// GrabRewardOrderRequest 抢奖励订单请求
-type GrabRewardOrderRequest struct {
-	OrderID uint `json:"orderId" binding:"required"`
-}
-
-// RewardOrderSearch 奖励订单搜索请求
-type RewardOrderSearch struct {
-	Game          string `json:"game" form:"game"`
-	Status        string `json:"status" form:"status"`
-	PaymentMethod string `json:"paymentMethod" form:"paymentMethod"`
-	Keyword       string `json:"keyword" form:"keyword"`
-	Page          int    `json:"page" form:"page"`
-	PageSize      int    `json:"pageSize" form:"pageSize"`
-}
-
-// CreateRewardOrderRequest 创建奖励订单请求
-type CreateRewardOrderRequest struct {
-	Game          string  `json:"game" binding:"required"`
-	Content       string  `json:"content" binding:"required"`
-	Reward        float64 `json:"reward" binding:"required,gt=0"`
-	PaymentMethod string  `json:"paymentMethod" binding:"required"`
-	Tags          string  `json:"tags"`
-}
-
-// UpdateRewardOrderRequest 更新奖励订单请求
-type UpdateRewardOrderRequest struct {
-	Game          string  `json:"game"`
-	Content       string  `json:"content"`
-	Reward        float64 `json:"reward"`
-	PaymentMethod string  `json:"paymentMethod"`
-	Status        string  `json:"status"`
-	Tags          string  `json:"tags"`
-}
-
 // ActivitySearch 活动搜索请求
 type ActivitySearch struct {
 	Status    string `json:"status" form:"status"`
@@ -270,4 +236,56 @@ type UpdateAppealRequest struct {
 type HandleAppealRequest struct {
 	Status   string `json:"status" binding:"required"` // resolved, rejected
 	Response string `json:"response" binding:"required"`
+}
+
+// AddSkillRequest 添加技能请求
+type AddSkillRequest struct {
+	Game        string  `json:"game" binding:"required"`
+	Skill       string  `json:"skill" binding:"required"`
+	Level       string  `json:"level" binding:"required"` // beginner, intermediate, advanced, expert
+	Price       float64 `json:"price" binding:"required,gt=0"`
+	Description string  `json:"description"`
+}
+
+// UpdateSkillRequest 更新技能请求
+type UpdateSkillRequest struct {
+	Game        string  `json:"game"`
+	Skill       string  `json:"skill"`
+	Level       string  `json:"level"`
+	Price       float64 `json:"price"`
+	Description string  `json:"description"`
+}
+
+// CreatePostRequest 创建帖子请求
+type CreatePostRequest struct {
+	Content string   `json:"content" binding:"required"`
+	Images  []string `json:"images"`
+	Game    string   `json:"game"`
+}
+
+// RechargeRequest 充值请求
+type RechargeRequest struct {
+	Amount float64 `json:"amount" binding:"required,gt=0"`
+	Method string  `json:"method" binding:"required"` // alipay, wechat, balance
+}
+
+// SendSmsCodeRequest 发送短信验证码请求
+type SendSmsCodeRequest struct {
+	Phone string `json:"phone" binding:"required"`
+}
+
+// SkillSearch 技能搜索请求
+type SkillSearch struct {
+	Game     string `json:"game" form:"game"`
+	Level    string `json:"level" form:"level"`
+	Keyword  string `json:"keyword" form:"keyword"`
+	Page     int    `json:"page" form:"page"`
+	PageSize int    `json:"pageSize" form:"pageSize"`
+}
+
+// LeaderboardSearch 排行榜搜索请求
+type LeaderboardSearch struct {
+	Game     string `json:"game" form:"game"`
+	Page     int    `json:"page" form:"page"`
+	PageSize int    `json:"pageSize" form:"pageSize"`
 }

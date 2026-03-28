@@ -47,29 +47,6 @@ func (OrderConfirmation) TableName() string {
 	return "game_partner_order_confirmations"
 }
 
-// RewardOrder 奖励订单模型
-type RewardOrder struct {
-	ID            uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt     time.Time      `json:"createdAt"`
-	UpdatedAt     time.Time      `json:"updatedAt"`
-	DeletedAt     gorm.DeletedAt `gorm:"index" json:"-"`
-	UserID        uint           `json:"userId"`
-	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
-	GrabUserID    *uint          `json:"grabUserId"` // 抢单用户ID
-	GrabUser      *User          `gorm:"foreignKey:GrabUserID;constraint:OnDelete:CASCADE" json:"grabUser"`
-	Game          string         `json:"game"`
-	Content       string         `json:"content"`
-	Reward        float64        `json:"reward"`
-	PaymentMethod string         `json:"paymentMethod"` // prepay, postpay
-	Status        string         `json:"status"`        // available, grabbed, completed, cancelled
-	Tags          string         `json:"tags"`          // 用逗号分隔的标签
-}
-
-// TableName 设置RewardOrder表名
-func (RewardOrder) TableName() string {
-	return "game_partner_reward_orders"
-}
-
 // Coupon 优惠券模型
 type Coupon struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`

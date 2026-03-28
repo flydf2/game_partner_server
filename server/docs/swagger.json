@@ -7484,7 +7484,7 @@
                 }
             }
         },
-        "/playmate/reward-orders": {
+        "/playmate/reward": {
             "get": {
                 "security": [
                     {
@@ -7618,7 +7618,7 @@
                 }
             }
         },
-        "/playmate/reward-orders/{id}": {
+        "/playmate/reward/{id}": {
             "get": {
                 "security": [
                     {
@@ -7767,7 +7767,7 @@
                 }
             }
         },
-        "/playmate/reward-orders/{id}/grab": {
+        "/playmate/reward/{id}/grab": {
             "post": {
                 "security": [
                     {

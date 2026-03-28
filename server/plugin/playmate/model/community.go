@@ -100,3 +100,35 @@ type UserBrowseHistory struct {
 func (UserBrowseHistory) TableName() string {
 	return "game_partner_user_browse_histories"
 }
+
+// Topic 话题模型
+type Topic struct {
+	ID               uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt        time.Time      `json:"createdAt"`
+	UpdatedAt        time.Time      `json:"updatedAt"`
+	DeletedAt        gorm.DeletedAt `gorm:"index" json:"-"`
+	Title            string         `json:"title"`
+	Description      string         `json:"description"`
+	Cover            string         `json:"cover"`
+	ParticipantCount int            `json:"participantCount"`
+	PostCount        int            `json:"postCount"`
+}
+
+// TableName 设置Topic表名
+func (Topic) TableName() string {
+	return "game_partner_topics"
+}
+
+// UserTopicFollow 用户话题关注模型
+type UserTopicFollow struct {
+	ID        uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time      `json:"createdAt"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	UserID    uint           `json:"userId"`
+	TopicID   uint           `json:"topicId"`
+}
+
+// TableName 设置UserTopicFollow表名
+func (UserTopicFollow) TableName() string {
+	return "game_partner_user_topic_follows"
+}

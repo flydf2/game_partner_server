@@ -57,4 +57,7 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化申诉路由
 	router.RouterGroupApp.InitAppealRouter(routerGroup)
+
+	// 初始化文件上传路由
+	router.RouterGroupApp.InitUploadRouter(routerGroup)
 }

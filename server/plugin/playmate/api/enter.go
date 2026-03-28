@@ -16,6 +16,7 @@ type ApiGroup struct {
 	GameCategoryApi
 	RewardOrderApi
 	AppealApi
+	UploadApi
 }
 
 var ApiGroupApp = new(ApiGroup)

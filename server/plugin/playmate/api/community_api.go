@@ -136,3 +136,148 @@ func (a *CommunityApi) CommentPost(c *gin.Context) {
 	}
 	response.OkWithData(comment, c)
 }
+
+// CreatePost 创建帖子
+// @Tags     Community
+// @Summary  创建帖子
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body     request.CreatePostRequest true "帖子内容"
+// @Success  200  {object} response.Response{data=model.CommunityPost} "创建成功"
+// @Router   /playmate/community/posts [post]
+func (a *CommunityApi) CreatePost(c *gin.Context) {
+	var req request.CreatePostRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	post, err := service.ServiceGroupApp.CommunityService.CreatePost(userID, req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(post, "创建成功", c)
+}
+
+// GetTopicDetail 获取话题详情
+// @Tags     Community
+// @Summary  获取话题详情
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    topicId path     string true "话题ID"
+// @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/community/topics/{topicId} [get]
+func (a *CommunityApi) GetTopicDetail(c *gin.Context) {
+	topicIdStr := c.Param("topicId")
+	topicId, err := strconv.ParseUint(topicIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	topic, err := service.ServiceGroupApp.CommunityService.GetTopicDetail(uint(topicId))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(topic, "获取成功", c)
+}
+
+// GetTopicPosts 获取话题帖子列表
+// @Tags     Community
+// @Summary  获取话题帖子列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    topicId path     string true "话题ID"
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200  {object} response.Response{data=[]model.CommunityPost,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/community/topics/{topicId}/posts [get]
+func (a *CommunityApi) GetTopicPosts(c *gin.Context) {
+	topicIdStr := c.Param("topicId")
+	topicId, err := strconv.ParseUint(topicIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	posts, total, err := service.ServiceGroupApp.CommunityService.GetTopicPosts(uint(topicId), page, pageSize)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": posts,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
+// FollowTopic 关注话题
+// @Tags     Community
+// @Summary  关注话题
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    topicId path     string true "话题ID"
+// @Success  200  {object} response.Response{msg=string} "关注成功"
+// @Router   /playmate/community/topics/{topicId}/follow [post]
+func (a *CommunityApi) FollowTopic(c *gin.Context) {
+	topicIdStr := c.Param("topicId")
+	topicId, err := strconv.ParseUint(topicIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.FollowTopic(userID, uint(topicId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("关注成功", c)
+}
+
+// UnfollowTopic 取消关注话题
+// @Tags     Community
+// @Summary  取消关注话题
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    topicId path     string true "话题ID"
+// @Success  200  {object} response.Response{msg=string} "取消关注成功"
+// @Router   /playmate/community/topics/{topicId}/follow [delete]
+func (a *CommunityApi) UnfollowTopic(c *gin.Context) {
+	topicIdStr := c.Param("topicId")
+	topicId, err := strconv.ParseUint(topicIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.UnfollowTopic(userID, uint(topicId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("取消关注成功", c)
+}

@@ -285,3 +285,181 @@ func (s *OrderService) CancelOrder(orderID, userID uint) error {
 
 	return nil
 }
+
+// ConfirmOrder 确认订单
+func (s *OrderService) ConfirmOrder(orderID, userID uint) error {
+	// 查找订单
+	var order model.Order
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("订单不存在")
+		}
+		return err
+	}
+
+	// 检查订单是否属于当前用户
+	if order.UserID != userID {
+		return errors.New("无权操作此订单")
+	}
+
+	// 检查订单状态是否可以确认
+	if order.Status != "completed" {
+		return errors.New("该订单状态无法确认")
+	}
+
+	// 更新订单状态
+	order.Status = "confirmed"
+	if err := global.GVA_DB.Save(&order).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AcceptOrder 接受订单
+func (s *OrderService) AcceptOrder(orderID, userID uint) error {
+	// 查找订单
+	var order model.Order
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("订单不存在")
+		}
+		return err
+	}
+
+	// 检查订单是否属于当前陪玩
+	if order.PlaymateID != userID {
+		return errors.New("无权操作此订单")
+	}
+
+	// 检查订单状态是否可以接受
+	if order.Status != "pending" {
+		return errors.New("该订单状态无法接受")
+	}
+
+	// 更新订单状态
+	order.Status = "accepted"
+	if err := global.GVA_DB.Save(&order).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RejectOrder 拒绝订单
+func (s *OrderService) RejectOrder(orderID, userID uint) error {
+	// 查找订单
+	var order model.Order
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("订单不存在")
+		}
+		return err
+	}
+
+	// 检查订单是否属于当前陪玩
+	if order.PlaymateID != userID {
+		return errors.New("无权操作此订单")
+	}
+
+	// 检查订单状态是否可以拒绝
+	if order.Status != "pending" {
+		return errors.New("该订单状态无法拒绝")
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 更新订单状态
+	order.Status = "rejected"
+	if err := tx.Save(&order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 退款逻辑：将金额退回用户钱包
+	var wallet model.UserWallet
+	if err := tx.Where("user_id = ?", order.UserID).First(&wallet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 增加余额
+	wallet.Balance += order.Amount
+	if err := tx.Save(&wallet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 创建退款交易记录
+	transaction := model.Transaction{
+		UserID:      order.UserID,
+		Type:        "refund",
+		Amount:      order.Amount,
+		Description: "订单拒绝退款",
+		Time:        time.Now(),
+	}
+	if err := tx.Create(&transaction).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ShareOrder 分享订单
+func (s *OrderService) ShareOrder(orderID, userID uint, platform string) (map[string]interface{}, error) {
+	// 查找订单
+	var order model.Order
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("订单不存在")
+		}
+		return nil, err
+	}
+
+	// 检查订单是否属于当前用户
+	if order.UserID != userID {
+		return nil, errors.New("无权操作此订单")
+	}
+
+	// 生成分享码
+	shareCode := fmt.Sprintf("GP%s%d", time.Now().Format("20060102150405"), orderID)
+
+	// 构建分享URL
+	shareURL := fmt.Sprintf("http://127.0.0.1:8080/share/order?code=%s", shareCode)
+
+	// 创建分享记录
+	share := model.Share{
+		UserID:        userID,
+		OrderID:       &orderID,
+		RewardOrderID: nil,
+		ShareType:     "order",
+		SharePlatform: platform,
+		ShareURL:      shareURL,
+		ShareCode:     shareCode,
+		ClickCount:    0,
+		Status:        "active",
+	}
+
+	if err := global.GVA_DB.Create(&share).Error; err != nil {
+		return nil, err
+	}
+
+	// 构建返回数据
+	shareData := map[string]interface{}{
+		"shareCode":     shareCode,
+		"shareURL":      shareURL,
+		"orderID":       orderID,
+		"orderNumber":   order.OrderNumber,
+		"sharePlatform": platform,
+		"createdAt":     share.CreatedAt,
+	}
+
+	return shareData, nil
+}

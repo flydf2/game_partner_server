@@ -4,17 +4,11 @@ const pluginModules = import.meta.glob('../plugin/**/*.vue')
 export const asyncRouterHandle = (asyncRouter) => {
   asyncRouter.forEach((item) => {
     if (item.component && typeof item.component === 'string') {
-      // 特殊处理Layout组件
-      if (item.component === 'Layout') {
-        item.meta.path = '/src/view/layout/index.vue'
-        item.component = viewModules['../view/layout/index.vue']
-      } else {
-        item.meta.path = '/src/' + item.component
-        if (item.component.split('/')[0] === 'view') {
-          item.component = dynamicImport(viewModules, item.component)
-        } else if (item.component.split('/')[0] === 'plugin') {
-          item.component = dynamicImport(pluginModules, item.component)
-        }
+      item.meta.path = '/src/' + item.component
+      if (item.component.split('/')[0] === 'view') {
+        item.component = dynamicImport(viewModules, item.component)
+      } else if (item.component.split('/')[0] === 'plugin') {
+        item.component = dynamicImport(pluginModules, item.component)
       }
     }
     if (item.children) {

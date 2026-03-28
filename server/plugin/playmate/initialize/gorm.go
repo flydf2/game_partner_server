@@ -23,6 +23,9 @@ func InitializeDB() {
 		&model.Order{},
 		&model.OrderConfirmation{},
 		&model.RewardOrder{},
+		&model.RewardOrderApplicant{},
+		&model.RewardOrderPayment{},
+		&model.RewardOrderReview{},
 		&model.Coupon{},
 
 		// 通知相关
@@ -47,5 +50,8 @@ func InitializeDB() {
 		&model.UserFollow{},
 		&model.UserFavorite{},
 		&model.UserBrowseHistory{},
+
+		// 分享相关
+		&model.Share{},
 	)
 }

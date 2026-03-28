@@ -395,3 +395,129 @@ func (a *PlaymateApi) GetSkills(c *gin.Context) {
 
 	response.OkWithDetailed(skills, "获取成功", c)
 }
+
+// AddSkill 添加技能
+// @Tags     Playmate
+// @Summary  添加技能
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.AddSkillRequest  true "技能信息"
+// @Success  200   {object}  response.Response{data=model.PlaymateSkill} "添加成功"
+// @Router   /playmate/skills [post]
+func (a *PlaymateApi) AddSkill(c *gin.Context) {
+	var req request.AddSkillRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	skill, err := service.ServiceGroupApp.PlaymateService.AddSkill(userID, req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(skill, "添加成功", c)
+}
+
+// UpdateSkill 更新技能
+// @Tags     Playmate
+// @Summary  更新技能
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id    path      uint                        true "技能ID"
+// @Param    data  body      request.UpdateSkillRequest  true "技能信息"
+// @Success  200   {object}  response.Response{data=model.PlaymateSkill} "更新成功"
+// @Router   /playmate/skills/{id} [put]
+func (a *PlaymateApi) UpdateSkill(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	var req request.UpdateSkillRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	skill, err := service.ServiceGroupApp.PlaymateService.UpdateSkill(uint(id), req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(skill, "更新成功", c)
+}
+
+// DeleteSkill 删除技能
+// @Tags     Playmate
+// @Summary  删除技能
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id  path      uint    true "技能ID"
+// @Success  200 {object}  response.Response{msg=string} "删除成功"
+// @Router   /playmate/skills/{id} [delete]
+func (a *PlaymateApi) DeleteSkill(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.PlaymateService.DeleteSkill(uint(id))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("删除成功", c)
+}
+
+// GetLeaderboard 获取排行榜
+// @Tags     Playmate
+// @Summary  获取陪玩排行榜
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    game     query    string  false "游戏"
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.Playmate, pagination=map[string]int64} "获取成功"
+// @Router   /playmate/playmates/leaderboard [get]
+func (a *PlaymateApi) GetLeaderboard(c *gin.Context) {
+	var search request.LeaderboardSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	playmates, total, err := service.ServiceGroupApp.PlaymateService.GetLeaderboard(search)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	// 处理pageSize为0的情况，避免除以零错误
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": playmates,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}

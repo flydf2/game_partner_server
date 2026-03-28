@@ -310,3 +310,99 @@ func (s *PlaymateService) GetSkills() ([]model.PlaymateSkill, error) {
 	}
 	return skills, nil
 }
+
+// AddSkill 添加技能
+func (s *PlaymateService) AddSkill(userID uint, req request.AddSkillRequest) (model.PlaymateSkill, error) {
+	skill := model.PlaymateSkill{
+		PlaymateID:  userID,
+		Name:        req.Skill,
+		Price:       req.Price,
+		Level:       req.Level,
+		Description: req.Description,
+	}
+
+	if err := global.GVA_DB.Create(&skill).Error; err != nil {
+		return model.PlaymateSkill{}, err
+	}
+
+	return skill, nil
+}
+
+// UpdateSkill 更新技能
+func (s *PlaymateService) UpdateSkill(skillID uint, req request.UpdateSkillRequest) (model.PlaymateSkill, error) {
+	var skill model.PlaymateSkill
+	if err := global.GVA_DB.First(&skill, skillID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.PlaymateSkill{}, errors.New("技能不存在")
+		}
+		return model.PlaymateSkill{}, err
+	}
+
+	if req.Skill != "" {
+		skill.Name = req.Skill
+	}
+	if req.Price > 0 {
+		skill.Price = req.Price
+	}
+	if req.Level != "" {
+		skill.Level = req.Level
+	}
+	if req.Description != "" {
+		skill.Description = req.Description
+	}
+
+	if err := global.GVA_DB.Save(&skill).Error; err != nil {
+		return model.PlaymateSkill{}, err
+	}
+
+	return skill, nil
+}
+
+// DeleteSkill 删除技能
+func (s *PlaymateService) DeleteSkill(skillID uint) error {
+	if err := global.GVA_DB.Delete(&model.PlaymateSkill{}, skillID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetLeaderboard 获取排行榜
+func (s *PlaymateService) GetLeaderboard(search request.LeaderboardSearch) ([]model.Playmate, int64, error) {
+	var playmates []model.Playmate
+	var total int64
+
+	db := global.GVA_DB
+	query := db.Model(&model.Playmate{})
+
+	// 按游戏过滤
+	if search.Game != "" {
+		query = query.Where("game = ?", search.Game)
+	}
+
+	// 计算总数
+	query.Count(&total)
+
+	// 按评分降序排序
+	query = query.Order("rating DESC")
+
+	// 应用分页
+	page := search.Page
+	if page <= 0 {
+		page = 1
+	}
+
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+	query = query.Offset(offset).Limit(pageSize)
+
+	// 执行查询
+	if err := query.Find(&playmates).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return playmates, total, nil
+}

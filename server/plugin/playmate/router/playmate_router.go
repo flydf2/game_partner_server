@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/gin-gonic/gin"
 )
 
 type PlaymateRouter struct{}
@@ -14,6 +14,7 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		playmateRouter.GET("", api.ApiGroupApp.PlaymateApi.GetPlaymates)
 		playmateRouter.GET("/search", api.ApiGroupApp.PlaymateApi.SearchPlaymates)
 		playmateRouter.GET("/suggestions", api.ApiGroupApp.PlaymateApi.GetSearchSuggestions)
+		playmateRouter.GET("/leaderboard", api.ApiGroupApp.PlaymateApi.GetLeaderboard)
 		playmateRouter.GET("/:id", api.ApiGroupApp.PlaymateApi.GetPlaymateById)
 		playmateRouter.POST("", api.ApiGroupApp.PlaymateApi.CreatePlaymate)
 		playmateRouter.PUT("/:id", api.ApiGroupApp.PlaymateApi.UpdatePlaymate)
@@ -27,5 +28,14 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		expertRouter.DELETE("/:id/follow", api.ApiGroupApp.PlaymateApi.UnfollowExpert)
 		expertRouter.GET("/:id/reviews", api.ApiGroupApp.ReviewApi.GetExpertReviews)
 		expertRouter.GET("/:id/voice", api.ApiGroupApp.PlaymateApi.GetExpertVoice)
+	}
+
+	// 技能相关路由
+	skillRouter := router.Group("/skills")
+	{
+		skillRouter.GET("", api.ApiGroupApp.PlaymateApi.GetSkills)
+		skillRouter.POST("", api.ApiGroupApp.PlaymateApi.AddSkill)
+		skillRouter.PUT("/:id", api.ApiGroupApp.PlaymateApi.UpdateSkill)
+		skillRouter.DELETE("/:id", api.ApiGroupApp.PlaymateApi.DeleteSkill)
 	}
 }

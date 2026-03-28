@@ -12,6 +12,7 @@ func (r *NotificationRouter) InitNotificationRouter(router *gin.RouterGroup) {
 	notificationRouter := router.Group("/notifications")
 	{
 		notificationRouter.GET("", api.ApiGroupApp.NotificationApi.GetNotifications)
+		notificationRouter.GET("/unread-count", api.ApiGroupApp.NotificationApi.GetUnreadCount)
 		notificationRouter.PUT("/:id/read", api.ApiGroupApp.NotificationApi.MarkAsRead)
 		notificationRouter.PUT("/read-all", api.ApiGroupApp.NotificationApi.MarkAllAsRead)
 	}

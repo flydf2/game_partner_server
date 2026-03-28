@@ -357,3 +357,128 @@ func (s *UserService) GetUsers(page, pageSize int) ([]model.User, int64, error) 
 
 	return users, total, nil
 }
+
+// SendSmsCode 发送短信验证码
+func (s *UserService) SendSmsCode(phone string) error {
+	// 这里应该调用短信服务发送验证码
+	// 暂时返回成功
+	return nil
+}
+
+// FollowUser 关注用户
+func (s *UserService) FollowUser(userID, targetUserID uint) error {
+	// 检查是否已经关注
+	var follow model.UserFollow
+	result := global.GVA_DB.Where("user_id = ? AND follow_id = ?", userID, targetUserID).First(&follow)
+	if result.Error == nil {
+		return errors.New("已经关注过该用户")
+	}
+
+	// 创建关注记录
+	follow = model.UserFollow{
+		UserID:   userID,
+		FollowID: targetUserID,
+	}
+
+	if err := global.GVA_DB.Create(&follow).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UnfollowUser 取消关注用户
+func (s *UserService) UnfollowUser(userID, targetUserID uint) error {
+	result := global.GVA_DB.Where("user_id = ? AND follow_id = ?", userID, targetUserID).Delete(&model.UserFollow{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("未关注该用户")
+	}
+
+	return nil
+}
+
+// RemoveFavorite 移除收藏
+func (s *UserService) RemoveFavorite(userID, favoriteID uint) error {
+	result := global.GVA_DB.Where("id = ? AND user_id = ?", favoriteID, userID).Delete(&model.UserFavorite{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("收藏不存在")
+	}
+
+	return nil
+}
+
+// ClearHistory 清空浏览历史
+func (s *UserService) ClearHistory(userID uint) error {
+	if err := global.GVA_DB.Where("user_id = ?", userID).Delete(&model.UserBrowseHistory{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Recharge 充值
+func (s *UserService) Recharge(userID uint, req request.RechargeRequest) (map[string]interface{}, error) {
+	// 检查用户钱包
+	var wallet model.UserWallet
+	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// 创建默认钱包
+			wallet = model.UserWallet{
+				UserID:       userID,
+				Balance:      0,
+				Frozen:       0,
+				TotalIncome:  0,
+				TotalExpense: 0,
+			}
+			if err := global.GVA_DB.Create(&wallet).Error; err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 更新钱包余额
+	wallet.Balance += req.Amount
+	wallet.TotalIncome += req.Amount
+	if err := tx.Save(&wallet).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 创建交易记录
+	transaction := model.Transaction{
+		UserID:      userID,
+		Type:        "income",
+		Amount:      req.Amount,
+		Description: "充值",
+		Time:        time.Now(),
+	}
+	if err := tx.Create(&transaction).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"transactionId": transaction.ID,
+		"amountAdded":   req.Amount,
+		"balance":       wallet.Balance,
+		"method":        req.Method,
+	}, nil
+}

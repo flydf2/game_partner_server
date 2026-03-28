@@ -108,3 +108,26 @@ func (a *NotificationApi) MarkAllAsRead(c *gin.Context) {
 
 	response.OkWithMessage("全部标记为已读", c)
 }
+
+// GetUnreadCount 获取未读通知数量
+// @Tags     Notification
+// @Summary  获取未读通知数量
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Success  200  {object} response.Response{data=map[string]int64} "获取成功"
+// @Router   /playmate/notifications/unread-count [get]
+func (a *NotificationApi) GetUnreadCount(c *gin.Context) {
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	count, err := service.ServiceGroupApp.NotificationService.GetUnreadCount(userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"count": count,
+	}, "获取成功", c)
+}

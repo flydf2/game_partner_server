@@ -328,3 +328,158 @@ func (a *UserApi) GetUsers(c *gin.Context) {
 		},
 	}, "获取成功", c)
 }
+
+// SendSmsCode 发送短信验证码
+// @Tags     Auth
+// @Summary  发送短信验证码
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.SendSmsCodeRequest  true "手机号"
+// @Success  200   {object}  response.Response{msg=string} "发送成功"
+// @Router   /playmate/auth/send-code [post]
+func (a *UserApi) SendSmsCode(c *gin.Context) {
+	var req request.SendSmsCodeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err := service.ServiceGroupApp.UserService.SendSmsCode(req.Phone)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("验证码发送成功", c)
+}
+
+// FollowUser 关注用户
+// @Tags     User
+// @Summary  关注用户
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    userId  path      uint    true "用户ID"
+// @Success  200     {object}  response.Response{msg=string} "关注成功"
+// @Router   /playmate/user/following/{userId} [post]
+func (a *UserApi) FollowUser(c *gin.Context) {
+	userIdStr := c.Param("userId")
+	userId, err := strconv.ParseUint(userIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	err = service.ServiceGroupApp.UserService.FollowUser(userID, uint(userId))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("关注成功", c)
+}
+
+// UnfollowUser 取消关注用户
+// @Tags     User
+// @Summary  取消关注用户
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    userId  path      uint    true "用户ID"
+// @Success  200     {object}  response.Response{msg=string} "取消关注成功"
+// @Router   /playmate/user/following/{userId} [delete]
+func (a *UserApi) UnfollowUser(c *gin.Context) {
+	userIdStr := c.Param("userId")
+	userId, err := strconv.ParseUint(userIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	err = service.ServiceGroupApp.UserService.UnfollowUser(userID, uint(userId))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("取消关注成功", c)
+}
+
+// RemoveFavorite 移除收藏
+// @Tags     User
+// @Summary  移除收藏
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    favoriteId  path      uint    true "收藏ID"
+// @Success  200         {object}  response.Response{msg=string} "移除成功"
+// @Router   /playmate/user/favorites/{favoriteId} [delete]
+func (a *UserApi) RemoveFavorite(c *gin.Context) {
+	favoriteIdStr := c.Param("favoriteId")
+	favoriteId, err := strconv.ParseUint(favoriteIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	err = service.ServiceGroupApp.UserService.RemoveFavorite(userID, uint(favoriteId))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("移除成功", c)
+}
+
+// ClearHistory 清空浏览历史
+// @Tags     User
+// @Summary  清空浏览历史
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Success  200  {object}  response.Response{msg=string} "清空成功"
+// @Router   /playmate/user/history [delete]
+func (a *UserApi) ClearHistory(c *gin.Context) {
+	userID := uint(1)
+
+	err := service.ServiceGroupApp.UserService.ClearHistory(userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("清空成功", c)
+}
+
+// Recharge 充值
+// @Tags     User
+// @Summary  充值
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.RechargeRequest  true "充值信息"
+// @Success  200   {object}  response.Response{data=map[string]interface{}} "充值成功"
+// @Router   /playmate/user/recharge [post]
+func (a *UserApi) Recharge(c *gin.Context) {
+	var req request.RechargeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	result, err := service.ServiceGroupApp.UserService.Recharge(userID, req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(result, "充值成功", c)
+}

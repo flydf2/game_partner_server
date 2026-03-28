@@ -83,3 +83,13 @@ func (s *NotificationService) MarkAllAsRead(userID uint) error {
 
 	return nil
 }
+
+// GetUnreadCount 获取未读通知数量
+func (s *NotificationService) GetUnreadCount(userID uint) (int64, error) {
+	var count int64
+	if err := global.GVA_DB.Model(&model.Notification{}).Where("user_id = ? AND read = ?", userID, false).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

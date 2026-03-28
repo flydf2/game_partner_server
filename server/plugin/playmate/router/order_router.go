@@ -16,5 +16,9 @@ func (r *OrderRouter) InitOrderRouter(router *gin.RouterGroup) {
 		orderRouter.POST("", api.ApiGroupApp.OrderApi.CreateOrder)
 		orderRouter.GET("/:id/confirmation", api.ApiGroupApp.OrderApi.GetOrderConfirmation)
 		orderRouter.POST("/:id/cancel", api.ApiGroupApp.OrderApi.CancelOrder)
+		orderRouter.POST("/:id/confirm", api.ApiGroupApp.OrderApi.ConfirmOrder)
+		orderRouter.POST("/:id/accept", api.ApiGroupApp.OrderApi.AcceptOrder)
+		orderRouter.POST("/:id/reject", api.ApiGroupApp.OrderApi.RejectOrder)
+		orderRouter.POST("/:id/share", api.ApiGroupApp.OrderApi.ShareOrder)
 	}
 }

@@ -7492,7 +7492,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/reward-orders": {
+        "/playmate/reward": {
             "get": {
                 "security": [
                     {
@@ -7626,7 +7626,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/reward-orders/{id}": {
+        "/playmate/reward/{id}": {
             "get": {
                 "security": [
                     {
@@ -7775,7 +7775,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/reward-orders/{id}/grab": {
+        "/playmate/reward/{id}/grab": {
             "post": {
                 "security": [
                     {
