@@ -69,6 +69,44 @@ export const getUserInfo = () => {
 }
 
 /**
+ * 获取关注列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 关注列表数据
+ */
+export const getFollowing = (params) => {
+  return service({
+    url: '/playmate/user/following',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取收藏列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 收藏列表数据
+ */
+export const getFavorites = (params) => {
+  return service({
+    url: '/playmate/user/favorites',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
  * 获取订单列表
  * @param {Object} params 查询参数
  * @param {number} params.page 页码
@@ -387,6 +425,42 @@ export const updateUser = (data) => {
 export const deleteUser = (id) => {
   return service({
     url: `/playmate/users/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 移除收藏
+ * @param {number} favoriteId 收藏ID
+ * @returns {Promise} 移除结果
+ */
+export const removeFavorite = (favoriteId) => {
+  return service({
+    url: `/playmate/user/favorites/${favoriteId}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 关注用户
+ * @param {number} userId 用户ID
+ * @returns {Promise} 关注结果
+ */
+export const followUser = (userId) => {
+  return service({
+    url: `/playmate/user/following/${userId}`,
+    method: 'post'
+  })
+}
+
+/**
+ * 取消关注用户
+ * @param {number} userId 用户ID
+ * @returns {Promise} 取消关注结果
+ */
+export const unfollowUser = (userId) => {
+  return service({
+    url: `/playmate/user/following/${userId}`,
     method: 'delete'
   })
 }

@@ -16,8 +16,12 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 		userRouter.GET("/settings", api.ApiGroupApp.UserApi.GetSettings)
 		userRouter.PUT("/settings", api.ApiGroupApp.UserApi.UpdateSettings)
 		userRouter.GET("/following", api.ApiGroupApp.UserApi.GetFollowing)
+		userRouter.POST("/following/:userId", api.ApiGroupApp.UserApi.FollowUser)
+		userRouter.DELETE("/following/:userId", api.ApiGroupApp.UserApi.UnfollowUser)
 		userRouter.GET("/favorites", api.ApiGroupApp.UserApi.GetFavorites)
+		userRouter.DELETE("/favorites/:favoriteId", api.ApiGroupApp.UserApi.RemoveFavorite)
 		userRouter.GET("/history", api.ApiGroupApp.UserApi.GetBrowseHistory)
+		userRouter.DELETE("/history", api.ApiGroupApp.UserApi.ClearHistory)
 		userRouter.GET("/wallet", api.ApiGroupApp.UserApi.GetWallet)
 	}
 

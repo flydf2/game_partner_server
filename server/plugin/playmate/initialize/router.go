@@ -63,4 +63,7 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化测试工具路由（仅用于自动化测试）
 	router.RouterGroupApp.InitTestToolRouter(routerGroup)
+
+	// 初始化专家订单设置路由
+	router.RouterGroupApp.InitExpertOrderSettingRouter(routerGroup)
 }

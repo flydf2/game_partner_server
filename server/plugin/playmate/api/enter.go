@@ -18,6 +18,7 @@ type ApiGroup struct {
 	AppealApi
 	UploadApi
 	TestToolApi
+	ExpertOrderSettingApi
 }
 
 var ApiGroupApp = new(ApiGroup)

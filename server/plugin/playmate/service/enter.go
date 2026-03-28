@@ -18,6 +18,7 @@ type ServiceGroup struct {
 	RewardOrderService
 	UploadService
 	AppealService
+	ExpertOrderSettingService
 }
 
 var ServiceGroupApp = new(ServiceGroup)

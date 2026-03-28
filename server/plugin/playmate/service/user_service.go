@@ -117,11 +117,11 @@ func (s *UserService) Register(req request.RegisterRequest) (model.User, string,
 
 	// 创建默认设置
 	settings := model.UserSettings{
-		UserID:       user.ID,
+		UserID:        user.ID,
 		Notifications: `{"order": true, "system": true, "promotion": false, "message": true}`,
-		Privacy:      `{"showOnline": true, "allowMessages": true, "showOrders": false}`,
-		Theme:        "light",
-		Language:     "zh-CN",
+		Privacy:       `{"showOnline": true, "allowMessages": true, "showOrders": false}`,
+		Theme:         "light",
+		Language:      "zh-CN",
 	}
 
 	if err := global.GVA_DB.Create(&settings).Error; err != nil {
@@ -159,6 +159,18 @@ func (s *UserService) UpdateProfile(userID uint, req request.UpdateProfileReques
 		}
 		user.Phone = req.Phone
 	}
+	if req.Gender != "" {
+		user.Gender = req.Gender
+	}
+	if req.Birthday != "" {
+		user.Birthday = req.Birthday
+	}
+	if req.Bio != "" {
+		user.Bio = req.Bio
+	}
+	if req.Location != "" {
+		user.Location = req.Location
+	}
 
 	if err := global.GVA_DB.Save(&user).Error; err != nil {
 		return model.User{}, err
@@ -174,11 +186,11 @@ func (s *UserService) GetSettings(userID uint) (model.UserSettings, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 创建默认设置
 			settings = model.UserSettings{
-				UserID:       userID,
+				UserID:        userID,
 				Notifications: `{"order": true, "system": true, "promotion": false, "message": true}`,
-				Privacy:      `{"showOnline": true, "allowMessages": true, "showOrders": false}`,
-				Theme:        "light",
-				Language:     "zh-CN",
+				Privacy:       `{"showOnline": true, "allowMessages": true, "showOrders": false}`,
+				Theme:         "light",
+				Language:      "zh-CN",
 			}
 			if err := global.GVA_DB.Create(&settings).Error; err != nil {
 				return model.UserSettings{}, err
@@ -240,10 +252,19 @@ func (s *UserService) Logout(userID uint) error {
 }
 
 // GetFollowing 获取关注列表
-func (s *UserService) GetFollowing(userID uint) ([]model.Playmate, error) {
+func (s *UserService) GetFollowing(userID uint, page, pageSize int) ([]model.Playmate, int64, error) {
 	var follows []model.UserFollow
-	if err := global.GVA_DB.Where("user_id = ?", userID).Find(&follows).Error; err != nil {
-		return nil, err
+	var total int64
+
+	// 获取总数
+	if err := global.GVA_DB.Model(&model.UserFollow{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	offset := (page - 1) * pageSize
+	if err := global.GVA_DB.Where("user_id = ?", userID).Offset(offset).Limit(pageSize).Find(&follows).Error; err != nil {
+		return nil, 0, err
 	}
 
 	var playmateIDs []uint
@@ -254,18 +275,27 @@ func (s *UserService) GetFollowing(userID uint) ([]model.Playmate, error) {
 	var playmates []model.Playmate
 	if len(playmateIDs) > 0 {
 		if err := global.GVA_DB.Where("id IN ?", playmateIDs).Find(&playmates).Error; err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 	}
 
-	return playmates, nil
+	return playmates, total, nil
 }
 
 // GetFavorites 获取收藏列表
-func (s *UserService) GetFavorites(userID uint) ([]model.Playmate, error) {
+func (s *UserService) GetFavorites(userID uint, page, pageSize int) ([]model.Playmate, int64, error) {
 	var favorites []model.UserFavorite
-	if err := global.GVA_DB.Where("user_id = ?", userID).Find(&favorites).Error; err != nil {
-		return nil, err
+	var total int64
+
+	// 获取总数
+	if err := global.GVA_DB.Model(&model.UserFavorite{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	offset := (page - 1) * pageSize
+	if err := global.GVA_DB.Where("user_id = ?", userID).Offset(offset).Limit(pageSize).Find(&favorites).Error; err != nil {
+		return nil, 0, err
 	}
 
 	var playmateIDs []uint
@@ -276,21 +306,38 @@ func (s *UserService) GetFavorites(userID uint) ([]model.Playmate, error) {
 	var playmates []model.Playmate
 	if len(playmateIDs) > 0 {
 		if err := global.GVA_DB.Where("id IN ?", playmateIDs).Find(&playmates).Error; err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 	}
 
-	return playmates, nil
+	return playmates, total, nil
 }
 
 // GetBrowseHistory 获取浏览历史
-func (s *UserService) GetBrowseHistory(userID uint) ([]model.UserBrowseHistory, error) {
+func (s *UserService) GetBrowseHistory(userID uint, page, pageSize int) ([]model.UserBrowseHistory, int64, error) {
 	var history []model.UserBrowseHistory
-	if err := global.GVA_DB.Where("user_id = ?", userID).Order("viewed_at DESC").Find(&history).Error; err != nil {
-		return nil, err
+	var total int64
+
+	// 获取总数
+	if err := global.GVA_DB.Model(&model.UserBrowseHistory{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
 
-	return history, nil
+	// 分页查询
+	if page <= 0 {
+		page = 1
+	}
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+	if err := global.GVA_DB.Where("user_id = ?", userID).Offset(offset).Limit(pageSize).Order("viewed_at DESC").Find(&history).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return history, total, nil
 }
 
 // GetWallet 获取钱包信息

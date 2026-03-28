@@ -129,7 +129,8 @@ func (a *CommunityApi) CommentPost(c *gin.Context) {
 		response.FailWithMessage("参数错误", c)
 		return
 	}
-	comment, err := service.ServiceGroupApp.CommunityService.CommentPost(uint(postID), req.Content)
+	userID := uint(1)
+	comment, err := service.ServiceGroupApp.CommunityService.CommentPost(userID, uint(postID), req.Content)
 	if err != nil {
 		response.FailWithMessage("评论帖子失败", c)
 		return

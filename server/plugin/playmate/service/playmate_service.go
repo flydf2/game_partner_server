@@ -302,13 +302,72 @@ func (s *PlaymateService) GetExpertVoice(expertID uint) (map[string]string, erro
 	}, nil
 }
 
-// GetSkills 获取所有技能列表
-func (s *PlaymateService) GetSkills() ([]model.PlaymateSkill, error) {
-	var skills []model.PlaymateSkill
-	if err := global.GVA_DB.Find(&skills).Error; err != nil {
+// GetExpertStatus 获取专家状态
+func (s *PlaymateService) GetExpertStatus(expertID uint) (map[string]interface{}, error) {
+	// 获取专家基本信息
+	playmate, err := s.GetPlaymateById(expertID)
+	if err != nil {
 		return nil, err
 	}
-	return skills, nil
+
+	// 构建状态响应，匹配前端期望的数据结构
+	status := map[string]interface{}{
+		"isFollowing": false,          // 这里可以根据实际业务逻辑判断是否关注
+		"isFavorite":  false,          // 这里可以根据实际业务逻辑判断是否收藏
+		"isLiked":     false,          // 这里可以根据实际业务逻辑判断是否点赞
+		"likeCount":   playmate.Likes, // 使用playmate的点赞数
+	}
+
+	return status, nil
+}
+
+// GetSkills 获取技能列表（支持分页和搜索）
+func (s *PlaymateService) GetSkills(search request.SkillSearch) ([]model.PlaymateSkill, int64, error) {
+	var skills []model.PlaymateSkill
+	var total int64
+
+	db := global.GVA_DB
+	query := db.Model(&model.PlaymateSkill{})
+
+	// 应用过滤条件
+	if search.Game != "" {
+		// 这里需要根据实际业务逻辑来实现游戏过滤
+		// 暂时注释掉，因为PlaymateSkill模型中没有Game字段
+		// query = query.Where("game = ?", search.Game)
+	}
+
+	if search.Level != "" {
+		query = query.Where("level = ?", search.Level)
+	}
+
+	if search.Keyword != "" {
+		keyword := fmt.Sprintf("%%%s%%", search.Keyword)
+		query = query.Where("name LIKE ? OR description LIKE ?", keyword, keyword)
+	}
+
+	// 计算总数
+	query.Count(&total)
+
+	// 应用分页
+	page := search.Page
+	if page <= 0 {
+		page = 1
+	}
+
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	offset := (page - 1) * pageSize
+	query = query.Offset(offset).Limit(pageSize)
+
+	// 执行查询
+	if err := query.Find(&skills).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return skills, total, nil
 }
 
 // AddSkill 添加技能
@@ -405,4 +464,158 @@ func (s *PlaymateService) GetLeaderboard(search request.LeaderboardSearch) ([]mo
 	}
 
 	return playmates, total, nil
+}
+
+// GetMatchHistory 获取用户的匹配历史
+func (s *PlaymateService) GetMatchHistory(userID uint, page, pageSize int) ([]model.MatchHistory, int64, error) {
+	var histories []model.MatchHistory
+	var total int64
+
+	query := global.GVA_DB.Model(&model.MatchHistory{}).Where("user_id = ?", userID)
+
+	// 计算总数
+	query.Count(&total)
+
+	// 应用分页
+	if page <= 0 {
+		page = 1
+	}
+
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	offset := (page - 1) * pageSize
+
+	// 查询历史
+	if err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&histories).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return histories, total, nil
+}
+
+// GetMatchHistoryById 根据ID获取匹配历史详情
+func (s *PlaymateService) GetMatchHistoryById(id uint) (model.MatchHistory, error) {
+	var history model.MatchHistory
+	if err := global.GVA_DB.First(&history, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.MatchHistory{}, errors.New("匹配历史不存在")
+		}
+		return model.MatchHistory{}, err
+	}
+	return history, nil
+}
+
+// CreateMatchHistory 创建匹配历史
+func (s *PlaymateService) CreateMatchHistory(history model.MatchHistory) (model.MatchHistory, error) {
+	if err := global.GVA_DB.Create(&history).Error; err != nil {
+		return model.MatchHistory{}, err
+	}
+	return history, nil
+}
+
+// UpdateMatchHistory 更新匹配历史
+func (s *PlaymateService) UpdateMatchHistory(history model.MatchHistory) (model.MatchHistory, error) {
+	if err := global.GVA_DB.Save(&history).Error; err != nil {
+		return model.MatchHistory{}, err
+	}
+	return history, nil
+}
+
+// UpdateExpertAutoReply 更新专家自动回复设置
+func (s *PlaymateService) UpdateExpertAutoReply(expertID uint, autoReplyEnabled bool) error {
+	// 查找专家订单设置
+	var setting model.ExpertOrderSetting
+	result := global.GVA_DB.Where("expert_id = ?", expertID).First(&setting)
+
+	// 如果不存在，创建新的设置
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			setting = model.ExpertOrderSetting{
+				ExpertID:            expertID,
+				AutoAccept:          false,
+				AcceptMode:          "manual",
+				MaxDailyOrders:      10,
+				ServiceStartTime:    "09:00",
+				ServiceEndTime:      "23:00",
+				MinOrderAmount:      0,
+				MaxOrderAmount:      0,
+				RejectWithoutVoice:  false,
+				NotificationEnabled: autoReplyEnabled,
+			}
+			return global.GVA_DB.Create(&setting).Error
+		}
+		return result.Error
+	}
+
+	// 更新设置
+	setting.NotificationEnabled = autoReplyEnabled
+	return global.GVA_DB.Save(&setting).Error
+}
+
+// UpdateExpertOrderStatus 更新专家订单状态设置
+func (s *PlaymateService) UpdateExpertOrderStatus(expertID uint, autoAccept bool, acceptMode string) error {
+	// 查找专家订单设置
+	var setting model.ExpertOrderSetting
+	result := global.GVA_DB.Where("expert_id = ?", expertID).First(&setting)
+
+	// 如果不存在，创建新的设置
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			setting = model.ExpertOrderSetting{
+				ExpertID:            expertID,
+				AutoAccept:          autoAccept,
+				AcceptMode:          acceptMode,
+				MaxDailyOrders:      10,
+				ServiceStartTime:    "09:00",
+				ServiceEndTime:      "23:00",
+				MinOrderAmount:      0,
+				MaxOrderAmount:      0,
+				RejectWithoutVoice:  false,
+				NotificationEnabled: true,
+			}
+			return global.GVA_DB.Create(&setting).Error
+		}
+		return result.Error
+	}
+
+	// 更新设置
+	setting.AutoAccept = autoAccept
+	setting.AcceptMode = acceptMode
+	return global.GVA_DB.Save(&setting).Error
+}
+
+// UpdateExpertTimeSlots 更新专家服务时间设置
+func (s *PlaymateService) UpdateExpertTimeSlots(expertID uint, startTime, endTime, restDays string) error {
+	// 查找专家订单设置
+	var setting model.ExpertOrderSetting
+	result := global.GVA_DB.Where("expert_id = ?", expertID).First(&setting)
+
+	// 如果不存在，创建新的设置
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			setting = model.ExpertOrderSetting{
+				ExpertID:            expertID,
+				AutoAccept:          false,
+				AcceptMode:          "manual",
+				MaxDailyOrders:      10,
+				ServiceStartTime:    startTime,
+				ServiceEndTime:      endTime,
+				RestDays:            restDays,
+				MinOrderAmount:      0,
+				MaxOrderAmount:      0,
+				RejectWithoutVoice:  false,
+				NotificationEnabled: true,
+			}
+			return global.GVA_DB.Create(&setting).Error
+		}
+		return result.Error
+	}
+
+	// 更新设置
+	setting.ServiceStartTime = startTime
+	setting.ServiceEndTime = endTime
+	setting.RestDays = restDays
+	return global.GVA_DB.Save(&setting).Error
 }

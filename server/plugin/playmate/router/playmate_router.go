@@ -28,6 +28,7 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		expertRouter.DELETE("/:id/follow", api.ApiGroupApp.PlaymateApi.UnfollowExpert)
 		expertRouter.GET("/:id/reviews", api.ApiGroupApp.ReviewApi.GetExpertReviews)
 		expertRouter.GET("/:id/voice", api.ApiGroupApp.PlaymateApi.GetExpertVoice)
+		expertRouter.GET("/:id/status", api.ApiGroupApp.PlaymateApi.GetExpertStatus)
 	}
 
 	// 技能相关路由
@@ -37,5 +38,13 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		skillRouter.POST("", api.ApiGroupApp.PlaymateApi.AddSkill)
 		skillRouter.PUT("/:id", api.ApiGroupApp.PlaymateApi.UpdateSkill)
 		skillRouter.DELETE("/:id", api.ApiGroupApp.PlaymateApi.DeleteSkill)
+	}
+
+	// 匹配历史相关路由
+	matchHistoryRouter := router.Group("/match-history")
+	{
+		matchHistoryRouter.GET("", api.ApiGroupApp.PlaymateApi.GetMatchHistory)
+		matchHistoryRouter.GET("/matches", api.ApiGroupApp.PlaymateApi.GetMatchHistoryMatches)
+		matchHistoryRouter.GET("/:id", api.ApiGroupApp.PlaymateApi.GetMatchHistoryById)
 	}
 }

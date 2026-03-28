@@ -378,22 +378,72 @@ func (a *PlaymateApi) GetExpertVoice(c *gin.Context) {
 	response.OkWithDetailed(voice, "获取成功", c)
 }
 
+// GetExpertStatus 获取专家状态
+// @Tags     Playmate
+// @Summary  获取专家状态
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "专家ID"
+// @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/experts/{id}/status [get]
+func (a *PlaymateApi) GetExpertStatus(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	status, err := service.ServiceGroupApp.PlaymateService.GetExpertStatus(uint(id))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(status, "获取成功", c)
+}
+
 // GetSkills 获取技能列表
 // @Tags     Playmate
 // @Summary  获取技能列表
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Success  200  {object} response.Response{data=[]model.PlaymateSkill} "获取成功"
+// @Param    game     query    string  false "游戏"
+// @Param    level    query    string  false "等级"
+// @Param    keyword  query    string  false "关键词"
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.PlaymateSkill, pagination=map[string]int64} "获取成功"
 // @Router   /playmate/skills [get]
 func (a *PlaymateApi) GetSkills(c *gin.Context) {
-	skills, err := service.ServiceGroupApp.PlaymateService.GetSkills()
+	var search request.SkillSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	skills, total, err := service.ServiceGroupApp.PlaymateService.GetSkills(search)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(skills, "获取成功", c)
+	// 处理pageSize为0的情况，避免除以零错误
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": skills,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
 
 // AddSkill 添加技能
@@ -520,4 +570,96 @@ func (a *PlaymateApi) GetLeaderboard(c *gin.Context) {
 			"totalCount":  total,
 		},
 	}, "获取成功", c)
+}
+
+// GetMatchHistory 获取匹配历史列表
+// @Tags     Playmate
+// @Summary  获取用户的匹配历史
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.MatchHistory, pagination=map[string]int64} "获取成功"
+// @Router   /playmate/match-history [get]
+func (a *PlaymateApi) GetMatchHistory(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "20"))
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": histories,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
+// GetMatchHistoryMatches 获取匹配历史匹配记录
+// @Tags     Playmate
+// @Summary  获取用户的匹配历史匹配记录
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.MatchHistory, pagination=map[string]int64} "获取成功"
+// @Router   /playmate/match-history/matches [get]
+func (a *PlaymateApi) GetMatchHistoryMatches(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "20"))
+
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": histories,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
+// GetMatchHistoryById 获取匹配历史详情
+// @Tags     Playmate
+// @Summary  根据ID获取匹配历史详情
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "匹配历史ID"
+// @Success  200  {object} response.Response{data=model.MatchHistory} "获取成功"
+// @Router   /playmate/match-history/{id} [get]
+func (a *PlaymateApi) GetMatchHistoryById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	history, err := service.ServiceGroupApp.PlaymateService.GetMatchHistoryById(uint(id))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(history, "获取成功", c)
 }

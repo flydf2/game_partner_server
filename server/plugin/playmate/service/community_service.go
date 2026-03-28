@@ -60,9 +60,10 @@ func (s *CommunityService) LikePost(postId uint) error {
 }
 
 // CommentPost 评论帖子
-func (s *CommunityService) CommentPost(postId uint, content string) (model.Comment, error) {
+func (s *CommunityService) CommentPost(userId, postId uint, content string) (model.Comment, error) {
 	comment := model.Comment{
 		PostID:  postId,
+		UserID:  userId,
 		Content: content,
 	}
 	err := global.GVA_DB.Create(&comment).Error

@@ -31,6 +31,10 @@ type UpdateProfileRequest struct {
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
 	Phone    string `json:"phone"`
+	Gender   string `json:"gender"`
+	Birthday string `json:"birthday"`
+	Bio      string `json:"bio"`
+	Location string `json:"location"`
 }
 
 // UpdateSettingsRequest 更新设置请求

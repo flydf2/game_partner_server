@@ -53,5 +53,13 @@ func InitializeDB() {
 
 		// 分享相关
 		&model.Share{},
+
+		// 匹配历史相关
+		&model.MatchHistory{},
+
+		// 专家订单设置相关
+		&model.ExpertOrderSetting{},
+		&model.ExpertService{},
+		&model.TodayRecommendation{},
 	)
 }

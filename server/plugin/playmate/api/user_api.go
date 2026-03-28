@@ -209,25 +209,142 @@ func (a *UserApi) RefreshToken(c *gin.Context) {
 	}, "刷新成功", c)
 }
 
+// FollowUser 关注用户
+// @Tags     User
+// @Summary  关注用户
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    userId path uint true "用户ID"
+// @Success  200  {object} response.Response{message=string} "关注成功"
+// @Router   /playmate/user/following/{userId} [post]
+func (a *UserApi) FollowUser(c *gin.Context) {
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	targetUserID, err := strconv.ParseUint(c.Param("userId"), 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.UserService.FollowUser(userID, uint(targetUserID))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("关注成功", c)
+}
+
+// UnfollowUser 取消关注用户
+// @Tags     User
+// @Summary  取消关注用户
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    userId path uint true "用户ID"
+// @Success  200  {object} response.Response{message=string} "取消关注成功"
+// @Router   /playmate/user/following/{userId} [delete]
+func (a *UserApi) UnfollowUser(c *gin.Context) {
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	targetUserID, err := strconv.ParseUint(c.Param("userId"), 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.UserService.UnfollowUser(userID, uint(targetUserID))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("取消关注成功", c)
+}
+
+// RemoveFavorite 移除收藏
+// @Tags     User
+// @Summary  移除收藏
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    favoriteId path uint true "收藏ID"
+// @Success  200  {object} response.Response{message=string} "移除成功"
+// @Router   /playmate/user/favorites/{favoriteId} [delete]
+func (a *UserApi) RemoveFavorite(c *gin.Context) {
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	favoriteID, err := strconv.ParseUint(c.Param("favoriteId"), 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.UserService.RemoveFavorite(userID, uint(favoriteID))
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("移除成功", c)
+}
+
+// ClearHistory 清空浏览历史
+// @Tags     User
+// @Summary  清空浏览历史
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Success  200  {object} response.Response{message=string} "清空成功"
+// @Router   /playmate/user/history [delete]
+func (a *UserApi) ClearHistory(c *gin.Context) {
+	// 这里应该从上下文获取用户ID
+	userID := uint(1) // 临时值
+
+	err := service.ServiceGroupApp.UserService.ClearHistory(userID)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("清空成功", c)
+}
+
 // GetFollowing 获取关注列表
 // @Tags     User
 // @Summary  获取关注列表
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Success  200  {object} response.Response{data=[]model.Playmate} "获取成功"
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.Playmate,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/following [get]
 func (a *UserApi) GetFollowing(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
 
-	following, err := service.ServiceGroupApp.UserService.GetFollowing(userID)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	following, total, err := service.ServiceGroupApp.UserService.GetFollowing(userID, page, pageSize)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(following, "获取成功", c)
+	response.OkWithDetailed(gin.H{
+		"data": following,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
 
 // GetFavorites 获取收藏列表
@@ -236,19 +353,31 @@ func (a *UserApi) GetFollowing(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Success  200  {object} response.Response{data=[]model.Playmate} "获取成功"
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.Playmate,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/favorites [get]
 func (a *UserApi) GetFavorites(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
 
-	favorites, err := service.ServiceGroupApp.UserService.GetFavorites(userID)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	favorites, total, err := service.ServiceGroupApp.UserService.GetFavorites(userID, page, pageSize)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(favorites, "获取成功", c)
+	response.OkWithDetailed(gin.H{
+		"data": favorites,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
 
 // GetBrowseHistory 获取浏览历史
@@ -257,19 +386,31 @@ func (a *UserApi) GetFavorites(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Success  200  {object} response.Response{data=[]model.UserBrowseHistory} "获取成功"
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.UserBrowseHistory,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/history [get]
 func (a *UserApi) GetBrowseHistory(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	userID := uint(1) // 临时值
 
-	history, err := service.ServiceGroupApp.UserService.GetBrowseHistory(userID)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	history, total, err := service.ServiceGroupApp.UserService.GetBrowseHistory(userID, page, pageSize)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(history, "获取成功", c)
+	response.OkWithDetailed(gin.H{
+		"data": history,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
 
 // GetWallet 获取钱包信息
@@ -327,159 +468,4 @@ func (a *UserApi) GetUsers(c *gin.Context) {
 			"totalCount":  total,
 		},
 	}, "获取成功", c)
-}
-
-// SendSmsCode 发送短信验证码
-// @Tags     Auth
-// @Summary  发送短信验证码
-// @accept   application/json
-// @Produce  application/json
-// @Param    data  body      request.SendSmsCodeRequest  true "手机号"
-// @Success  200   {object}  response.Response{msg=string} "发送成功"
-// @Router   /playmate/auth/send-code [post]
-func (a *UserApi) SendSmsCode(c *gin.Context) {
-	var req request.SendSmsCodeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	err := service.ServiceGroupApp.UserService.SendSmsCode(req.Phone)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithMessage("验证码发送成功", c)
-}
-
-// FollowUser 关注用户
-// @Tags     User
-// @Summary  关注用户
-// @Security ApiKeyAuth
-// @accept   application/json
-// @Produce  application/json
-// @Param    userId  path      uint    true "用户ID"
-// @Success  200     {object}  response.Response{msg=string} "关注成功"
-// @Router   /playmate/user/following/{userId} [post]
-func (a *UserApi) FollowUser(c *gin.Context) {
-	userIdStr := c.Param("userId")
-	userId, err := strconv.ParseUint(userIdStr, 10, 32)
-	if err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	userID := uint(1)
-
-	err = service.ServiceGroupApp.UserService.FollowUser(userID, uint(userId))
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithMessage("关注成功", c)
-}
-
-// UnfollowUser 取消关注用户
-// @Tags     User
-// @Summary  取消关注用户
-// @Security ApiKeyAuth
-// @accept   application/json
-// @Produce  application/json
-// @Param    userId  path      uint    true "用户ID"
-// @Success  200     {object}  response.Response{msg=string} "取消关注成功"
-// @Router   /playmate/user/following/{userId} [delete]
-func (a *UserApi) UnfollowUser(c *gin.Context) {
-	userIdStr := c.Param("userId")
-	userId, err := strconv.ParseUint(userIdStr, 10, 32)
-	if err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	userID := uint(1)
-
-	err = service.ServiceGroupApp.UserService.UnfollowUser(userID, uint(userId))
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithMessage("取消关注成功", c)
-}
-
-// RemoveFavorite 移除收藏
-// @Tags     User
-// @Summary  移除收藏
-// @Security ApiKeyAuth
-// @accept   application/json
-// @Produce  application/json
-// @Param    favoriteId  path      uint    true "收藏ID"
-// @Success  200         {object}  response.Response{msg=string} "移除成功"
-// @Router   /playmate/user/favorites/{favoriteId} [delete]
-func (a *UserApi) RemoveFavorite(c *gin.Context) {
-	favoriteIdStr := c.Param("favoriteId")
-	favoriteId, err := strconv.ParseUint(favoriteIdStr, 10, 32)
-	if err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	userID := uint(1)
-
-	err = service.ServiceGroupApp.UserService.RemoveFavorite(userID, uint(favoriteId))
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithMessage("移除成功", c)
-}
-
-// ClearHistory 清空浏览历史
-// @Tags     User
-// @Summary  清空浏览历史
-// @Security ApiKeyAuth
-// @accept   application/json
-// @Produce  application/json
-// @Success  200  {object}  response.Response{msg=string} "清空成功"
-// @Router   /playmate/user/history [delete]
-func (a *UserApi) ClearHistory(c *gin.Context) {
-	userID := uint(1)
-
-	err := service.ServiceGroupApp.UserService.ClearHistory(userID)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithMessage("清空成功", c)
-}
-
-// Recharge 充值
-// @Tags     User
-// @Summary  充值
-// @Security ApiKeyAuth
-// @accept   application/json
-// @Produce  application/json
-// @Param    data  body      request.RechargeRequest  true "充值信息"
-// @Success  200   {object}  response.Response{data=map[string]interface{}} "充值成功"
-// @Router   /playmate/user/recharge [post]
-func (a *UserApi) Recharge(c *gin.Context) {
-	var req request.RechargeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	userID := uint(1)
-
-	result, err := service.ServiceGroupApp.UserService.Recharge(userID, req)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	response.OkWithDetailed(result, "充值成功", c)
 }

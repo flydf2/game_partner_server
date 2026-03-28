@@ -24,7 +24,7 @@ type RewardOrderApi struct{}
 // @Param    status      query    string  false "订单状态"
 // @Param    game        query    string  false "游戏"
 // @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
-// @Router   /playmate/api/reward [get]
+// @Router   /playmate/reward [get]
 func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 	var search request.RewardOrderSearch
 	if err := c.ShouldBindQuery(&search); err != nil {
@@ -65,7 +65,7 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 // @Param    page        query    int     false "页码"
 // @Param    pageSize    query    int     false "每页数量"
 // @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
-// @Router   /playmate/api/my-reward [get]
+// @Router   /playmate/api/reward/my [get]
 func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 	// 这里应该从上下文获取用户ID
 	// userID := c.GetUint("userID")
@@ -98,7 +98,7 @@ func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 // @Produce  application/json
 // @Param    orderId   path      uint  true "订单ID"
 // @Success  200       {object} response.Response{data=model.RewardOrder} "获取成功"
-// @Router   /playmate/api/reward/{orderId} [get]
+// @Router   /playmate/reward/{orderId} [get]
 func (a *RewardOrderApi) GetRewardOrderDetail(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -147,7 +147,7 @@ func (a *RewardOrderApi) GetRewardOrderDetail(c *gin.Context) {
 // @Produce  application/json
 // @Param    orderId   path      uint  true "订单ID"
 // @Success  200       {object} response.Response{data=[]map[string]interface{}} "获取成功"
-// @Router   /playmate/api/reward/{orderId}/applicants [get]
+// @Router   /playmate/reward/{orderId}/applicants [get]
 func (a *RewardOrderApi) GetApplicants(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -174,7 +174,7 @@ func (a *RewardOrderApi) GetApplicants(c *gin.Context) {
 // @Param    orderId   path      uint                      true "订单ID"
 // @Param    data      body      request.SelectApplicantRequest true "选择抢单者信息"
 // @Success  200       {object} response.Response{msg=string} "选择成功"
-// @Router   /playmate/api/reward/{orderId}/select-applicant [post]
+// @Router   /playmate/reward/{orderId}/select-applicant [post]
 func (a *RewardOrderApi) SelectApplicant(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -206,7 +206,7 @@ func (a *RewardOrderApi) SelectApplicant(c *gin.Context) {
 // @Param    orderId   path      uint                      true "订单ID"
 // @Param    data      body      request.GrabRewardOrderRequest false "抢单信息"
 // @Success  200       {object} response.Response{data=map[string]interface{},msg=string} "抢单成功"
-// @Router   /playmate/api/reward/{orderId}/grab [post]
+// @Router   /playmate/reward/{orderId}/grab [post]
 func (a *RewardOrderApi) GrabRewardOrder(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -245,7 +245,7 @@ func (a *RewardOrderApi) GrabRewardOrder(c *gin.Context) {
 // @Produce  application/json
 // @Param    data  body      request.CreateRewardOrderRequest  true "发布悬赏订单信息"
 // @Success  200   {object} response.Response{data=map[string]uint,msg=string} "发布成功"
-// @Router   /playmate/api/reward [post]
+// @Router   /playmate/reward [post]
 func (a *RewardOrderApi) PublishReward(c *gin.Context) {
 	var req request.CreateRewardOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -276,7 +276,7 @@ func (a *RewardOrderApi) PublishReward(c *gin.Context) {
 // @Produce  application/json
 // @Param    orderId   path      uint  true "订单ID"
 // @Success  200       {object} response.Response{msg=string} "发布成功"
-// @Router   /playmate/api/reward/{orderId}/publish [post]
+// @Router   /playmate/reward/{orderId}/publish [post]
 func (a *RewardOrderApi) PublishRewardOrder(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -302,7 +302,7 @@ func (a *RewardOrderApi) PublishRewardOrder(c *gin.Context) {
 // @Param    orderId   path      uint                      true "订单ID"
 // @Param    data      body      request.PayRewardOrderRequest true "支付信息"
 // @Success  200       {object} response.Response{data=map[string]string,msg=string} "支付成功"
-// @Router   /playmate/api/reward/{orderId}/pay [post]
+// @Router   /playmate/reward/{orderId}/pay [post]
 func (a *RewardOrderApi) PayRewardOrder(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -337,7 +337,7 @@ func (a *RewardOrderApi) PayRewardOrder(c *gin.Context) {
 // @Param    orderId   path      uint                      true "订单ID"
 // @Param    data      body      request.ConfirmServiceRequest true "确认服务信息"
 // @Success  200       {object} response.Response{data=map[string]float64,msg=string} "服务确认成功"
-// @Router   /playmate/api/reward/{orderId}/confirm [post]
+// @Router   /playmate/reward/{orderId}/confirm [post]
 func (a *RewardOrderApi) ConfirmService(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
@@ -372,7 +372,7 @@ func (a *RewardOrderApi) ConfirmService(c *gin.Context) {
 // @Param    orderId   path      uint    true "订单ID"
 // @Param    data      body      map[string]string  true "分享信息，包含platform字段"
 // @Success  200       {object} response.Response{data=map[string]interface{}} "分享成功"
-// @Router   /playmate/api/reward/{orderId}/share [post]
+// @Router   /playmate/reward/{orderId}/share [post]
 func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 	orderIdStr := c.Param("orderId")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)

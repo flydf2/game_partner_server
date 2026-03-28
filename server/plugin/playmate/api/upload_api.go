@@ -1,14 +1,12 @@
 package api
 
 import (
-	"fmt"
 	"path/filepath"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils/upload"
 )
 
 // UploadApi 文件上传API
@@ -44,16 +42,13 @@ func (a *UploadApi) UploadFile(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-	relativePath := fmt.Sprintf("uploads/%s/%s", uploadType, filename)
-	absolutePath := filepath.Join(global.GVA_CONFIG.AutoCode.Root, relativePath)
-
-	if err := c.SaveUploadedFile(file, absolutePath); err != nil {
-		response.FailWithMessage("文件上传失败", c)
+	// 使用阿里云 OSS 上传
+	oss := upload.NewOss()
+	fileURL, _, err := oss.UploadFile(file)
+	if err != nil {
+		response.FailWithMessage("文件上传失败: "+err.Error(), c)
 		return
 	}
-
-	fileURL := fmt.Sprintf("/%s", relativePath)
 
 	response.OkWithDetailed(gin.H{
 		"url":      fileURL,
@@ -91,16 +86,13 @@ func (a *UploadApi) UploadImage(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-	relativePath := fmt.Sprintf("uploads/images/%s", filename)
-	absolutePath := filepath.Join(global.GVA_CONFIG.AutoCode.Root, relativePath)
-
-	if err := c.SaveUploadedFile(file, absolutePath); err != nil {
-		response.FailWithMessage("图片上传失败", c)
+	// 使用阿里云 OSS 上传
+	oss := upload.NewOss()
+	fileURL, _, err := oss.UploadFile(file)
+	if err != nil {
+		response.FailWithMessage("图片上传失败: "+err.Error(), c)
 		return
 	}
-
-	fileURL := fmt.Sprintf("/%s", relativePath)
 
 	response.OkWithDetailed(gin.H{
 		"url":      fileURL,
@@ -137,16 +129,13 @@ func (a *UploadApi) UploadVoice(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-	relativePath := fmt.Sprintf("uploads/voices/%s", filename)
-	absolutePath := filepath.Join(global.GVA_CONFIG.AutoCode.Root, relativePath)
-
-	if err := c.SaveUploadedFile(file, absolutePath); err != nil {
-		response.FailWithMessage("语音上传失败", c)
+	// 使用阿里云 OSS 上传
+	oss := upload.NewOss()
+	fileURL, _, err := oss.UploadFile(file)
+	if err != nil {
+		response.FailWithMessage("语音上传失败: "+err.Error(), c)
 		return
 	}
-
-	fileURL := fmt.Sprintf("/%s", relativePath)
 
 	response.OkWithDetailed(gin.H{
 		"url":      fileURL,

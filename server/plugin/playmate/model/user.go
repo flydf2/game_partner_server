@@ -17,6 +17,10 @@ type User struct {
 	Phone       string         `json:"phone"`
 	Avatar      string         `json:"avatar"`
 	Nickname    string         `json:"nickname"`
+	Gender      string         `json:"gender"`
+	Birthday    string         `json:"birthday"`
+	Bio         string         `json:"bio"`
+	Location    string         `json:"location"`
 	VipLevel    int            `json:"vipLevel"`
 	Balance     float64        `json:"balance"`
 	CouponCount int            `json:"couponCount"`
