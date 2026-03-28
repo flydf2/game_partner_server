@@ -10,10 +10,10 @@
         <el-table :data="posts" style="width: 100%" v-loading="loading">
           <el-table-column prop="id" label="帖子ID" width="80" />
           <el-table-column prop="userId" label="用户ID" width="100" />
-          <el-table-column prop="title" label="标题" />
+          <el-table-column prop="game" label="游戏" width="120" />
           <el-table-column prop="content" label="内容" show-overflow-tooltip />
-          <el-table-column prop="likeCount" label="点赞数" width="100" />
-          <el-table-column prop="commentCount" label="评论数" width="100" />
+          <el-table-column prop="likes" label="点赞数" width="100" />
+          <el-table-column prop="comments" label="评论数" width="100" />
           <el-table-column prop="createdAt" label="创建时间" width="180" />
           <el-table-column label="操作" width="150">
             <template #default="scope">
@@ -50,8 +50,8 @@
         <el-form-item label="用户ID" prop="userId">
           <el-input v-model="form.userId" disabled />
         </el-form-item>
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入标题" />
+        <el-form-item label="游戏" prop="game">
+          <el-input v-model="form.game" placeholder="请输入游戏" />
         </el-form-item>
         <el-form-item label="内容" prop="content">
           <el-input
@@ -90,14 +90,11 @@ const formRef = ref(null)
 const form = ref({
   id: '',
   userId: '',
-  title: '',
+  game: '',
   content: '',
   createdAt: ''
 })
 const rules = ref({
-  title: [
-    { required: true, message: '请输入标题', trigger: 'blur' }
-  ],
   content: [
     { required: true, message: '请输入内容', trigger: 'blur' }
   ]
@@ -127,7 +124,7 @@ const editPost = (row) => {
   form.value = {
     id: row.id,
     userId: row.userId,
-    title: row.title,
+    game: row.game,
     content: row.content,
     createdAt: row.createdAt
   }

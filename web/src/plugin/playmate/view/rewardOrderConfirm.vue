@@ -135,7 +135,7 @@
             <template #header>
               <div class="card-header">
                 <span>温馨提示</span>
-              </template>
+              </div>
             </template>
             <div class="tips-content">
               <p><el-icon><InfoFilled /></el-icon> 确认服务后，订单将标记为已完成</p>
