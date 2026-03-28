@@ -289,3 +289,9 @@ type LeaderboardSearch struct {
 	Page     int    `json:"page" form:"page"`
 	PageSize int    `json:"pageSize" form:"pageSize"`
 }
+
+// CreateBidRequest 创建投标请求
+type CreateBidRequest struct {
+	PostID  uint   `json:"postId" binding:"required"`
+	Message string `json:"message" binding:"required"`
+}

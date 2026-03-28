@@ -132,3 +132,21 @@ type UserTopicFollow struct {
 func (UserTopicFollow) TableName() string {
 	return "game_partner_user_topic_follows"
 }
+
+// CommunityBid 社区投标模型
+type CommunityBid struct {
+	ID        uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	PostID    uint           `json:"postId"`
+	UserID    uint           `json:"userId"`
+	User      User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
+	Message   string         `json:"message"`
+	Status    string         `json:"status"` // pending, accepted, rejected, cancelled
+}
+
+// TableName 设置CommunityBid表名
+func (CommunityBid) TableName() string {
+	return "game_partner_community_bids"
+}

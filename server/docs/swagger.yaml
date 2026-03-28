@@ -963,6 +963,26 @@ definitions:
       userId:
         type: integer
     type: object
+  model.CommunityBid:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      postId:
+        type: integer
+      status:
+        description: pending, accepted, rejected, cancelled
+        type: string
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      userId:
+        type: integer
+    type: object
   model.CommunityPost:
     properties:
       comments:
@@ -1224,34 +1244,34 @@ definitions:
     type: object
   model.RewardOrder:
     properties:
+      ID:
+        description: 主键ID
+        type: integer
       content:
         type: string
       createdAt:
         type: string
       game:
         type: string
-      grabUser:
-        $ref: '#/definitions/model.User'
-      grabUserId:
-        description: 抢单用户ID
-        type: integer
-      id:
-        type: integer
       paymentMethod:
-        description: prepay, postpay
+        description: prepay 预付, postpay 现付
+        type: string
+      requirements:
+        description: 以逗号分隔的要求
         type: string
       reward:
         type: number
       status:
-        description: available, grabbed, completed, cancelled
+        description: available 可抢单, ongoing 进行中, completed 已完成, draft 草稿, cancelled
+          已取消, expired 已过期
         type: string
       tags:
-        description: 用逗号分隔的标签
+        description: 以逗号分隔的标签
+        type: string
+      timeLeft:
         type: string
       updatedAt:
         type: string
-      user:
-        $ref: '#/definitions/model.User'
       userId:
         type: integer
     type: object
@@ -1348,6 +1368,25 @@ definitions:
         items:
           $ref: '#/definitions/system.SysBaseMenu'
         type: array
+    type: object
+  request.AddSkillRequest:
+    properties:
+      description:
+        type: string
+      game:
+        type: string
+      level:
+        description: beginner, intermediate, advanced, expert
+        type: string
+      price:
+        type: number
+      skill:
+        type: string
+    required:
+    - game
+    - level
+    - price
+    - skill
     type: object
   request.AutoCode:
     properties:
@@ -1577,6 +1616,21 @@ definitions:
         description: 密码
         type: string
     type: object
+  request.ConfirmServiceRequest:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      review:
+        type: string
+    required:
+    - rating
+    type: object
   request.CreateAppealRequest:
     properties:
       contactInfo:
@@ -1598,6 +1652,16 @@ definitions:
     - orderId
     - title
     - type
+    type: object
+  request.CreateBidRequest:
+    properties:
+      message:
+        type: string
+      postId:
+        type: integer
+    required:
+    - message
+    - postId
     type: object
   request.CreateOrderRequest:
     properties:
@@ -1624,6 +1688,19 @@ definitions:
     - serviceTime
     - skill
     type: object
+  request.CreatePostRequest:
+    properties:
+      content:
+        type: string
+      game:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+    required:
+    - content
+    type: object
   request.CreateRewardOrderRequest:
     properties:
       content:
@@ -1631,16 +1708,27 @@ definitions:
       game:
         type: string
       paymentMethod:
+        enum:
+        - prepay
+        - postpay
         type: string
+      requirements:
+        items:
+          type: string
+        type: array
       reward:
         type: number
       tags:
-        type: string
+        items:
+          type: string
+        type: array
     required:
     - content
     - game
     - paymentMethod
+    - requirements
     - reward
+    - tags
     type: object
   request.DataSource:
     properties:
@@ -1740,6 +1828,15 @@ definitions:
       phone:
         type: string
       username:
+        type: string
+    type: object
+  request.GrabRewardOrderRequest:
+    properties:
+      recommendation:
+        type: string
+      recordUrl:
+        type: string
+      voiceUrl:
         type: string
     type: object
   request.HandleAppealRequest:
@@ -1861,6 +1958,30 @@ definitions:
         description: 每页大小
         type: integer
     type: object
+  request.PayRewardOrderRequest:
+    properties:
+      amount:
+        type: number
+      paymentMethod:
+        type: string
+      transactionId:
+        type: string
+    required:
+    - amount
+    - paymentMethod
+    - transactionId
+    type: object
+  request.RechargeRequest:
+    properties:
+      amount:
+        type: number
+      method:
+        description: alipay, wechat, balance
+        type: string
+    required:
+    - amount
+    - method
+    type: object
   request.Register:
     properties:
       authorityId:
@@ -1943,6 +2064,13 @@ definitions:
         description: 更新时间
         type: string
     type: object
+  request.SelectApplicantRequest:
+    properties:
+      applicantId:
+        type: integer
+    required:
+    - applicantId
+    type: object
   request.SendMessageRequest:
     properties:
       content:
@@ -1957,6 +2085,13 @@ definitions:
         type: string
     required:
     - content
+    type: object
+  request.SendSmsCodeRequest:
+    properties:
+      phone:
+        type: string
+    required:
+    - phone
     type: object
   request.SetApiAuthorities:
     properties:
@@ -2114,21 +2249,6 @@ definitions:
       phone:
         type: string
     type: object
-  request.UpdateRewardOrderRequest:
-    properties:
-      content:
-        type: string
-      game:
-        type: string
-      paymentMethod:
-        type: string
-      reward:
-        type: number
-      status:
-        type: string
-      tags:
-        type: string
-    type: object
   request.UpdateSettingsRequest:
     properties:
       language:
@@ -2142,6 +2262,19 @@ definitions:
           type: boolean
         type: object
       theme:
+        type: string
+    type: object
+  request.UpdateSkillRequest:
+    properties:
+      description:
+        type: string
+      game:
+        type: string
+      level:
+        type: string
+      price:
+        type: number
+      skill:
         type: string
     type: object
   request.VersionInfo:
@@ -5500,6 +5633,379 @@ paths:
       summary: 获取活动列表
       tags:
       - Activity
+  /playmate/api/my-reward:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.RewardOrder'
+                  type: array
+                pagination:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取我的悬赏订单列表
+      tags:
+      - RewardOrder
+  /playmate/api/reward:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 订单状态
+        in: query
+        name: status
+        type: string
+      - description: 游戏
+        in: query
+        name: game
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.RewardOrder'
+                  type: array
+                pagination:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取悬赏订单列表
+      tags:
+      - RewardOrder
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 发布悬赏订单信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateRewardOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 发布成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: integer
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 发布悬赏订单
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.RewardOrder'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取悬赏订单详情
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/applicants:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    additionalProperties: true
+                    type: object
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取抢单者列表
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/confirm:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: 确认服务信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfirmServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务确认成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: number
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 确认服务
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/grab:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: 抢单信息
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/request.GrabRewardOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 抢单成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 抢单
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/pay:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: 支付信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.PayRewardOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 支付成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 支付订单
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/publish:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 发布成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 发布订单
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/select-applicant:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: 选择抢单者信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SelectApplicantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 选择成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 选择抢单者
+      tags:
+      - RewardOrder
+  /playmate/api/reward/{orderId}/share:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: 分享信息，包含platform字段
+        in: body
+        name: data
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分享成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分享悬赏订单
+      tags:
+      - RewardOrder
   /playmate/appeals:
     get:
       consumes:
@@ -5847,6 +6353,32 @@ paths:
       summary: 用户注册
       tags:
       - Auth
+  /playmate/auth/send-code:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 手机号
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SendSmsCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 发送成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 发送短信验证码
+      tags:
+      - Auth
   /playmate/categories:
     get:
       consumes:
@@ -5899,6 +6431,142 @@ paths:
       summary: 获取分类列表
       tags:
       - Category
+  /playmate/community/bids:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 投标信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateBidRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CommunityBid'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建投标
+      tags:
+      - Community
+  /playmate/community/bids/{bidId}/accept:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 投标ID
+        in: path
+        name: bidId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 接受成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 接受投标
+      tags:
+      - Community
+  /playmate/community/bids/{bidId}/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 投标ID
+        in: path
+        name: bidId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 取消成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 取消投标
+      tags:
+      - Community
+  /playmate/community/bids/{bidId}/reject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 投标ID
+        in: path
+        name: bidId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 拒绝成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 拒绝投标
+      tags:
+      - Community
+  /playmate/community/orders/{orderId}/complete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 完成成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 完成社区订单
+      tags:
+      - Community
   /playmate/community/posts:
     get:
       consumes:
@@ -5963,6 +6631,33 @@ paths:
       summary: 获取社区帖子列表
       tags:
       - Community
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子内容
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CommunityPost'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建帖子
+      tags:
+      - Community
   /playmate/community/posts/{postId}:
     get:
       consumes:
@@ -5988,6 +6683,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取帖子详情
+      tags:
+      - Community
+  /playmate/community/posts/{postId}/bids:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: postId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CommunityBid'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取帖子投标列表
       tags:
       - Community
   /playmate/community/posts/{postId}/comments:
@@ -6052,6 +6776,128 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 点赞帖子
+      tags:
+      - Community
+  /playmate/community/topics/{topicId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 话题ID
+        in: path
+        name: topicId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取话题详情
+      tags:
+      - Community
+  /playmate/community/topics/{topicId}/follow:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 话题ID
+        in: path
+        name: topicId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 取消关注成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 取消关注话题
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 话题ID
+        in: path
+        name: topicId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 关注成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 关注话题
+      tags:
+      - Community
+  /playmate/community/topics/{topicId}/posts:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 话题ID
+        in: path
+        name: topicId
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CommunityPost'
+                  type: array
+                pagination:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取话题帖子列表
       tags:
       - Community
   /playmate/conversations:
@@ -6688,6 +7534,29 @@ paths:
       summary: 标记所有通知为已读
       tags:
       - Notification
+  /playmate/notifications/unread-count:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取未读通知数量
+      tags:
+      - Notification
   /playmate/orders:
     get:
       consumes:
@@ -6807,6 +7676,33 @@ paths:
       summary: 获取订单详情
       tags:
       - Order
+  /playmate/orders/{id}/accept:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 接受成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 接受订单
+      tags:
+      - Order
   /playmate/orders/{id}/cancel:
     post:
       consumes:
@@ -6832,6 +7728,33 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 取消订单
+      tags:
+      - Order
+  /playmate/orders/{id}/confirm:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 确认成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 确认订单
       tags:
       - Order
   /playmate/orders/{id}/confirmation:
@@ -6860,6 +7783,69 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取订单确认信息
+      tags:
+      - Order
+  /playmate/orders/{id}/reject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 拒绝成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 拒绝订单
+      tags:
+      - Order
+  /playmate/orders/{id}/share:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 分享信息，包含platform字段
+        in: body
+        name: data
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分享成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分享订单
       tags:
       - Order
   /playmate/playmates:
@@ -7038,6 +8024,46 @@ paths:
       summary: 更新陪玩信息
       tags:
       - Playmate
+  /playmate/playmates/leaderboard:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 游戏
+        in: query
+        name: game
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                ' pagination':
+                  additionalProperties:
+                    type: integer
+                  type: object
+                data:
+                  items:
+                    $ref: '#/definitions/model.Playmate'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取陪玩排行榜
+      tags:
+      - Playmate
   /playmate/playmates/search:
     get:
       consumes:
@@ -7199,197 +8225,6 @@ paths:
       summary: 提交评价
       tags:
       - Review
-  /playmate/reward:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: 游戏
-        in: query
-        name: game
-        type: string
-      - description: 订单状态
-        in: query
-        name: status
-        type: string
-      - description: 支付方式
-        in: query
-        name: paymentMethod
-        type: string
-      - description: 关键词
-        in: query
-        name: keyword
-        type: string
-      - description: 页码
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量
-        in: query
-        name: pageSize
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/model.RewardOrder'
-                  type: array
-                pagination:
-                  additionalProperties:
-                    type: integer
-                  type: object
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 获取奖励订单列表
-      tags:
-      - RewardOrder
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 奖励订单信息
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateRewardOrderRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 创建成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.RewardOrder'
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 创建奖励订单
-      tags:
-      - RewardOrder
-  /playmate/reward/{id}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: 订单ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 删除成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 删除奖励订单
-      tags:
-      - RewardOrder
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: 订单ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.RewardOrder'
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 获取奖励订单详情
-      tags:
-      - RewardOrder
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: 订单ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 奖励订单更新信息
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpdateRewardOrderRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 更新成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.RewardOrder'
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 更新奖励订单
-      tags:
-      - RewardOrder
-  /playmate/reward/{id}/grab:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 订单ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 抢单成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 抢奖励订单
-      tags:
-      - RewardOrder
   /playmate/skills:
     get:
       consumes:
@@ -7413,6 +8248,183 @@ paths:
       summary: 获取技能列表
       tags:
       - Playmate
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 技能信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 添加成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PlaymateSkill'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加技能
+      tags:
+      - Playmate
+  /playmate/skills/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 技能ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除技能
+      tags:
+      - Playmate
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 技能ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 技能信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PlaymateSkill'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新技能
+      tags:
+      - Playmate
+  /playmate/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 类型 (avatar, image, voice, document)
+        in: formData
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 上传文件
+      tags:
+      - Upload
+  /playmate/upload/image:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 图片文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 上传图片
+      tags:
+      - Upload
+  /playmate/upload/voice:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 语音文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 上传语音
+      tags:
+      - Upload
   /playmate/user/favorites:
     get:
       consumes:
@@ -7434,6 +8446,33 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取收藏列表
+      tags:
+      - User
+  /playmate/user/favorites/{favoriteId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 收藏ID
+        in: path
+        name: favoriteId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 移除成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 移除收藏
       tags:
       - User
   /playmate/user/following:
@@ -7459,7 +8498,80 @@ paths:
       summary: 获取关注列表
       tags:
       - User
+  /playmate/user/following/{userId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 取消关注成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 取消关注用户
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 关注成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 关注用户
+      tags:
+      - User
   /playmate/user/history:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 清空成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 清空浏览历史
+      tags:
+      - User
     get:
       consumes:
       - application/json
@@ -7529,6 +8641,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新个人资料
+      tags:
+      - User
+  /playmate/user/recharge:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 充值信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.RechargeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 充值成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 充值
       tags:
       - User
   /playmate/user/settings:

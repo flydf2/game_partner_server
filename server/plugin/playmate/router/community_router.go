@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/gin-gonic/gin"
 )
 
 type CommunityRouter struct{}
@@ -16,6 +16,16 @@ func (r *CommunityRouter) InitCommunityRouter(router *gin.RouterGroup) {
 		communityRouter.GET("/posts/:postId", api.ApiGroupApp.CommunityApi.GetPostDetail)
 		communityRouter.POST("/posts/:postId/like", api.ApiGroupApp.CommunityApi.LikePost)
 		communityRouter.POST("/posts/:postId/comments", api.ApiGroupApp.CommunityApi.CommentPost)
+		communityRouter.GET("/posts/:postId/bids", api.ApiGroupApp.CommunityApi.GetBids)
+
+		// 投标相关路由
+		communityRouter.POST("/bids", api.ApiGroupApp.CommunityApi.CreateBid)
+		communityRouter.POST("/bids/:bidId/cancel", api.ApiGroupApp.CommunityApi.CancelBid)
+		communityRouter.POST("/bids/:bidId/accept", api.ApiGroupApp.CommunityApi.AcceptBid)
+		communityRouter.POST("/bids/:bidId/reject", api.ApiGroupApp.CommunityApi.RejectBid)
+
+		// 订单相关路由
+		communityRouter.POST("/orders/:orderId/complete", api.ApiGroupApp.CommunityApi.CompleteOrder)
 
 		// 话题相关路由
 		communityRouter.GET("/topics/:topicId", api.ApiGroupApp.CommunityApi.GetTopicDetail)

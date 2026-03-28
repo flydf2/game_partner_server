@@ -281,3 +281,164 @@ func (a *CommunityApi) UnfollowTopic(c *gin.Context) {
 
 	response.OkWithMessage("取消关注成功", c)
 }
+
+// GetBids 获取帖子投标列表
+// @Tags     Community
+// @Summary  获取帖子投标列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    postId path     string true "帖子ID"
+// @Success  200  {object} response.Response{data=[]model.CommunityBid} "获取成功"
+// @Router   /playmate/community/posts/{postId}/bids [get]
+func (a *CommunityApi) GetBids(c *gin.Context) {
+	postIdStr := c.Param("postId")
+	postId, err := strconv.ParseUint(postIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	bids, err := service.ServiceGroupApp.CommunityService.GetBids(uint(postId))
+	if err != nil {
+		response.FailWithMessage("获取投标列表失败", c)
+		return
+	}
+
+	response.OkWithData(bids, c)
+}
+
+// CreateBid 创建投标
+// @Tags     Community
+// @Summary  创建投标
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body     request.CreateBidRequest true "投标信息"
+// @Success  200  {object} response.Response{data=model.CommunityBid} "创建成功"
+// @Router   /playmate/community/bids [post]
+func (a *CommunityApi) CreateBid(c *gin.Context) {
+	var req request.CreateBidRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	bid, err := service.ServiceGroupApp.CommunityService.CreateBid(userID, req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(bid, "创建成功", c)
+}
+
+// CancelBid 取消投标
+// @Tags     Community
+// @Summary  取消投标
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    bidId path     string true "投标ID"
+// @Success  200  {object} response.Response{msg=string} "取消成功"
+// @Router   /playmate/community/bids/{bidId}/cancel [post]
+func (a *CommunityApi) CancelBid(c *gin.Context) {
+	bidIdStr := c.Param("bidId")
+	bidId, err := strconv.ParseUint(bidIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.CancelBid(userID, uint(bidId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("取消成功", c)
+}
+
+// AcceptBid 接受投标
+// @Tags     Community
+// @Summary  接受投标
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    bidId path     string true "投标ID"
+// @Success  200  {object} response.Response{msg=string} "接受成功"
+// @Router   /playmate/community/bids/{bidId}/accept [post]
+func (a *CommunityApi) AcceptBid(c *gin.Context) {
+	bidIdStr := c.Param("bidId")
+	bidId, err := strconv.ParseUint(bidIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.AcceptBid(userID, uint(bidId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("接受成功", c)
+}
+
+// RejectBid 拒绝投标
+// @Tags     Community
+// @Summary  拒绝投标
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    bidId path     string true "投标ID"
+// @Success  200  {object} response.Response{msg=string} "拒绝成功"
+// @Router   /playmate/community/bids/{bidId}/reject [post]
+func (a *CommunityApi) RejectBid(c *gin.Context) {
+	bidIdStr := c.Param("bidId")
+	bidId, err := strconv.ParseUint(bidIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.RejectBid(userID, uint(bidId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("拒绝成功", c)
+}
+
+// CompleteOrder 完成社区订单
+// @Tags     Community
+// @Summary  完成社区订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    orderId path     string true "订单ID"
+// @Success  200  {object} response.Response{msg=string} "完成成功"
+// @Router   /playmate/community/orders/{orderId}/complete [post]
+func (a *CommunityApi) CompleteOrder(c *gin.Context) {
+	orderIdStr := c.Param("orderId")
+	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1)
+
+	if err := service.ServiceGroupApp.CommunityService.CompleteOrder(userID, uint(orderId)); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	response.OkWithMessage("订单已完成，金钱已划拨", c)
+}
