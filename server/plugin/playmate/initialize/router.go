@@ -60,4 +60,7 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化文件上传路由
 	router.RouterGroupApp.InitUploadRouter(routerGroup)
+
+	// 初始化测试工具路由（仅用于自动化测试）
+	router.RouterGroupApp.InitTestToolRouter(routerGroup)
 }

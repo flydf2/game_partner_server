@@ -16,6 +16,7 @@ type RouterGroup struct {
 	RewardOrderRouter
 	AppealRouter
 	UploadRouter
+	TestToolRouter
 }
 
 var RouterGroupApp = new(RouterGroup)

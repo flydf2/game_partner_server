@@ -98,7 +98,14 @@
         window.open(index, '_blank')
         return
     } else {
-      router.push({ name: index, query, params })
+      // 检查路由是否存在
+      if (routerStore.routeMap[index]) {
+        router.push({ name: index, query, params }).catch(err => {
+          console.error('路由跳转失败:', err)
+        })
+      } else {
+        console.error('路由不存在:', index)
+      }
     }
   }
 

@@ -15,6 +15,7 @@ const formatRouter = (routes, routeMap, parent) => {
   routes &&
     routes.forEach((item) => {
       item.parent = parent
+      item.meta = item.meta || {}
       item.meta.btns = item.btns
       item.meta.hidden = item.hidden
       if (item.meta.defaultMenu === true) {
@@ -23,7 +24,12 @@ const formatRouter = (routes, routeMap, parent) => {
           notLayoutRouterArr.push(item)
         }
       }
-      routeMap[item.name] = item
+      // 确保路由名称存在
+      if (item.name) {
+        routeMap[item.name] = item
+      } else {
+        console.warn('路由缺少名称:', item)
+      }
       if (item.children && item.children.length > 0) {
         formatRouter(item.children, routeMap, item)
       }
@@ -168,28 +174,37 @@ export const useRouterStore = defineStore('router', () => {
         children: []
       }
     ]
-    const asyncRouterRes = await asyncMenu()
-    const asyncRouter = asyncRouterRes.data.menus
-    asyncRouter &&
-      asyncRouter.push({
-        path: 'reload',
-        name: 'Reload',
-        hidden: true,
-        meta: {
-          title: '',
-          closeTab: true
-        },
-        component: 'view/error/reload.vue'
-      })
-    formatRouter(asyncRouter, routeMap)
-    baseRouter[0].children = asyncRouter
-    if (notLayoutRouterArr.length !== 0) {
-      baseRouter.push(...notLayoutRouterArr)
+    try {
+      const asyncRouterRes = await asyncMenu()
+      const asyncRouter = asyncRouterRes.data.menus
+      if (asyncRouter && Array.isArray(asyncRouter)) {
+        asyncRouter.push({
+          path: 'reload',
+          name: 'Reload',
+          hidden: true,
+          meta: {
+            title: '',
+            closeTab: true
+          },
+          component: 'view/error/reload.vue'
+        })
+        formatRouter(asyncRouter, routeMap)
+        baseRouter[0].children = asyncRouter
+        if (notLayoutRouterArr.length !== 0) {
+          baseRouter.push(...notLayoutRouterArr)
+        }
+        asyncRouterHandle(baseRouter)
+        KeepAliveFilter(asyncRouter)
+        asyncRouters.value = baseRouter
+        return true
+      } else {
+        console.error('获取的路由数据无效:', asyncRouter)
+        return false
+      }
+    } catch (error) {
+      console.error('获取动态路由失败:', error)
+      return false
     }
-    asyncRouterHandle(baseRouter)
-    KeepAliveFilter(asyncRouter)
-    asyncRouters.value = baseRouter
-    return true
   }
 
   return {

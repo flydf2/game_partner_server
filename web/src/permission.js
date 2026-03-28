@@ -161,8 +161,13 @@ router.beforeEach(async (to, from) => {
   Nprogress.start()
 
   // 处理元数据和缓存
+  to.meta = to.meta || {}
   to.meta.matched = [...to.matched]
-  await routerStore.handleKeepAlive(to)
+  try {
+    await routerStore.handleKeepAlive(to)
+  } catch (error) {
+    console.error('处理路由缓存失败:', error)
+  }
   // 设置页面标题
   document.title = getPageTitle(to.meta.title, to)
   if (to.meta.client) {
@@ -173,7 +178,10 @@ router.beforeEach(async (to, from) => {
   if (WHITE_LIST.includes(to.name)) {
     if (token) {
       if(!routerStore.asyncRouterFlag){
-        await setupRouter(userStore)
+        const success = await setupRouter(userStore)
+        if (!success) {
+          console.error('设置路由失败')
+        }
       }
       if(userStore.userInfo.authority.defaultRouter){
         return { name: userStore.userInfo.authority.defaultRouter }
@@ -192,7 +200,10 @@ router.beforeEach(async (to, from) => {
 
     // 处理异步路由
     if (!routerStore.asyncRouterFlag && !WHITE_LIST.includes(from.name)) {
-      await setupRouter(userStore)
+      const success = await setupRouter(userStore)
+      if (!success) {
+        console.error('设置路由失败')
+      }
       return to
     }
 
