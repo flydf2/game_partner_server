@@ -158,7 +158,7 @@ func (a *CommunityApi) CreatePost(c *gin.Context) {
 
 	post, err := service.ServiceGroupApp.CommunityService.CreatePost(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -184,7 +184,7 @@ func (a *CommunityApi) GetTopicDetail(c *gin.Context) {
 
 	topic, err := service.ServiceGroupApp.CommunityService.GetTopicDetail(uint(topicId))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -215,7 +215,7 @@ func (a *CommunityApi) GetTopicPosts(c *gin.Context) {
 
 	posts, total, err := service.ServiceGroupApp.CommunityService.GetTopicPosts(uint(topicId), page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -249,7 +249,7 @@ func (a *CommunityApi) FollowTopic(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.FollowTopic(userID, uint(topicId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -276,7 +276,7 @@ func (a *CommunityApi) UnfollowTopic(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.UnfollowTopic(userID, uint(topicId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -329,7 +329,7 @@ func (a *CommunityApi) CreateBid(c *gin.Context) {
 
 	bid, err := service.ServiceGroupApp.CommunityService.CreateBid(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -356,7 +356,7 @@ func (a *CommunityApi) CancelBid(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.CancelBid(userID, uint(bidId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -383,7 +383,7 @@ func (a *CommunityApi) AcceptBid(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.AcceptBid(userID, uint(bidId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -410,7 +410,7 @@ func (a *CommunityApi) RejectBid(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.RejectBid(userID, uint(bidId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -437,7 +437,7 @@ func (a *CommunityApi) CompleteOrder(c *gin.Context) {
 	userID := uint(1)
 
 	if err := service.ServiceGroupApp.CommunityService.CompleteOrder(userID, uint(orderId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

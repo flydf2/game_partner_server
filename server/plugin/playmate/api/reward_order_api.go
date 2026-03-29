@@ -42,7 +42,7 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 
 	orders, total, err := service.ServiceGroupApp.RewardOrderService.GetRewardOrders(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -76,7 +76,7 @@ func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 
 	orders, total, err := service.ServiceGroupApp.RewardOrderService.GetMyRewardOrders(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (a *RewardOrderApi) GetRewardOrderDetail(c *gin.Context) {
 
 	order, err := service.ServiceGroupApp.RewardOrderService.GetRewardOrderDetail(uint(orderId))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -158,7 +158,7 @@ func (a *RewardOrderApi) GetApplicants(c *gin.Context) {
 
 	applicants, err := service.ServiceGroupApp.RewardOrderService.GetApplicants(uint(orderId))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -190,7 +190,7 @@ func (a *RewardOrderApi) SelectApplicant(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.RewardOrderService.SelectApplicant(uint(orderId), req.ApplicantID); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -226,7 +226,7 @@ func (a *RewardOrderApi) GrabRewardOrder(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.RewardOrderService.GrabRewardOrder(uint(orderId), userID, req); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -259,7 +259,7 @@ func (a *RewardOrderApi) PublishReward(c *gin.Context) {
 
 	order, err := service.ServiceGroupApp.RewardOrderService.CreateRewardOrder(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -286,7 +286,7 @@ func (a *RewardOrderApi) PublishRewardOrder(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.RewardOrderService.PublishRewardOrder(uint(orderId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -319,7 +319,7 @@ func (a *RewardOrderApi) PayRewardOrder(c *gin.Context) {
 
 	transactionId, err := service.ServiceGroupApp.RewardOrderService.PayRewardOrder(uint(orderId), req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -354,7 +354,7 @@ func (a *RewardOrderApi) ConfirmService(c *gin.Context) {
 
 	settlementAmount, err := service.ServiceGroupApp.RewardOrderService.ConfirmService(uint(orderId), req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -400,7 +400,7 @@ func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 	// 调用服务层分享方法
 	shareData, err := service.ServiceGroupApp.RewardOrderService.ShareRewardOrder(uint(orderId), userID, platform)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

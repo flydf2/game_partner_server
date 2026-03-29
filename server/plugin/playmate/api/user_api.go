@@ -27,7 +27,7 @@ func (a *UserApi) GetUserInfo(c *gin.Context) {
 
 	user, err := service.ServiceGroupApp.UserService.GetUserInfo(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (a *UserApi) Login(c *gin.Context) {
 
 	user, token, err := service.ServiceGroupApp.UserService.Login(req.Username, req.Password)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -78,7 +78,7 @@ func (a *UserApi) Register(c *gin.Context) {
 
 	user, token, err := service.ServiceGroupApp.UserService.Register(req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (a *UserApi) UpdateProfile(c *gin.Context) {
 
 	user, err := service.ServiceGroupApp.UserService.UpdateProfile(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (a *UserApi) GetSettings(c *gin.Context) {
 
 	settings, err := service.ServiceGroupApp.UserService.GetSettings(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -158,7 +158,7 @@ func (a *UserApi) UpdateSettings(c *gin.Context) {
 
 	settings, err := service.ServiceGroupApp.UserService.UpdateSettings(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -179,7 +179,7 @@ func (a *UserApi) Logout(c *gin.Context) {
 
 	err := service.ServiceGroupApp.UserService.Logout(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -200,7 +200,7 @@ func (a *UserApi) RefreshToken(c *gin.Context) {
 
 	token, err := service.ServiceGroupApp.UserService.RefreshToken(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -230,7 +230,7 @@ func (a *UserApi) FollowUser(c *gin.Context) {
 
 	err = service.ServiceGroupApp.UserService.FollowUser(userID, uint(targetUserID))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -258,7 +258,7 @@ func (a *UserApi) UnfollowUser(c *gin.Context) {
 
 	err = service.ServiceGroupApp.UserService.UnfollowUser(userID, uint(targetUserID))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -286,7 +286,7 @@ func (a *UserApi) RemoveFavorite(c *gin.Context) {
 
 	err = service.ServiceGroupApp.UserService.RemoveFavorite(userID, uint(favoriteID))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -307,7 +307,7 @@ func (a *UserApi) ClearHistory(c *gin.Context) {
 
 	err := service.ServiceGroupApp.UserService.ClearHistory(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -333,7 +333,7 @@ func (a *UserApi) GetFollowing(c *gin.Context) {
 
 	following, total, err := service.ServiceGroupApp.UserService.GetFollowing(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -366,7 +366,7 @@ func (a *UserApi) GetFavorites(c *gin.Context) {
 
 	favorites, total, err := service.ServiceGroupApp.UserService.GetFavorites(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -399,7 +399,7 @@ func (a *UserApi) GetBrowseHistory(c *gin.Context) {
 
 	history, total, err := service.ServiceGroupApp.UserService.GetBrowseHistory(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -427,7 +427,7 @@ func (a *UserApi) GetWallet(c *gin.Context) {
 
 	wallet, transactions, err := service.ServiceGroupApp.UserService.GetWallet(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -456,7 +456,7 @@ func (a *UserApi) GetUsers(c *gin.Context) {
 
 	users, total, err := service.ServiceGroupApp.UserService.GetUsers(page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

@@ -27,7 +27,7 @@ func (a *MessageApi) GetConversations(c *gin.Context) {
 
 	conversations, err := service.ServiceGroupApp.MessageService.GetConversations(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (a *MessageApi) GetMessages(c *gin.Context) {
 
 	messages, total, err := service.ServiceGroupApp.MessageService.GetMessages(userID, search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (a *MessageApi) GetChatMessages(c *gin.Context) {
 
 	chatMessages, err := service.ServiceGroupApp.MessageService.GetChatMessages(currentUserID, uint(userId))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -148,7 +148,7 @@ func (a *MessageApi) SendMessage(c *gin.Context) {
 
 	message, err := service.ServiceGroupApp.MessageService.SendMessage(currentUserID, uint(userId), req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -173,7 +173,7 @@ func (a *MessageApi) MarkMessageAsRead(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.MessageService.MarkMessageAsRead(uint(id)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -201,7 +201,7 @@ func (a *MessageApi) MarkConversationAsRead(c *gin.Context) {
 	currentUserID := uint(1) // 临时值
 
 	if err := service.ServiceGroupApp.MessageService.MarkConversationAsRead(currentUserID, uint(userId)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -226,7 +226,7 @@ func (a *MessageApi) MarkConversationAsReadByID(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.MessageService.MarkConversationAsReadByID(uint(id)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -251,7 +251,7 @@ func (a *MessageApi) ArchiveConversation(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.MessageService.ArchiveConversation(uint(id)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

@@ -48,7 +48,7 @@ func (a *AppealApi) GetAppeals(c *gin.Context) {
 
 	appeals, total, err := service.ServiceGroupApp.AppealService.GetAppeals(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (a *AppealApi) GetAppealDetail(c *gin.Context) {
 
 	appeal, err := service.ServiceGroupApp.AppealService.GetAppealDetail(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (a *AppealApi) CreateAppeal(c *gin.Context) {
 
 	appeal, err := service.ServiceGroupApp.AppealService.CreateAppeal(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -142,7 +142,7 @@ func (a *AppealApi) UpdateAppeal(c *gin.Context) {
 
 	appeal, err := service.ServiceGroupApp.AppealService.UpdateAppeal(uint(id), req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (a *AppealApi) DeleteAppeal(c *gin.Context) {
 	}
 
 	if err := service.ServiceGroupApp.AppealService.DeleteAppeal(uint(id)); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -203,7 +203,7 @@ func (a *AppealApi) HandleAppeal(c *gin.Context) {
 
 	appeal, err := service.ServiceGroupApp.AppealService.HandleAppeal(uint(id), handlerID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -229,7 +229,7 @@ func (a *AppealApi) GetMyAppeals(c *gin.Context) {
 
 	appeals, total, err := service.ServiceGroupApp.AppealService.GetUserAppeals(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

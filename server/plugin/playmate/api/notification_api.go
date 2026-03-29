@@ -48,7 +48,7 @@ func (a *NotificationApi) GetNotifications(c *gin.Context) {
 
 	notifications, total, err := service.ServiceGroupApp.NotificationService.GetNotifications(userID, search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (a *NotificationApi) MarkAsRead(c *gin.Context) {
 
 	err = service.ServiceGroupApp.NotificationService.MarkAsRead(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (a *NotificationApi) MarkAllAsRead(c *gin.Context) {
 
 	err := service.ServiceGroupApp.NotificationService.MarkAllAsRead(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -123,7 +123,7 @@ func (a *NotificationApi) GetUnreadCount(c *gin.Context) {
 
 	count, err := service.ServiceGroupApp.NotificationService.GetUnreadCount(userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

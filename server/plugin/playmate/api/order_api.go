@@ -49,7 +49,7 @@ func (a *OrderApi) GetOrders(c *gin.Context) {
 
 	orders, total, err := service.ServiceGroupApp.OrderService.GetOrders(userID, search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -82,7 +82,7 @@ func (a *OrderApi) GetOrderDetail(c *gin.Context) {
 
 	order, err := service.ServiceGroupApp.OrderService.GetOrderDetail(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -110,7 +110,7 @@ func (a *OrderApi) CreateOrder(c *gin.Context) {
 
 	order, err := service.ServiceGroupApp.OrderService.CreateOrder(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -141,7 +141,7 @@ func (a *OrderApi) GetOrderConfirmation(c *gin.Context) {
 
 	confirmation, err := service.ServiceGroupApp.OrderService.GetOrderConfirmation(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -170,7 +170,7 @@ func (a *OrderApi) CancelOrder(c *gin.Context) {
 
 	err = service.ServiceGroupApp.OrderService.CancelOrder(uint(id), userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -199,7 +199,7 @@ func (a *OrderApi) ConfirmOrder(c *gin.Context) {
 
 	err = service.ServiceGroupApp.OrderService.ConfirmOrder(uint(id), userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -228,7 +228,7 @@ func (a *OrderApi) AcceptOrder(c *gin.Context) {
 
 	err = service.ServiceGroupApp.OrderService.AcceptOrder(uint(id), userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -257,7 +257,7 @@ func (a *OrderApi) RejectOrder(c *gin.Context) {
 
 	err = service.ServiceGroupApp.OrderService.RejectOrder(uint(id), userID)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -301,7 +301,7 @@ func (a *OrderApi) ShareOrder(c *gin.Context) {
 	// 调用服务层分享方法
 	shareData, err := service.ServiceGroupApp.OrderService.ShareOrder(uint(id), userID, platform)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 

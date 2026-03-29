@@ -40,7 +40,7 @@ func (a *PlaymateApi) GetPlaymates(c *gin.Context) {
 
 	playmates, total, err := service.ServiceGroupApp.PlaymateService.GetPlaymates(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (a *PlaymateApi) GetExpertDetail(c *gin.Context) {
 
 	detail, err := service.ServiceGroupApp.PlaymateService.GetExpertDetail(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (a *PlaymateApi) FollowExpert(c *gin.Context) {
 
 	err = service.ServiceGroupApp.PlaymateService.FollowExpert(userID, uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -137,7 +137,7 @@ func (a *PlaymateApi) UnfollowExpert(c *gin.Context) {
 
 	err = service.ServiceGroupApp.PlaymateService.UnfollowExpert(userID, uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -168,7 +168,7 @@ func (a *PlaymateApi) GetExpertReviews(c *gin.Context) {
 
 	reviews, total, err := service.ServiceGroupApp.PlaymateService.GetExpertReviews(uint(id), page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -206,7 +206,7 @@ func (a *PlaymateApi) SearchPlaymates(c *gin.Context) {
 
 	playmates, total, err := service.ServiceGroupApp.PlaymateService.GetPlaymates(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -234,7 +234,7 @@ func (a *PlaymateApi) GetSearchSuggestions(c *gin.Context) {
 
 	suggestions, err := service.ServiceGroupApp.PlaymateService.GetSearchSuggestions(keyword)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -260,7 +260,7 @@ func (a *PlaymateApi) GetPlaymateById(c *gin.Context) {
 
 	playmate, err := service.ServiceGroupApp.PlaymateService.GetPlaymateById(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -285,7 +285,7 @@ func (a *PlaymateApi) CreatePlaymate(c *gin.Context) {
 
 	createdPlaymate, err := service.ServiceGroupApp.PlaymateService.CreatePlaymate(playmate)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -319,7 +319,7 @@ func (a *PlaymateApi) UpdatePlaymate(c *gin.Context) {
 	playmate.ID = uint(id)
 	updatedPlaymate, err := service.ServiceGroupApp.PlaymateService.UpdatePlaymate(playmate)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -345,7 +345,7 @@ func (a *PlaymateApi) DeletePlaymate(c *gin.Context) {
 
 	err = service.ServiceGroupApp.PlaymateService.DeletePlaymate(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -371,7 +371,7 @@ func (a *PlaymateApi) GetExpertVoice(c *gin.Context) {
 
 	voice, err := service.ServiceGroupApp.PlaymateService.GetExpertVoice(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -397,7 +397,7 @@ func (a *PlaymateApi) GetExpertStatus(c *gin.Context) {
 
 	status, err := service.ServiceGroupApp.PlaymateService.GetExpertStatus(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -426,7 +426,7 @@ func (a *PlaymateApi) GetSkills(c *gin.Context) {
 
 	skills, total, err := service.ServiceGroupApp.PlaymateService.GetSkills(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -466,7 +466,7 @@ func (a *PlaymateApi) AddSkill(c *gin.Context) {
 
 	skill, err := service.ServiceGroupApp.PlaymateService.AddSkill(userID, req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -499,7 +499,7 @@ func (a *PlaymateApi) UpdateSkill(c *gin.Context) {
 
 	skill, err := service.ServiceGroupApp.PlaymateService.UpdateSkill(uint(id), req)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -525,7 +525,7 @@ func (a *PlaymateApi) DeleteSkill(c *gin.Context) {
 
 	err = service.ServiceGroupApp.PlaymateService.DeleteSkill(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -552,7 +552,7 @@ func (a *PlaymateApi) GetLeaderboard(c *gin.Context) {
 
 	playmates, total, err := service.ServiceGroupApp.PlaymateService.GetLeaderboard(search)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -591,7 +591,7 @@ func (a *PlaymateApi) GetMatchHistory(c *gin.Context) {
 
 	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -624,7 +624,7 @@ func (a *PlaymateApi) GetMatchHistoryMatches(c *gin.Context) {
 
 	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
@@ -657,7 +657,7 @@ func (a *PlaymateApi) GetMatchHistoryById(c *gin.Context) {
 
 	history, err := service.ServiceGroupApp.PlaymateService.GetMatchHistoryById(uint(id))
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithError(err, c)
 		return
 	}
 
