@@ -49,7 +49,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -99,7 +99,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -149,7 +149,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -188,7 +188,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -222,7 +222,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -261,7 +261,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -314,7 +314,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -353,7 +353,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -403,7 +403,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -461,7 +461,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -504,7 +504,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -554,7 +554,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -593,7 +593,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -643,7 +643,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -724,7 +724,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -760,7 +760,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -813,7 +813,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -866,7 +866,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -919,7 +919,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -969,7 +969,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1020,7 +1020,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1076,7 +1076,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1126,7 +1126,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1176,7 +1176,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1218,7 +1218,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1268,7 +1268,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1321,7 +1321,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1409,7 +1409,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1501,7 +1501,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1555,7 +1555,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1594,7 +1594,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1637,7 +1637,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1691,7 +1691,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1734,7 +1734,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1774,7 +1774,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1827,7 +1827,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1869,7 +1869,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1912,7 +1912,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1955,7 +1955,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1998,7 +1998,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2041,7 +2041,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2093,7 +2093,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2221,7 +2221,7 @@ const docTemplate = `{
                     "200": {
                         "description": "{\"success\":true,\"data\":{},\"msg\":\"测试成功\"}",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                         }
                     }
                 }
@@ -2261,7 +2261,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2313,7 +2313,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2369,7 +2369,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2419,7 +2419,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2458,7 +2458,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2503,7 +2503,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2556,7 +2556,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2606,7 +2606,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2692,7 +2692,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2743,7 +2743,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2791,7 +2791,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2839,7 +2839,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2898,7 +2898,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3008,7 +3008,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3055,7 +3055,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3103,7 +3103,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3152,7 +3152,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3205,7 +3205,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3255,7 +3255,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3303,7 +3303,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3351,7 +3351,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3404,7 +3404,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3454,7 +3454,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3493,7 +3493,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3570,7 +3570,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3607,7 +3607,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3679,7 +3679,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3746,7 +3746,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3799,7 +3799,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3830,7 +3830,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3876,7 +3876,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3915,7 +3915,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3965,7 +3965,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4015,7 +4015,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4065,7 +4065,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4115,7 +4115,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4165,7 +4165,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4215,7 +4215,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4268,7 +4268,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4322,7 +4322,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4373,7 +4373,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4427,7 +4427,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4477,7 +4477,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4560,7 +4560,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4622,7 +4622,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4732,7 +4732,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4789,7 +4789,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4842,7 +4842,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4899,7 +4899,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4954,7 +4954,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5000,7 +5000,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5057,7 +5057,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5102,7 +5102,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5142,7 +5142,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5181,7 +5181,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5229,7 +5229,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5307,7 +5307,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5366,7 +5366,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5414,7 +5414,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5462,7 +5462,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5510,7 +5510,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5558,7 +5558,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5653,7 +5653,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5710,7 +5710,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5758,7 +5758,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5806,7 +5806,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5869,7 +5869,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5920,7 +5920,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5968,7 +5968,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6017,7 +6017,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6063,7 +6063,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6123,7 +6123,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6171,7 +6171,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6223,7 +6223,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6271,7 +6271,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6319,7 +6319,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6358,7 +6358,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6406,7 +6406,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6445,7 +6445,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6496,7 +6496,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6553,7 +6553,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6599,7 +6599,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6638,7 +6638,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6689,7 +6689,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6746,7 +6746,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6792,7 +6792,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6840,7 +6840,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6889,7 +6889,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6935,7 +6935,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6993,7 +6993,7 @@ const docTemplate = `{
                     "200": {
                         "description": "获取专家评价列表成功",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                         }
                     }
                 }
@@ -7031,7 +7031,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7080,7 +7080,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7154,7 +7154,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7211,7 +7211,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7295,7 +7295,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7357,7 +7357,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7419,7 +7419,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7476,7 +7476,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7571,7 +7571,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7629,7 +7629,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7687,7 +7687,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7735,7 +7735,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7818,7 +7818,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7866,7 +7866,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7905,7 +7905,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7956,7 +7956,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8051,7 +8051,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8108,7 +8108,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8157,7 +8157,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8205,7 +8205,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8253,7 +8253,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8301,7 +8301,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8349,7 +8349,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8398,7 +8398,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8458,7 +8458,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8554,7 +8554,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8611,7 +8611,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8670,7 +8670,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8739,7 +8739,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8796,7 +8796,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8847,7 +8847,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8902,7 +8902,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8948,7 +8948,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9043,7 +9043,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9100,7 +9100,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9165,7 +9165,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9222,7 +9222,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9276,7 +9276,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9324,7 +9324,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9385,7 +9385,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9447,7 +9447,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9508,7 +9508,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9562,7 +9562,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9619,7 +9619,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9679,7 +9679,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9751,7 +9751,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9808,7 +9808,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9865,7 +9865,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9911,7 +9911,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9945,7 +9945,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9980,7 +9980,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10026,7 +10026,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10081,7 +10081,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10132,7 +10132,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10183,7 +10183,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10239,7 +10239,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10296,7 +10296,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10349,7 +10349,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10406,7 +10406,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10452,7 +10452,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10505,7 +10505,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10551,7 +10551,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10590,7 +10590,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10640,7 +10640,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10679,7 +10679,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10727,7 +10727,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10766,7 +10766,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10820,7 +10820,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10918,7 +10918,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10975,7 +10975,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11025,7 +11025,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11075,7 +11075,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11164,7 +11164,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11257,7 +11257,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11308,7 +11308,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11361,7 +11361,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11411,7 +11411,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11461,7 +11461,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11511,7 +11511,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11630,7 +11630,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11694,7 +11694,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11748,7 +11748,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11802,7 +11802,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11856,7 +11856,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11999,7 +11999,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12052,7 +12052,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12102,7 +12102,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12152,7 +12152,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12191,7 +12191,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12239,7 +12239,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12320,7 +12320,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12371,7 +12371,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12421,7 +12421,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12915,7 +12915,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13006,7 +13006,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13056,7 +13056,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13175,7 +13175,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13316,7 +13316,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13369,7 +13369,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13419,7 +13419,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13458,7 +13458,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13544,7 +13544,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13595,7 +13595,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13677,7 +13677,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13730,7 +13730,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13780,7 +13780,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13819,7 +13819,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13867,7 +13867,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13920,7 +13920,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -13968,7 +13968,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14049,7 +14049,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14086,7 +14086,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14139,7 +14139,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14175,7 +14175,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14215,7 +14215,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14254,7 +14254,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14301,7 +14301,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14351,7 +14351,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14406,7 +14406,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14452,7 +14452,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14502,7 +14502,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14552,7 +14552,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14591,7 +14591,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14645,7 +14645,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14695,7 +14695,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14745,7 +14745,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14795,7 +14795,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -14845,7 +14845,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -16097,6 +16097,30 @@ const docTemplate = `{
                 },
                 "to": {
                     "description": "收件人:多个以英文逗号分隔 例：a@qq.com b@qq.com 正式开发中请把此项目作为参数使用",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_flipped-aurora_gin-vue-admin_server_model_common_response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
                     "type": "string"
                 }
             }
@@ -18484,18 +18508,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/request.CasbinInfo"
                     }
-                }
-            }
-        },
-        "response.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "msg": {
-                    "type": "string"
                 }
             }
         },

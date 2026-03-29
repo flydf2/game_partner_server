@@ -9,6 +9,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // ReviewService 评价服务
@@ -20,7 +21,7 @@ func (s *ReviewService) SubmitReview(userID uint, req request.SubmitReviewReques
 	var playmate model.Playmate
 	if err := global.GVA_DB.First(&playmate, req.PlaymateID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Review{}, errors.New("陪玩不存在")
+			return model.Review{}, response.NewPlaymateError(response.ErrPlaymateNotFound)
 		}
 		return model.Review{}, err
 	}

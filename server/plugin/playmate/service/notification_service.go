@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // NotificationService 通知服务
@@ -62,7 +63,7 @@ func (s *NotificationService) MarkAsRead(notificationID uint) error {
 	var notification model.Notification
 	if err := global.GVA_DB.First(&notification, notificationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("通知不存在")
+			return response.NewPlaymateError(response.ErrNotificationNotFound)
 		}
 		return err
 	}

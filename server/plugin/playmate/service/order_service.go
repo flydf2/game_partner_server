@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // OrderService 订单服务
@@ -69,7 +70,7 @@ func (s *OrderService) GetOrderDetail(orderID uint) (model.Order, error) {
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Order{}, errors.New("订单不存在")
+			return model.Order{}, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return model.Order{}, err
 	}
@@ -83,7 +84,7 @@ func (s *OrderService) CreateOrder(userID uint, req request.CreateOrderRequest) 
 	var playmate model.Playmate
 	if err := global.GVA_DB.First(&playmate, req.PlaymateID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Order{}, errors.New("陪玩不存在")
+			return model.Order{}, response.NewPlaymateError(response.ErrPlaymateNotFound)
 		}
 		return model.Order{}, err
 	}
@@ -92,13 +93,13 @@ func (s *OrderService) CreateOrder(userID uint, req request.CreateOrderRequest) 
 	var wallet model.UserWallet
 	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Order{}, errors.New("钱包不存在")
+			return model.Order{}, response.NewPlaymateError(response.ErrWalletNotFound)
 		}
 		return model.Order{}, err
 	}
 
 	if wallet.Balance < req.Amount {
-		return model.Order{}, errors.New("余额不足")
+		return model.Order{}, response.NewPlaymateError(response.ErrInsufficientBalance)
 	}
 
 	// 生成订单号
@@ -168,7 +169,7 @@ func (s *OrderService) GetOrderConfirmation(orderID uint) (map[string]interface{
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("订单不存在")
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return nil, err
 	}
@@ -226,19 +227,19 @@ func (s *OrderService) CancelOrder(orderID, userID uint) error {
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
 
 	// 检查订单是否属于当前用户
 	if order.UserID != userID {
-		return errors.New("无权操作此订单")
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 检查订单状态是否可以取消
 	if order.Status != "pending" && order.Status != "confirmed" {
-		return errors.New("该订单状态无法取消")
+		return response.NewPlaymateError(response.ErrOrderStatusNotAllowCancel)
 	}
 
 	// 开始事务
@@ -292,19 +293,19 @@ func (s *OrderService) ConfirmOrder(orderID, userID uint) error {
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
 
 	// 检查订单是否属于当前用户
 	if order.UserID != userID {
-		return errors.New("无权操作此订单")
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 检查订单状态是否可以确认
 	if order.Status != "completed" {
-		return errors.New("该订单状态无法确认")
+		return response.NewPlaymateError(response.ErrOrderStatusNotAllowConfirm)
 	}
 
 	// 更新订单状态
@@ -322,19 +323,19 @@ func (s *OrderService) AcceptOrder(orderID, userID uint) error {
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
 
 	// 检查订单是否属于当前陪玩
 	if order.PlaymateID != userID {
-		return errors.New("无权操作此订单")
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 检查订单状态是否可以接受
 	if order.Status != "pending" {
-		return errors.New("该订单状态无法接受")
+		return response.NewPlaymateError(response.ErrOrderStatusNotAllowAccept)
 	}
 
 	// 更新订单状态
@@ -352,19 +353,19 @@ func (s *OrderService) RejectOrder(orderID, userID uint) error {
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
 
 	// 检查订单是否属于当前陪玩
 	if order.PlaymateID != userID {
-		return errors.New("无权操作此订单")
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 检查订单状态是否可以拒绝
 	if order.Status != "pending" {
-		return errors.New("该订单状态无法拒绝")
+		return response.NewPlaymateError(response.ErrOrderStatusNotAllowReject)
 	}
 
 	// 开始事务
@@ -418,14 +419,14 @@ func (s *OrderService) ShareOrder(orderID, userID uint, platform string) (map[st
 	var order model.Order
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("订单不存在")
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return nil, err
 	}
 
 	// 检查订单是否属于当前用户
 	if order.UserID != userID {
-		return nil, errors.New("无权操作此订单")
+		return nil, response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 生成分享码

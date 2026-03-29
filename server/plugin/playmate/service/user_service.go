@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // UserService 用户服务
@@ -20,7 +21,7 @@ func (s *UserService) GetUserInfo(userID uint) (model.User, error) {
 	var user model.User
 	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.User{}, errors.New("用户不存在")
+			return model.User{}, response.NewPlaymateError(response.ErrUserNotFound)
 		}
 		return model.User{}, err
 	}
@@ -42,14 +43,14 @@ func (s *UserService) Login(username, password string) (model.User, string, erro
 	var user model.User
 	if err := global.GVA_DB.Where("username = ?", username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.User{}, "", errors.New("用户名或密码错误")
+			return model.User{}, "", response.NewPlaymateError(response.ErrInvalidCredentials)
 		}
 		return model.User{}, "", err
 	}
 
 	// 验证密码
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return model.User{}, "", errors.New("用户名或密码错误")
+		return model.User{}, "", response.NewPlaymateError(response.ErrInvalidCredentials)
 	}
 
 	// 从钱包中获取最新的余额
@@ -72,12 +73,12 @@ func (s *UserService) Register(req request.RegisterRequest) (model.User, string,
 	// 检查用户名是否已存在
 	var existingUser model.User
 	if err := global.GVA_DB.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
-		return model.User{}, "", errors.New("用户名已存在")
+		return model.User{}, "", response.NewPlaymateError(response.ErrUserAlreadyExists)
 	}
 
 	// 检查手机号是否已存在
 	if err := global.GVA_DB.Where("phone = ?", req.Phone).First(&existingUser).Error; err == nil {
-		return model.User{}, "", errors.New("手机号已被注册")
+		return model.User{}, "", response.NewPlaymateError(response.ErrPhoneAlreadyRegistered)
 	}
 
 	// 加密密码
@@ -139,7 +140,7 @@ func (s *UserService) UpdateProfile(userID uint, req request.UpdateProfileReques
 	var user model.User
 	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.User{}, errors.New("用户不存在")
+			return model.User{}, response.NewPlaymateError(response.ErrUserNotFound)
 		}
 		return model.User{}, err
 	}
@@ -155,7 +156,7 @@ func (s *UserService) UpdateProfile(userID uint, req request.UpdateProfileReques
 		// 检查手机号是否已被其他用户使用
 		var existingUser model.User
 		if err := global.GVA_DB.Where("phone = ? AND id != ?", req.Phone, userID).First(&existingUser).Error; err == nil {
-			return model.User{}, errors.New("手机号已被注册")
+			return model.User{}, response.NewPlaymateError(response.ErrPhoneAlreadyRegistered)
 		}
 		user.Phone = req.Phone
 	}
@@ -418,7 +419,7 @@ func (s *UserService) FollowUser(userID, targetUserID uint) error {
 	var follow model.UserFollow
 	result := global.GVA_DB.Where("user_id = ? AND follow_id = ?", userID, targetUserID).First(&follow)
 	if result.Error == nil {
-		return errors.New("已经关注过该用户")
+		return response.NewPlaymateError(response.ErrAlreadyFollowed)
 	}
 
 	// 创建关注记录
@@ -442,7 +443,7 @@ func (s *UserService) UnfollowUser(userID, targetUserID uint) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return errors.New("未关注该用户")
+		return response.NewPlaymateError(response.ErrNotFollowed)
 	}
 
 	return nil
@@ -456,7 +457,7 @@ func (s *UserService) RemoveFavorite(userID, favoriteID uint) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return errors.New("收藏不存在")
+		return response.NewPlaymateError(response.ErrFavoriteNotFound)
 	}
 
 	return nil

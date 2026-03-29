@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // PlaymateService 陪玩服务
@@ -102,7 +103,7 @@ func (s *PlaymateService) GetPlaymateById(id uint) (model.Playmate, error) {
 	var playmate model.Playmate
 	if err := global.GVA_DB.First(&playmate, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Playmate{}, errors.New("陪玩不存在")
+			return model.Playmate{}, response.NewPlaymateError(response.ErrPlaymateNotFound)
 		}
 		return model.Playmate{}, err
 	}
@@ -198,7 +199,7 @@ func (s *PlaymateService) FollowExpert(userID, expertID uint) error {
 	var follow model.UserFollow
 	result := global.GVA_DB.Where("user_id = ? AND follow_id = ?", userID, expertID).First(&follow)
 	if result.Error == nil {
-		return errors.New("已经关注过该专家")
+		return response.NewPlaymateError(response.ErrAlreadyFollowed)
 	}
 
 	// 创建关注记录
@@ -222,7 +223,7 @@ func (s *PlaymateService) UnfollowExpert(userID, expertID uint) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return errors.New("未关注该专家")
+		return response.NewPlaymateError(response.ErrNotFollowed)
 	}
 
 	return nil
@@ -392,7 +393,7 @@ func (s *PlaymateService) UpdateSkill(skillID uint, req request.UpdateSkillReque
 	var skill model.PlaymateSkill
 	if err := global.GVA_DB.First(&skill, skillID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.PlaymateSkill{}, errors.New("技能不存在")
+			return model.PlaymateSkill{}, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return model.PlaymateSkill{}, err
 	}
@@ -500,7 +501,7 @@ func (s *PlaymateService) GetMatchHistoryById(id uint) (model.MatchHistory, erro
 	var history model.MatchHistory
 	if err := global.GVA_DB.First(&history, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.MatchHistory{}, errors.New("匹配历史不存在")
+			return model.MatchHistory{}, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return model.MatchHistory{}, err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"gorm.io/gorm"
 )
 
@@ -73,7 +74,7 @@ func (s *RewardOrderService) GetRewardOrderDetail(orderID uint) (model.RewardOrd
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return order, errors.New("订单不存在")
+			return order, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return order, err
 	}
@@ -113,7 +114,7 @@ func (s *RewardOrderService) UpdateRewardOrder(orderID uint, req request.UpdateR
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return order, errors.New("订单不存在")
+			return order, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return order, err
 	}
@@ -166,21 +167,21 @@ func (s *RewardOrderService) GrabRewardOrder(orderID, userID uint, req request.G
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
 
 	// 检查订单状态
 	if order.Status != "available" {
-		return errors.New("订单不可抢")
+		return response.NewPlaymateError(response.ErrOrderNot抢able)
 	}
 
 	// 检查是否已经抢过单
 	var existingApplicant model.RewardOrderApplicant
 	result := global.GVA_DB.Where("order_id = ? AND user_id = ?", orderID, userID).First(&existingApplicant)
 	if result.Error == nil {
-		return errors.New("您已经抢过此订单")
+		return response.NewPlaymateError(response.ErrAlready抢edOrder)
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
@@ -209,7 +210,7 @@ func (s *RewardOrderService) GetApplicants(orderID uint) ([]map[string]interface
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("订单不存在")
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return nil, err
 	}
@@ -251,7 +252,7 @@ func (s *RewardOrderService) SelectApplicant(orderID, applicantID uint) error {
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
@@ -260,14 +261,14 @@ func (s *RewardOrderService) SelectApplicant(orderID, applicantID uint) error {
 	var applicant model.RewardOrderApplicant
 	if err := global.GVA_DB.First(&applicant, applicantID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("抢单申请不存在")
+			return response.NewPlaymateError(response.Err抢单ApplicationNotFound)
 		}
 		return err
 	}
 
 	// 检查抢单申请是否属于该订单
 	if applicant.OrderID != orderID {
-		return errors.New("抢单申请不属于该订单")
+		return response.NewPlaymateError(response.Err抢单ApplicationNotMatch)
 	}
 
 	// 开始事务
@@ -312,19 +313,19 @@ func (s *RewardOrderService) PayRewardOrder(orderID uint, req request.PayRewardO
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", errors.New("订单不存在")
+			return "", response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return "", err
 	}
 
 	// 检查订单状态
 	if order.Status != "available" && order.Status != "ongoing" {
-		return "", errors.New("订单状态不允许支付")
+		return "", response.NewPlaymateError(response.ErrOrderStatusNotAllowPay)
 	}
 
 	// 检查金额是否匹配
 	if req.Amount != order.Reward {
-		return "", errors.New("支付金额与订单金额不符")
+		return "", response.NewPlaymateError(response.ErrPayAmountMismatch)
 	}
 
 	// 创建支付记录
@@ -350,14 +351,14 @@ func (s *RewardOrderService) ConfirmService(orderID uint, req request.ConfirmSer
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return 0, errors.New("订单不存在")
+			return 0, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return 0, err
 	}
 
 	// 检查订单状态
 	if order.Status != "ongoing" {
-		return 0, errors.New("订单状态不允许确认服务")
+		return 0, response.NewPlaymateError(response.ErrOrderStatusNotAllowConfirm)
 	}
 
 	// 开始事务
@@ -409,7 +410,7 @@ func (s *RewardOrderService) PublishRewardOrder(orderID uint) error {
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("订单不存在")
+			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return err
 	}
@@ -431,14 +432,14 @@ func (s *RewardOrderService) ShareRewardOrder(orderID, userID uint, platform str
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("订单不存在")
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
 		}
 		return nil, err
 	}
 
 	// 检查订单是否属于当前用户
 	if order.UserID != userID {
-		return nil, errors.New("无权操作此订单")
+		return nil, response.NewPlaymateError(response.ErrUnauthorizedOperation)
 	}
 
 	// 生成分享码

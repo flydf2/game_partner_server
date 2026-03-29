@@ -9,6 +9,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // AppealService 申诉服务
@@ -81,7 +82,7 @@ func (s *AppealService) GetAppealDetail(appealID uint) (*model.Appeal, error) {
 	var appeal model.Appeal
 	if err := global.GVA_DB.First(&appeal, appealID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("申诉不存在")
+			return nil, response.NewPlaymateError(response.ErrAppealNotFound)
 		}
 		return nil, err
 	}
@@ -120,14 +121,14 @@ func (s *AppealService) UpdateAppeal(appealID uint, req request.UpdateAppealRequ
 	var appeal model.Appeal
 	if err := global.GVA_DB.First(&appeal, appealID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("申诉不存在")
+			return nil, response.NewPlaymateError(response.ErrAppealNotFound)
 		}
 		return nil, err
 	}
 
 	// 只允许更新pending状态的申诉
 	if appeal.Status != "pending" {
-		return nil, errors.New("只能更新待处理状态的申诉")
+		return nil, response.NewPlaymateError(response.ErrAppealStatusNotUpdatable)
 	}
 
 	// 更新字段
@@ -165,7 +166,7 @@ func (s *AppealService) DeleteAppeal(appealID uint) error {
 	var appeal model.Appeal
 	if err := global.GVA_DB.First(&appeal, appealID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("申诉不存在")
+			return response.NewPlaymateError(response.ErrAppealNotFound)
 		}
 		return err
 	}
@@ -182,14 +183,14 @@ func (s *AppealService) HandleAppeal(appealID uint, handlerID uint, req request.
 	var appeal model.Appeal
 	if err := global.GVA_DB.First(&appeal, appealID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("申诉不存在")
+			return nil, response.NewPlaymateError(response.ErrAppealNotFound)
 		}
 		return nil, err
 	}
 
 	// 只能处理pending或processing状态的申诉
 	if appeal.Status != "pending" && appeal.Status != "processing" {
-		return nil, errors.New("该申诉已处理完成")
+		return nil, response.NewPlaymateError(response.ErrAppealAlreadyProcessed)
 	}
 
 	now := time.Now()

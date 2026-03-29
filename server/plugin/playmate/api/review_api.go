@@ -3,7 +3,7 @@ package api
 import (
 	"strconv"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 	"github.com/gin-gonic/gin"

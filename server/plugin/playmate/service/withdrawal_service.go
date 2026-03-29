@@ -9,6 +9,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // WithdrawalService 提现服务
@@ -20,7 +21,7 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 	var wallet model.UserWallet
 	if err := global.GVA_DB.Where("user_id = ?", userID).Order("balance DESC").First(&wallet).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Withdrawal{}, errors.New("钱包不存在")
+			return model.Withdrawal{}, response.NewPlaymateError(response.ErrWalletNotFound)
 		}
 		return model.Withdrawal{}, err
 	}
@@ -28,12 +29,12 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 	// 转换金额字符串为float64
 	amount, err := strconv.ParseFloat(req.Amount, 64)
 	if err != nil {
-		return model.Withdrawal{}, errors.New("金额格式错误")
+		return model.Withdrawal{}, response.NewPlaymateError(response.ErrInvalidAmount)
 	}
 
 	// 检查余额
 	if wallet.Balance < amount {
-		return model.Withdrawal{}, errors.New("余额不足")
+		return model.Withdrawal{}, response.NewPlaymateError(response.ErrInsufficientBalance)
 	}
 
 	// 计算手续费

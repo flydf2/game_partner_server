@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/gin-gonic/gin"

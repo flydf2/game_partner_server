@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 )
 
 // MessageService 消息服务
@@ -227,7 +228,7 @@ func (s *MessageService) SendMessage(userID, otherUserID uint, req request.SendM
 	var otherUser model.User
 	if err := global.GVA_DB.First(&otherUser, otherUserID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Message{}, errors.New("用户不存在")
+			return model.Message{}, response.NewPlaymateError(response.ErrMessageUserNotFound)
 		}
 		return model.Message{}, err
 	}
@@ -307,7 +308,7 @@ func (s *MessageService) MarkConversationAsReadByID(conversationID uint) error {
 	var conversation model.Conversation
 	if err := global.GVA_DB.First(&conversation, conversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("会话不存在")
+			return response.NewPlaymateError(response.ErrConversationNotFound)
 		}
 		return err
 	}
