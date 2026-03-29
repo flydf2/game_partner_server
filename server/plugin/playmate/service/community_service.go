@@ -211,3 +211,16 @@ func (s *CommunityService) CompleteOrder(userId, orderId uint) error {
 	// 这里简化处理，实际应该根据订单ID更新订单状态
 	return nil
 }
+
+// DeletePost 删除帖子
+func (s *CommunityService) DeletePost(userId, postId uint) error {
+	// 验证帖子是否存在且属于当前用户
+	var post model.CommunityPost
+	err := global.GVA_DB.Where("id = ? AND user_id = ?", postId, userId).First(&post).Error
+	if err != nil {
+		return err
+	}
+	
+	// 删除帖子
+	return global.GVA_DB.Delete(&post).Error
+}

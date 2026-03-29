@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/gin-gonic/gin"
 )
 
 type MessageRouter struct{}
@@ -13,9 +13,9 @@ func (r *MessageRouter) InitMessageRouter(router *gin.RouterGroup) {
 	conversationRouter := router.Group("/conversations")
 	{
 		conversationRouter.GET("", api.ApiGroupApp.MessageApi.GetConversations)
-		conversationRouter.PUT("/read/:userId", api.ApiGroupApp.MessageApi.MarkConversationAsRead)
-		conversationRouter.PUT("/:id/read", api.ApiGroupApp.MessageApi.MarkConversationAsReadByID)
-		conversationRouter.PUT("/archive/:id", api.ApiGroupApp.MessageApi.ArchiveConversation)
+		conversationRouter.PUT("/by-user/:userId/read", api.ApiGroupApp.MessageApi.MarkConversationAsRead)
+		conversationRouter.PUT("/by-id/:id/read", api.ApiGroupApp.MessageApi.MarkConversationAsReadByID)
+		conversationRouter.PUT("/by-id/:id/archive", api.ApiGroupApp.MessageApi.ArchiveConversation)
 	}
 
 	// 消息相关路由
@@ -24,6 +24,6 @@ func (r *MessageRouter) InitMessageRouter(router *gin.RouterGroup) {
 		messageRouter.GET("", api.ApiGroupApp.MessageApi.GetMessages)
 		messageRouter.GET("/chat/:userId", api.ApiGroupApp.MessageApi.GetChatMessages)
 		messageRouter.POST("/chat/:userId", api.ApiGroupApp.MessageApi.SendMessage)
-		messageRouter.PUT("/:id/read", api.ApiGroupApp.MessageApi.MarkMessageAsRead)
+		messageRouter.PUT("/by-id/:id/read", api.ApiGroupApp.MessageApi.MarkMessageAsRead)
 	}
 }

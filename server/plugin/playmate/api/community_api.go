@@ -3,8 +3,8 @@ package api
 import (
 	"strconv"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 	"github.com/gin-gonic/gin"
 )
@@ -442,4 +442,75 @@ func (a *CommunityApi) CompleteOrder(c *gin.Context) {
 	}
 
 	response.OkWithMessage("订单已完成，金钱已划拨", c)
+}
+
+// GetMyPosts 获取当前用户的帖子列表
+// @Tags     Community
+// @Summary  获取当前用户的帖子列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    page       query    int     false "页码"
+// @Param    pageSize   query    int     false "每页数量"
+// @Success  200        {object} response.Response{data=[]model.CommunityPost,pagination=map[string]int64} "获取当前用户帖子列表成功"
+// @Router   /playmate/community/my-posts [get]
+func (a *CommunityApi) GetMyPosts(c *gin.Context) {
+	var search request.CommunitySearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 设置默认值
+	if search.Page <= 0 {
+		search.Page = 1
+	}
+	if search.PageSize <= 0 {
+		search.PageSize = 10
+	}
+
+	// 设置当前用户ID
+	userID := uint(1) // 实际项目中应该从认证信息中获取
+	search.UserID = userID
+
+	posts, total, err := service.ServiceGroupApp.CommunityService.GetPosts(search)
+	if err != nil {
+		response.FailWithMessage("获取当前用户帖子列表失败", c)
+		return
+	}
+	response.OkWithDetailed(gin.H{
+		"data": posts,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
+// DeletePost 删除帖子
+// @Tags     Community
+// @Summary  删除帖子
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    postId path     string true "帖子ID"
+// @Success  200  {object} response.Response{msg=string} "删除成功"
+// @Router   /playmate/community/posts/{postId} [delete]
+func (a *CommunityApi) DeletePost(c *gin.Context) {
+	postIdStr := c.Param("postId")
+	postId, err := strconv.ParseUint(postIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := uint(1) // 实际项目中应该从认证信息中获取
+
+	if err := service.ServiceGroupApp.CommunityService.DeletePost(userID, uint(postId)); err != nil {
+		response.FailWithMessage("删除帖子失败", c)
+		return
+	}
+
+	response.OkWithMessage("删除成功", c)
 }

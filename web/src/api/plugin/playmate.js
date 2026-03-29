@@ -184,6 +184,25 @@ export const getPosts = (params) => {
 }
 
 /**
+ * 获取当前用户的帖子列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 当前用户帖子列表数据
+ */
+export const getMyPosts = (params) => {
+  return service({
+    url: '/playmate/community/my-posts',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
  * 获取游戏列表
  * @param {Object} params 查询参数
  * @param {number} params.page 页码

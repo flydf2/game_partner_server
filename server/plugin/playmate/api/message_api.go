@@ -163,7 +163,7 @@ func (a *MessageApi) SendMessage(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "消息ID"
 // @Success  200  {object} response.Response{msg=string} "标记成功"
-// @Router   /playmate/messages/{id}/read [put]
+// @Router   /playmate/messages/by-id/{id}/read [put]
 func (a *MessageApi) MarkMessageAsRead(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -188,7 +188,7 @@ func (a *MessageApi) MarkMessageAsRead(c *gin.Context) {
 // @Produce  application/json
 // @Param    userId  path      uint    true "用户ID"
 // @Success  200     {object} response.Response{msg=string} "标记成功"
-// @Router   /playmate/conversations/read/{userId} [put]
+// @Router   /playmate/conversations/by-user/{userId}/read [put]
 func (a *MessageApi) MarkConversationAsRead(c *gin.Context) {
 	userIdStr := c.Param("userId")
 	userId, err := strconv.ParseUint(userIdStr, 10, 32)
@@ -216,7 +216,7 @@ func (a *MessageApi) MarkConversationAsRead(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "会话ID"
 // @Success  200  {object} response.Response{msg=string} "标记成功"
-// @Router   /playmate/conversations/{id}/read [put]
+// @Router   /playmate/conversations/by-id/{id}/read [put]
 func (a *MessageApi) MarkConversationAsReadByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -241,7 +241,7 @@ func (a *MessageApi) MarkConversationAsReadByID(c *gin.Context) {
 // @Produce  application/json
 // @Param    id   path      uint    true "会话ID"
 // @Success  200  {object} response.Response{msg=string} "归档成功"
-// @Router   /playmate/conversations/archive/{id} [put]
+// @Router   /playmate/conversations/by-id/{id}/archive [put]
 func (a *MessageApi) ArchiveConversation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)

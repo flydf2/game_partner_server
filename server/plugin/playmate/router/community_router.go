@@ -12,8 +12,10 @@ func (r *CommunityRouter) InitCommunityRouter(router *gin.RouterGroup) {
 	communityRouter := router.Group("/community")
 	{
 		communityRouter.GET("/posts", api.ApiGroupApp.CommunityApi.GetPosts)
+		communityRouter.GET("/my-posts", api.ApiGroupApp.CommunityApi.GetMyPosts)
 		communityRouter.POST("/posts", api.ApiGroupApp.CommunityApi.CreatePost)
 		communityRouter.GET("/posts/:postId", api.ApiGroupApp.CommunityApi.GetPostDetail)
+		communityRouter.DELETE("/posts/:postId", api.ApiGroupApp.CommunityApi.DeletePost)
 		communityRouter.POST("/posts/:postId/like", api.ApiGroupApp.CommunityApi.LikePost)
 		communityRouter.POST("/posts/:postId/comments", api.ApiGroupApp.CommunityApi.CommentPost)
 		communityRouter.GET("/posts/:postId/bids", api.ApiGroupApp.CommunityApi.GetBids)

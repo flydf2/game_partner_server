@@ -95,7 +95,11 @@ func (s *RewardOrderService) CreateRewardOrder(userID uint, req request.CreateRe
 		Reward:        req.Reward,
 		PaymentMethod: req.PaymentMethod,
 		Status:        "available",
-		TimeLeft:      "24:00", // 默认24小时
+		TimeLeft:      req.TimeLeft,
+		GameRank:      req.GameRank,
+		StartTime:     req.StartTime,
+		Duration:      req.Duration,
+		Location:      req.Location,
 		Tags:          string(tags),
 		Requirements:  string(requirements),
 		CreatedAt:     time.Now(),
