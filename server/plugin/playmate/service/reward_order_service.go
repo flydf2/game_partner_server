@@ -230,7 +230,8 @@ func (s *RewardOrderService) GetApplicants(orderID uint) ([]map[string]interface
 	for _, applicant := range applicants {
 		// 这里应该查询用户信息，暂时模拟数据
 		userInfo := map[string]interface{}{
-			"id":         applicant.UserID,
+			"id":         applicant.ID,
+			"userId":     applicant.UserID,
 			"name":       fmt.Sprintf("用户%d", applicant.UserID),
 			"avatar":     "https://randomuser.me/api/portraits/men/32.jpg",
 			"level":      24,
@@ -243,6 +244,7 @@ func (s *RewardOrderService) GetApplicants(orderID uint) ([]map[string]interface
 			},
 			"recommendation": applicant.Recommendation,
 			"appliedAt":      applicant.AppliedAt,
+			"status":         applicant.Status,
 		}
 		result = append(result, userInfo)
 	}
