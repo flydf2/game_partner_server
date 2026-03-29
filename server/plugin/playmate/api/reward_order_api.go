@@ -67,14 +67,22 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 // @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/api/reward/my [get]
 func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	// userID := c.GetUint("userID")
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+	uid, ok := userID.(uint)
+	if !ok {
+		response.FailWithMessage("用户ID类型错误", c)
+		return
+	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "20"))
 
-	orders, total, err := service.ServiceGroupApp.RewardOrderService.GetMyRewardOrders(userID, page, pageSize)
+	orders, total, err := service.ServiceGroupApp.RewardOrderService.GetMyRewardOrders(uid, page, pageSize)
 	if err != nil {
 		response.FailWithError(err, c)
 		return
@@ -215,17 +223,27 @@ func (a *RewardOrderApi) GrabRewardOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	// userID := c.GetUint("userID")
-	userID := uint(1) // 临时值
-
+	// 从上下文获取用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+	uid, ok := userID.(uint)
+	if !ok {
+		response.FailWithMessage("用户ID类型错误", c)
+		return
+	}
 	var req request.GrabRewardOrderRequest
+	// 尝试绑定JSON数据，即使包含额外字段也能正确绑定现有字段
 	if err := c.ShouldBindJSON(&req); err != nil {
-		// 允许空请求体
-		req = request.GrabRewardOrderRequest{}
+		// 允许空请求体，但不覆盖已绑定的字段
+		if req.Recommendation == "" {
+			req = request.GrabRewardOrderRequest{}
+		}
 	}
 
-	if err := service.ServiceGroupApp.RewardOrderService.GrabRewardOrder(uint(orderId), userID, req); err != nil {
+	if err := service.ServiceGroupApp.RewardOrderService.GrabRewardOrder(uint(orderId), uid, req); err != nil {
 		response.FailWithError(err, c)
 		return
 	}
@@ -253,11 +271,19 @@ func (a *RewardOrderApi) PublishReward(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	// userID := c.GetUint("userID")
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+	uid, ok := userID.(uint)
+	if !ok {
+		response.FailWithMessage("用户ID类型错误", c)
+		return
+	}
 
-	order, err := service.ServiceGroupApp.RewardOrderService.CreateRewardOrder(userID, req)
+	order, err := service.ServiceGroupApp.RewardOrderService.CreateRewardOrder(uid, req)
 	if err != nil {
 		response.FailWithError(err, c)
 		return
@@ -381,8 +407,17 @@ func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+	uid, ok := userID.(uint)
+	if !ok {
+		response.FailWithMessage("用户ID类型错误", c)
+		return
+	}
 
 	// 绑定请求数据
 	var req map[string]string
@@ -398,7 +433,7 @@ func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 	}
 
 	// 调用服务层分享方法
-	shareData, err := service.ServiceGroupApp.RewardOrderService.ShareRewardOrder(uint(orderId), userID, platform)
+	shareData, err := service.ServiceGroupApp.RewardOrderService.ShareRewardOrder(uint(orderId), uid, platform)
 	if err != nil {
 		response.FailWithError(err, c)
 		return
