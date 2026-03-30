@@ -296,8 +296,8 @@ func (a *OrderApi) RejectOrder(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    id   path      uint    true "订单ID"
-// @Param    data  body      map[string]string  true "分享信息，包含platform字段"
+// @Param    id   path      uint                     true "订单ID"
+// @Param    data  body      request.ShareOrderRequest  true "分享信息，包含platform字段"
 // @Success  200  {object} response.Response{data=map[string]interface{}} "分享成功"
 // @Router   /playmate/orders/{id}/share [post]
 func (a *OrderApi) ShareOrder(c *gin.Context) {
@@ -316,20 +316,14 @@ func (a *OrderApi) ShareOrder(c *gin.Context) {
 	}
 
 	// 绑定请求数据
-	var req map[string]string
+	var req request.ShareOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage("参数错误", c)
 		return
 	}
 
-	// 获取分享平台
-	platform := req["platform"]
-	if platform == "" {
-		platform = "unknown"
-	}
-
 	// 调用服务层分享方法
-	shareData, err := service.ServiceGroupApp.OrderService.ShareOrder(uint(id), userID, platform)
+	shareData, err := service.ServiceGroupApp.OrderService.ShareOrder(uint(id), userID, req.Platform)
 	if err != nil {
 		response.FailWithError(err, c)
 		return

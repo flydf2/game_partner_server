@@ -68,8 +68,10 @@ type SubmitReviewRequest struct {
 
 // SubmitWithdrawalRequest 提交提现请求
 type SubmitWithdrawalRequest struct {
-	Amount string `json:"amount" binding:"required"`
-	Method string `json:"method" binding:"required"`
+	Amount      string `json:"amount" binding:"required"`
+	Method      string `json:"method" binding:"required"` // alipay, wechat, bank
+	AccountInfo string `json:"accountInfo" binding:"required"` // 账户信息，如支付宝账号、银行卡号等
+	Description string `json:"description" binding:"omitempty"`
 }
 
 // SendMessageRequest 发送消息请求
@@ -269,8 +271,11 @@ type CreatePostRequest struct {
 
 // RechargeRequest 充值请求
 type RechargeRequest struct {
-	Amount float64 `json:"amount" binding:"required,gt=0"`
-	Method string  `json:"method" binding:"required"` // alipay, wechat, balance
+	Amount    float64 `json:"amount" binding:"required,gt=0"`
+	Method    string  `json:"method" binding:"required"` // alipay, wechat, balance
+	OrderID   string  `json:"orderId" binding:"omitempty"`
+	ReturnURL string  `json:"returnUrl" binding:"omitempty"`
+	NotifyURL string  `json:"notifyUrl" binding:"omitempty"`
 }
 
 // SendSmsCodeRequest 发送短信验证码请求
@@ -298,4 +303,39 @@ type LeaderboardSearch struct {
 type CreateBidRequest struct {
 	PostID  uint   `json:"postId" binding:"required"`
 	Message string `json:"message" binding:"required"`
+}
+
+// CreatePlaymateRequest 创建陪玩请求
+type CreatePlaymateRequest struct {
+	UserID      uint    `json:"userId" binding:"required"`
+	Nickname    string  `json:"nickname" binding:"required"`
+	Avatar      string  `json:"avatar"`
+	Price       float64 `json:"price" binding:"required,gt=0"`
+	Tags        string  `json:"tags"`
+	Game        string  `json:"game" binding:"required"`
+	Rank        string  `json:"rank"`
+	Gender      string  `json:"gender"`
+	Description string  `json:"description"`
+	Level       int     `json:"level"`
+	Title       string  `json:"title"`
+}
+
+// UpdatePlaymateRequest 更新陪玩请求
+type UpdatePlaymateRequest struct {
+	Nickname    string  `json:"nickname"`
+	Avatar      string  `json:"avatar"`
+	Price       float64 `json:"price" binding:"omitempty,gt=0"`
+	Tags        string  `json:"tags"`
+	IsOnline    bool    `json:"isOnline"`
+	Game        string  `json:"game"`
+	Rank        string  `json:"rank"`
+	Gender      string  `json:"gender"`
+	Description string  `json:"description"`
+	Level       int     `json:"level"`
+	Title       string  `json:"title"`
+}
+
+// ShareOrderRequest 分享订单请求
+type ShareOrderRequest struct {
+	Platform string `json:"platform" binding:"required"`
 }

@@ -1,9 +1,11 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +19,7 @@ type WithdrawalApi struct{}
 // @accept   application/json
 // @Produce  application/json
 // @Param    data body     request.SubmitWithdrawalRequest true "提现信息"
-// @Success  200  {object} response.Response{msg=string} "提交提现成功"
+// @Success  200  {object} response.Response{data=map[string]interface{}} "提交提现成功"
 // @Router   /playmate/withdrawals [post]
 func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 	var req request.SubmitWithdrawalRequest
@@ -28,14 +30,15 @@ func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 	// 从上下文获取用户ID
 	userID := middleware.GetCurrentUserID(c)
 	if userID == 0 {
-		response.FailWithMessage("未获取到用户ID", c)
+		response.NoAuth("未登录或登录已过期", c)
 		return
 	}
-	if _, err := service.ServiceGroupApp.WithdrawalService.SubmitWithdrawal(userID, req); err != nil {
+	result, err := service.ServiceGroupApp.UserService.Withdraw(userID, req)
+	if err != nil {
 		response.FailWithError(err, c)
 		return
 	}
-	response.OkWithMessage("提交提现成功", c)
+	response.OkWithDetailed(result, "提交提现成功", c)
 }
 
 // GetWithdrawalRecords 获取提现记录
@@ -44,50 +47,70 @@ func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    status     query    string  false "状态"
-// @Param    method     query    string  false "提现方式"
-// @Param    minAmount  query    number  false "最小金额"
-// @Param    maxAmount  query    number  false "最大金额"
-// @Param    startTime  query    string  false "开始时间"
-// @Param    endTime    query    string  false "结束时间"
-// @Param    page       query    int     false "页码"
-// @Param    pageSize   query    int     false "每页数量"
-// @Success  200        {object} response.Response{data=[]model.Withdrawal,pagination=map[string]int64} "获取提现记录成功"
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.Withdrawal,pagination=map[string]int64} "获取提现记录成功"
 // @Router   /playmate/withdrawals [get]
 func (a *WithdrawalApi) GetWithdrawalRecords(c *gin.Context) {
-	var search request.WithdrawalSearch
-	if err := c.ShouldBindQuery(&search); err != nil {
-		response.FailWithMessage("参数错误", c)
-		return
-	}
-
-	// 设置默认值
-	if search.Page <= 0 {
-		search.Page = 1
-	}
-	if search.PageSize <= 0 {
-		search.PageSize = 10
-	}
-
 	// 从上下文获取用户ID
 	userID := middleware.GetCurrentUserID(c)
 	if userID == 0 {
-		response.FailWithMessage("未获取到用户ID", c)
+		response.NoAuth("未登录或登录已过期", c)
 		return
 	}
 
-	withdrawals, total, err := service.ServiceGroupApp.WithdrawalService.GetWithdrawalRecords(userID, search)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	withdrawals, total, err := service.ServiceGroupApp.UserService.GetWithdrawalList(userID, page, pageSize)
 	if err != nil {
-		response.FailWithMessage("获取提现记录失败", c)
+		response.FailWithError(err, c)
 		return
 	}
 
 	response.OkWithDetailed(gin.H{
 		"data": withdrawals,
 		"pagination": gin.H{
-			"currentPage": search.Page,
-			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
 			"totalCount":  total,
 		},
 	}, "获取成功", c)
+}
+
+// ProcessWithdrawal 处理提现（管理员操作）
+// @Tags     Withdrawal
+// @Summary  处理提现
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    withdrawalId path uint true "提现记录ID"
+// @Param    status body string true "处理状态（approved 或 rejected）"
+// @Success  200  {object} response.Response{message=string} "处理成功"
+// @Router   /playmate/withdrawals/{withdrawalId}/process [post]
+func (a *WithdrawalApi) ProcessWithdrawal(c *gin.Context) {
+	// 从路径参数获取提现记录ID
+	withdrawalID, err := strconv.ParseUint(c.Param("withdrawalId"), 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从请求体获取处理状态
+	var req struct {
+		Status string `json:"status" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 调用服务处理提现
+	err = service.ServiceGroupApp.UserService.ProcessWithdrawal(uint(withdrawalID), req.Status)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("处理成功", c)
 }

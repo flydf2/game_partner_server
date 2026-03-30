@@ -16,5 +16,6 @@ func (r *WithdrawalRouter) InitWithdrawalRouter(router *gin.RouterGroup) {
 	{
 		withdrawalRouter.POST("", api.ApiGroupApp.WithdrawalApi.SubmitWithdrawal)
 		withdrawalRouter.GET("", api.ApiGroupApp.WithdrawalApi.GetWithdrawalRecords)
+		withdrawalRouter.POST("/:withdrawalId/process", api.ApiGroupApp.WithdrawalApi.ProcessWithdrawal)
 	}
 }

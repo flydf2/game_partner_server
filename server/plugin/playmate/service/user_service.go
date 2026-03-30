@@ -2,6 +2,8 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"go.uber.org/zap"
@@ -543,6 +545,214 @@ func (s *UserService) ClearHistory(userID uint) error {
 	return nil
 }
 
+// Withdraw 提现
+func (s *UserService) Withdraw(userID uint, req playmateRequest.SubmitWithdrawalRequest) (map[string]interface{}, error) {
+	// 解析金额
+	amount, err := strconv.ParseFloat(req.Amount, 64)
+	if err != nil {
+		return nil, response.NewPlaymateError(response.ErrInvalidAmount)
+	}
+
+	// 检查用户钱包
+	var wallet model.UserWallet
+	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.NewPlaymateError(response.ErrWalletNotFound)
+		}
+		return nil, err
+	}
+
+	// 检查余额是否足够
+	if wallet.Balance < amount {
+		return nil, response.NewPlaymateError(response.ErrInsufficientBalance)
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 冻结金额
+	wallet.Balance -= amount
+	wallet.Frozen += amount
+	if err := tx.Save(&wallet).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 计算手续费
+	fee := amount * 0.01 // 1%手续费
+	actualAmount := amount - fee
+
+	// 创建提现记录
+	withdrawal := model.Withdrawal{
+		UserID:       userID,
+		Amount:       amount,
+		Fee:          fee,
+		ActualAmount: actualAmount,
+		Method:       req.Method,
+		Status:       "pending",
+	}
+	if err := tx.Create(&withdrawal).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 创建交易记录（待处理）
+	transaction := model.Transaction{
+		UserID:      userID,
+		Type:        "expense_pending",
+		Amount:      amount,
+		Description: "提现-" + req.Method + "(待处理)",
+		Time:        time.Now(),
+	}
+	if err := tx.Create(&transaction).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"withdrawalId":     withdrawal.ID,
+		"amount":           amount,
+		"method":           req.Method,
+		"status":           withdrawal.Status,
+		"transactionId":    transaction.ID,
+		"remainingBalance": wallet.Balance,
+	}, nil
+}
+
+// ProcessWithdrawal 处理提现（管理员操作）
+func (s *UserService) ProcessWithdrawal(withdrawalID uint, status string) error {
+	// 查找提现记录
+	var withdrawal model.Withdrawal
+	if err := global.GVA_DB.First(&withdrawal, withdrawalID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewPlaymateError(response.ErrWithdrawalNotFound)
+		}
+		return err
+	}
+
+	// 检查状态是否有效
+	if status != "approved" && status != "rejected" {
+		return response.NewPlaymateError(response.ErrInvalidStatus)
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 更新提现状态
+	withdrawal.Status = status
+	if err := tx.Save(&withdrawal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 如果批准提现
+	if status == "approved" {
+		// 查找用户钱包
+		var wallet model.UserWallet
+		if err := tx.Where("user_id = ?", withdrawal.UserID).First(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 解冻金额并减少总支出
+		wallet.Frozen -= withdrawal.Amount
+		wallet.TotalExpense += withdrawal.Amount
+		if err := tx.Save(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 更新交易记录为已完成
+		var transaction model.Transaction
+		if err := tx.Where("user_id = ? AND type = ? AND amount = ?", withdrawal.UserID, "expense_pending", withdrawal.Amount).Order("created_at DESC").First(&transaction).Error; err == nil {
+			transaction.Type = "expense"
+			transaction.Description = "提现-" + withdrawal.Method + "(已完成)"
+			if err := tx.Save(&transaction).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	// 如果拒绝提现
+	if status == "rejected" {
+		// 查找用户钱包
+		var wallet model.UserWallet
+		if err := tx.Where("user_id = ?", withdrawal.UserID).First(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 解冻金额并返回余额
+		wallet.Frozen -= withdrawal.Amount
+		wallet.Balance += withdrawal.Amount
+		if err := tx.Save(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 更新交易记录为已拒绝
+		var transaction model.Transaction
+		if err := tx.Where("user_id = ? AND type = ? AND amount = ?", withdrawal.UserID, "expense_pending", withdrawal.Amount).Order("created_at DESC").First(&transaction).Error; err == nil {
+			transaction.Description = "提现-" + withdrawal.Method + "(已拒绝)"
+			if err := tx.Save(&transaction).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetWithdrawalList 获取提现列表
+func (s *UserService) GetWithdrawalList(userID uint, page, pageSize int) ([]model.Withdrawal, int64, error) {
+	var withdrawals []model.Withdrawal
+	var total int64
+
+	// 获取总数
+	if err := global.GVA_DB.Model(&model.Withdrawal{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	offset := (page - 1) * pageSize
+	if err := global.GVA_DB.Where("user_id = ?", userID).Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&withdrawals).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return withdrawals, total, nil
+}
+
+// GetTransactionList 获取交易记录列表
+func (s *UserService) GetTransactionList(userID uint, page, pageSize int) ([]model.Transaction, int64, error) {
+	var transactions []model.Transaction
+	var total int64
+
+	// 获取总数
+	if err := global.GVA_DB.Model(&model.Transaction{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	offset := (page - 1) * pageSize
+	if err := global.GVA_DB.Where("user_id = ?", userID).Offset(offset).Limit(pageSize).Order("time DESC").Find(&transactions).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return transactions, total, nil
+}
+
 // Recharge 充值
 func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest) (map[string]interface{}, error) {
 	// 检查用户钱包
@@ -565,6 +775,23 @@ func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest)
 		}
 	}
 
+	// 生成订单号（如果没有提供）
+	orderID := req.OrderID
+	if orderID == "" {
+		orderID = "RECHARGE_" + time.Now().Format("20060102150405") + "_" + utils.RandomString(8)
+	}
+
+	// 处理第三方支付
+	if req.Method == "alipay" || req.Method == "wechat" {
+		// 调用第三方支付接口
+		paymentInfo, err := s.processThirdPartyPayment(userID, orderID, req)
+		if err != nil {
+			return nil, err
+		}
+		return paymentInfo, nil
+	}
+
+	// 余额充值（直接到账）
 	// 开始事务
 	tx := global.GVA_DB.Begin()
 
@@ -581,7 +808,7 @@ func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest)
 		UserID:      userID,
 		Type:        "income",
 		Amount:      req.Amount,
-		Description: "充值",
+		Description: "充值-" + req.Method,
 		Time:        time.Now(),
 	}
 	if err := tx.Create(&transaction).Error; err != nil {
@@ -599,5 +826,37 @@ func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest)
 		"amountAdded":   req.Amount,
 		"balance":       wallet.Balance,
 		"method":        req.Method,
+		"orderId":       orderID,
+	}, nil
+}
+
+// processThirdPartyPayment 处理第三方支付
+func (s *UserService) processThirdPartyPayment(userID uint, orderID string, req playmateRequest.RechargeRequest) (map[string]interface{}, error) {
+	// 这里应该调用具体的第三方支付接口
+	// 例如：支付宝、微信支付等
+	// 现在返回模拟数据
+
+	// 模拟支付链接生成
+	paymentURL := "https://example.com/pay?orderId=" + orderID + "&amount=" + fmt.Sprintf("%.2f", req.Amount) + "&method=" + req.Method
+
+	// 创建待支付的交易记录
+	transaction := model.Transaction{
+		UserID:      userID,
+		Type:        "income_pending",
+		Amount:      req.Amount,
+		Description: "充值-" + req.Method + "(待支付)",
+		Time:        time.Now(),
+	}
+	if err := global.GVA_DB.Create(&transaction).Error; err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"orderId":       orderID,
+		"paymentUrl":    paymentURL,
+		"amount":        req.Amount,
+		"method":        req.Method,
+		"transactionId": transaction.ID,
+		"status":        "pending",
 	}, nil
 }

@@ -23,25 +23,31 @@ func (r *RewardOrderRouter) InitRewardOrderRouter(Router *gin.RouterGroup) {
 		rewardOrderRouter.GET("/:orderId/applicants", api.ApiGroupApp.RewardOrderApi.GetApplicants)
 
 		// 需要认证的路由
-		authRouter := rewardOrderRouter.Group("/")
-		authRouter.Use(middleware.CombinedAuthMiddleware())
-		{
-			// 获取我的悬赏订单列表
-			authRouter.GET("/my", api.ApiGroupApp.RewardOrderApi.GetMyRewardOrders)
-			// 选择抢单者
-			authRouter.POST("/:orderId/select-applicant", api.ApiGroupApp.RewardOrderApi.SelectApplicant)
-			// 抢单
-			authRouter.POST("/:orderId/grab", api.ApiGroupApp.RewardOrderApi.GrabRewardOrder)
-			// 发布悬赏订单
-			authRouter.POST("", api.ApiGroupApp.RewardOrderApi.PublishReward)
-			// 发布订单
-			authRouter.POST("/:orderId/publish", api.ApiGroupApp.RewardOrderApi.PublishRewardOrder)
-			// 支付订单
-			authRouter.POST("/:orderId/pay", api.ApiGroupApp.RewardOrderApi.PayRewardOrder)
-			// 确认服务
-			authRouter.POST("/:orderId/confirm", api.ApiGroupApp.RewardOrderApi.ConfirmService)
-			// 分享悬赏订单
-			authRouter.POST("/:orderId/share", api.ApiGroupApp.RewardOrderApi.ShareRewardOrder)
-		}
+		// 发布悬赏订单
+		rewardOrderRouter.POST("", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.PublishReward)
+		// 获取我的悬赏订单列表
+		rewardOrderRouter.GET("/my", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.GetMyRewardOrders)
+		// 选择抢单者
+		rewardOrderRouter.POST("/:orderId/select-applicant", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.SelectApplicant)
+		// 抢单
+		rewardOrderRouter.POST("/:orderId/grab", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.GrabRewardOrder)
+		// 发布订单
+		rewardOrderRouter.POST("/:orderId/publish", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.PublishRewardOrder)
+		// 支付订单
+		rewardOrderRouter.POST("/:orderId/pay", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.PayRewardOrder)
+		// 确认服务
+		rewardOrderRouter.POST("/:orderId/confirm", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.ConfirmService)
+		// 分享悬赏订单
+		rewardOrderRouter.POST("/:orderId/share", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.ShareRewardOrder)
+	}
+
+	// 抢单相关路由
+	grabOrderRouter := Router.Group("/grab-orders")
+	{
+		// 需要认证的路由
+		// 获取抢单详情
+		grabOrderRouter.GET("/:id", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.GetGrabOrderDetail)
+		// 撤回抢单申请
+		grabOrderRouter.POST("/:id/withdraw", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.WithdrawGrabOrder)
 	}
 }

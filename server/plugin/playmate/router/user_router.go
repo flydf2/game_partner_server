@@ -26,6 +26,8 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 		userRouter.GET("/history", api.ApiGroupApp.UserApi.GetBrowseHistory)
 		userRouter.DELETE("/history", api.ApiGroupApp.UserApi.ClearHistory)
 		userRouter.GET("/wallet", api.ApiGroupApp.UserApi.GetWallet)
+		userRouter.POST("/recharge", api.ApiGroupApp.UserApi.Recharge)
+		userRouter.GET("/transactions", api.ApiGroupApp.UserApi.GetTransactionList)
 	}
 
 	// 获取用户列表（需要认证）

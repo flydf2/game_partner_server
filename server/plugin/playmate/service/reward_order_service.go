@@ -192,13 +192,13 @@ func (s *RewardOrderService) GrabRewardOrder(orderID, userID uint, req request.G
 
 	// 创建抢单申请
 	applicant := model.RewardOrderApplicant{
-		OrderID:         orderID,
-		UserID:          userID,
-		Recommendation:  req.Recommendation,
-		VoiceUrl:        req.VoiceUrl,
-		RecordUrl:       req.RecordUrl,
-		Status:          "pending",
-		AppliedAt:       time.Now(),
+		OrderID:        orderID,
+		UserID:         userID,
+		Recommendation: req.Recommendation,
+		VoiceUrl:       req.VoiceUrl,
+		RecordUrl:      req.RecordUrl,
+		Status:         "pending",
+		AppliedAt:      time.Now(),
 	}
 
 	if err := global.GVA_DB.Create(&applicant).Error; err != nil {
@@ -336,12 +336,12 @@ func (s *RewardOrderService) PayRewardOrder(orderID uint, req request.PayRewardO
 
 	// 创建支付记录
 	payment := model.RewardOrderPayment{
-		OrderID:         orderID,
-		Amount:          req.Amount,
-		PaymentMethod:   req.PaymentMethod,
-		TransactionID:   req.TransactionID,
-		PaymentStatus:   "success",
-		PaidAt:          time.Now(),
+		OrderID:       orderID,
+		Amount:        req.Amount,
+		PaymentMethod: req.PaymentMethod,
+		TransactionID: req.TransactionID,
+		PaymentStatus: "success",
+		PaidAt:        time.Now(),
 	}
 
 	if err := global.GVA_DB.Create(&payment).Error; err != nil {
@@ -484,3 +484,126 @@ func (s *RewardOrderService) ShareRewardOrder(orderID, userID uint, platform str
 	return shareData, nil
 }
 
+// GetGrabOrderDetail 获取抢单详情
+func (s *RewardOrderService) GetGrabOrderDetail(grabOrderID, userID uint) (map[string]interface{}, error) {
+	// 查找抢单申请
+	var applicant model.RewardOrderApplicant
+	if err := global.GVA_DB.First(&applicant, grabOrderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.NewPlaymateError(response.Err抢单ApplicationNotFound)
+		}
+		return nil, err
+	}
+
+	// 检查抢单申请是否属于当前用户
+	if applicant.UserID != userID {
+		return nil, response.NewPlaymateError(response.ErrUnauthorizedOperation)
+	}
+
+	// 查找关联的订单
+	var order model.RewardOrder
+	if err := global.GVA_DB.First(&order, applicant.OrderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
+		}
+		return nil, err
+	}
+
+	// 查找发布者信息
+	var publisher model.User
+	if err := global.GVA_DB.First(&publisher, order.UserID).Error; err != nil {
+		// 如果用户不存在，使用默认值
+		publisher = model.User{
+			ID:       order.UserID,
+			Username: fmt.Sprintf("用户%d", order.UserID),
+		}
+	}
+
+	// 构建返回数据
+	detail := map[string]interface{}{
+		"id":       grabOrderID,
+		"rewardId": order.ID,
+		"title":    order.Content,
+		"game":     order.Game,
+		"category": "MOBA 竞技", // 模拟数据
+		"reward":   order.Reward,
+		"status":   applicant.Status,
+		"statusText": func() string {
+			switch applicant.Status {
+			case "pending":
+				return "待确认"
+			case "approved":
+				return "已通过"
+			case "rejected":
+				return "已拒绝"
+			default:
+				return "进行中"
+			}
+		}(),
+		"requirements": map[string]string{
+			"level":     order.GameRank,
+			"duration":  fmt.Sprintf("约 %d 小时", order.Duration),
+			"startTime": order.StartTime,
+			"mode":      "巅峰赛 5V5", // 模拟数据
+		},
+		"publisher": map[string]interface{}{
+			"name":    publisher.Username,
+			"avatar":  "https://example.com/avatar.jpg", // 模拟数据
+			"level":   "极高 (S)",                         // 模拟数据
+			"isOwner": order.UserID == userID,
+		},
+		"timeline": []map[string]interface{}{
+			{
+				"step":   1,
+				"title":  "已提交申请",
+				"time":   applicant.AppliedAt.Format("2006-01-02 15:04"),
+				"status": "completed",
+			},
+			{
+				"step":   2,
+				"title":  "房主查看中",
+				"time":   applicant.AppliedAt.Add(time.Hour).Format("2006-01-02 15:04"), // 模拟数据
+				"status": "completed",
+			},
+			{
+				"step":   3,
+				"title":  "待确认",
+				"time":   "等待房主最终确认",
+				"status": "current",
+			},
+		},
+		"recommendation": applicant.Recommendation,
+	}
+
+	return detail, nil
+}
+
+// WithdrawGrabOrder 撤回抢单申请
+func (s *RewardOrderService) WithdrawGrabOrder(grabOrderID, userID uint) error {
+	// 查找抢单申请
+	var applicant model.RewardOrderApplicant
+	if err := global.GVA_DB.First(&applicant, grabOrderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewPlaymateError(response.Err抢单ApplicationNotFound)
+		}
+		return err
+	}
+
+	// 检查抢单申请是否属于当前用户
+	if applicant.UserID != userID {
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
+	}
+
+	// 检查抢单状态是否可以撤回
+	if applicant.Status != "pending" && applicant.Status != "approved" {
+		return response.NewPlaymateError(response.Err抢单StatusNotAllowWithdraw)
+	}
+
+	// 更新抢单申请状态为已撤回
+	applicant.Status = "withdrawn"
+	if err := global.GVA_DB.Save(&applicant).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -422,3 +422,70 @@ func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 
 	response.OkWithDetailed(shareData, "分享成功", c)
 }
+
+// GetGrabOrderDetail 获取抢单详情
+// @Tags     RewardOrder
+// @Summary  获取抢单详情
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint  true "抢单ID"
+// @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/grab-orders/{id} [get]
+func (a *RewardOrderApi) GetGrabOrderDetail(c *gin.Context) {
+	grabOrderIdStr := c.Param("id")
+	grabOrderId, err := strconv.ParseUint(grabOrderIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取用户ID
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+
+	detail, err := service.ServiceGroupApp.RewardOrderService.GetGrabOrderDetail(uint(grabOrderId), uid)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(detail, "获取成功", c)
+}
+
+// WithdrawGrabOrder 撤回抢单申请
+// @Tags     RewardOrder
+// @Summary  撤回抢单申请
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint  true "抢单ID"
+// @Success  200  {object} response.Response{data=map[string]string,msg=string} "操作成功"
+// @Router   /playmate/grab-orders/{id}/withdraw [post]
+func (a *RewardOrderApi) WithdrawGrabOrder(c *gin.Context) {
+	grabOrderIdStr := c.Param("id")
+	grabOrderId, err := strconv.ParseUint(grabOrderIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取用户ID
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+
+	if err := service.ServiceGroupApp.RewardOrderService.WithdrawGrabOrder(uint(grabOrderId), uid); err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"message": "申请已撤回",
+	}, "操作成功", c)
+}

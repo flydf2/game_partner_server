@@ -509,3 +509,70 @@ func (a *UserApi) GetUsers(c *gin.Context) {
 		},
 	}, "获取成功", c)
 }
+
+// Recharge 充值
+// @Tags     User
+// @Summary  充值
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.RechargeRequest  true "充值信息"
+// @Success  200   {object} response.Response{data=map[string]interface{}} "充值成功"
+// @Router   /playmate/user/recharge [post]
+func (a *UserApi) Recharge(c *gin.Context) {
+	var req request.RechargeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
+
+	result, err := service.ServiceGroupApp.UserService.Recharge(userID, req)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(result, "充值成功", c)
+}
+
+// GetTransactionList 获取交易记录列表
+// @Tags     User
+// @Summary  获取交易记录列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    page     query    int  false "页码"
+// @Param    pageSize query    int  false "每页数量"
+// @Success  200      {object} response.Response{data=[]model.Transaction,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/user/transactions [get]
+func (a *UserApi) GetTransactionList(c *gin.Context) {
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	transactions, total, err := service.ServiceGroupApp.UserService.GetTransactionList(userID, page, pageSize)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": transactions,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}

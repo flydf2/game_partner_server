@@ -4585,68 +4585,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/api/reward/my": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RewardOrder"
-                ],
-                "summary": "获取我的悬赏订单列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "获取成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.RewardOrder"
-                                            }
-                                        },
-                                        "pagination": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "type": "integer"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/playmate/appeals": {
             "get": {
                 "security": [
@@ -5121,11 +5059,6 @@ const docTemplate = `{
         },
         "/playmate/auth/logout": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5526,6 +5459,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/community/my-posts": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "获取当前用户的帖子列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取当前用户帖子列表成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.CommunityPost"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/community/orders/{orderId}/complete": {
             "post": {
                 "security": [
@@ -5765,6 +5760,52 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.CommunityPost"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "删除帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "帖子ID",
+                        "name": "postId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -6191,7 +6232,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/conversations/archive/{id}": {
+        "/playmate/conversations/by-id/{id}/archive": {
             "put": {
                 "security": [
                     {
@@ -6239,7 +6280,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/conversations/read/{userId}": {
+        "/playmate/conversations/by-id/{id}/read": {
             "put": {
                 "security": [
                     {
@@ -6255,12 +6296,12 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "标记会话为已读",
+                "summary": "通过会话ID标记会话为已读",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "用户ID",
-                        "name": "userId",
+                        "description": "会话ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -6287,7 +6328,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/playmate/conversations/{id}/read": {
+        "/playmate/conversations/by-user/{userId}/read": {
             "put": {
                 "security": [
                     {
@@ -6303,12 +6344,12 @@ const docTemplate = `{
                 "tags": [
                     "Message"
                 ],
-                "summary": "通过会话ID标记会话为已读",
+                "summary": "标记会话为已读",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "会话ID",
-                        "name": "id",
+                        "description": "用户ID",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     }
@@ -7320,6 +7361,109 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/grab-orders/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RewardOrder"
+                ],
+                "summary": "获取抢单详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "抢单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/playmate/grab-orders/{id}/withdraw": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RewardOrder"
+                ],
+                "summary": "撤回抢单申请",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "抢单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "操作成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/match-history": {
             "get": {
                 "security": [
@@ -7597,6 +7741,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/messages/by-id/{id}/read": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "标记消息为已读",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "消息ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "标记成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/messages/chat/{userId}": {
             "get": {
                 "security": [
@@ -7694,54 +7886,6 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.Message"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/playmate/messages/{id}/read": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Message"
-                ],
-                "summary": "标记消息为已读",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "消息ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "标记成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "msg": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -8445,10 +8589,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/request.ShareOrderRequest"
                         }
                     }
                 ],
@@ -8601,7 +8742,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Playmate"
+                            "$ref": "#/definitions/request.CreatePlaymateRequest"
                         }
                     }
                 ],
@@ -8892,7 +9033,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Playmate"
+                            "$ref": "#/definitions/request.UpdatePlaymateRequest"
                         }
                     }
                 ],
@@ -9235,6 +9376,68 @@ const docTemplate = `{
                                         },
                                         "msg": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/playmate/reward/my": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RewardOrder"
+                ],
+                "summary": "获取我的悬赏订单列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.RewardOrder"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "integer"
+                                            }
                                         }
                                     }
                                 }
@@ -10656,6 +10859,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/user/recharge": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "充值",
+                "parameters": [
+                    {
+                        "description": "充值信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RechargeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "充值成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/user/settings": {
             "get": {
                 "security": [
@@ -10734,6 +10988,68 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.UserSettings"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/playmate/user/transactions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取交易记录列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Transaction"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "integer"
+                                            }
                                         }
                                     }
                                 }
@@ -10864,42 +11180,6 @@ const docTemplate = `{
                 "summary": "获取提现记录",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "状态",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "提现方式",
-                        "name": "method",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "最小金额",
-                        "name": "minAmount",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "最大金额",
-                        "name": "maxAmount",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "startTime",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "endTime",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "description": "页码",
                         "name": "page",
@@ -10980,7 +11260,65 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "msg": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/playmate/withdrawals/{withdrawalId}/process": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal"
+                ],
+                "summary": "处理提现",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "提现记录ID",
+                        "name": "withdrawalId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "处理状态（approved 或 rejected）",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "处理成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
                                             "type": "string"
                                         }
                                     }
@@ -16847,7 +17185,16 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "duration": {
+                    "type": "integer"
+                },
                 "game": {
+                    "type": "string"
+                },
+                "gameRank": {
+                    "type": "string"
+                },
+                "location": {
                     "type": "string"
                 },
                 "paymentMethod": {
@@ -16860,6 +17207,9 @@ const docTemplate = `{
                 },
                 "reward": {
                     "type": "number"
+                },
+                "startTime": {
+                    "type": "string"
                 },
                 "status": {
                     "description": "available 可抢单, ongoing 进行中, completed 已完成, draft 草稿, cancelled 已取消, expired 已过期",
@@ -16927,6 +17277,33 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Transaction": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "income, expense, income_pending, expense_pending",
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -17527,6 +17904,50 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreatePlaymateRequest": {
+            "type": "object",
+            "required": [
+                "game",
+                "nickname",
+                "price",
+                "userId"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "game": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.CreatePostRequest": {
             "type": "object",
             "required": [
@@ -17551,17 +17972,31 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "content",
+                "duration",
                 "game",
+                "gameRank",
+                "location",
                 "paymentMethod",
                 "requirements",
                 "reward",
-                "tags"
+                "startTime",
+                "tags",
+                "timeLeft"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
+                "duration": {
+                    "type": "integer"
+                },
                 "game": {
+                    "type": "string"
+                },
+                "gameRank": {
+                    "type": "string"
+                },
+                "location": {
                     "type": "string"
                 },
                 "paymentMethod": {
@@ -17580,11 +18015,17 @@ const docTemplate = `{
                 "reward": {
                     "type": "number"
                 },
+                "startTime": {
+                    "type": "string"
+                },
                 "tags": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "timeLeft": {
+                    "type": "string"
                 }
             }
         },
@@ -17938,6 +18379,31 @@ const docTemplate = `{
                 }
             }
         },
+        "request.RechargeRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "method"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "method": {
+                    "description": "alipay, wechat, balance",
+                    "type": "string"
+                },
+                "notifyUrl": {
+                    "type": "string"
+                },
+                "orderId": {
+                    "type": "string"
+                },
+                "returnUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "request.Register": {
             "type": "object",
             "properties": {
@@ -18159,6 +18625,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.ShareOrderRequest": {
+            "type": "object",
+            "required": [
+                "platform"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string"
+                }
+            }
+        },
         "request.SubmitReviewRequest": {
             "type": "object",
             "required": [
@@ -18198,14 +18675,23 @@ const docTemplate = `{
         "request.SubmitWithdrawalRequest": {
             "type": "object",
             "required": [
+                "accountInfo",
                 "amount",
                 "method"
             ],
             "properties": {
+                "accountInfo": {
+                    "description": "账户信息，如支付宝账号、银行卡号等",
+                    "type": "string"
+                },
                 "amount": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "method": {
+                    "description": "alipay, wechat, bank",
                     "type": "string"
                 }
             }
@@ -18294,6 +18780,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdatePlaymateRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "game": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "isOnline": {
+                    "type": "boolean"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }

@@ -33,6 +33,8 @@ const (
 	ErrWalletNotFound
 	ErrInvalidAmount
 	ErrCannotFollowSelf
+	ErrWithdrawalNotFound
+	ErrInvalidStatus
 )
 
 const (
@@ -49,6 +51,7 @@ const (
 	ErrOrderStatusNotAllowCancel
 	ErrOrderStatusNotAllowAccept
 	ErrOrderStatusNotAllowReject
+	Err抢单StatusNotAllowWithdraw
 )
 
 const (
@@ -79,6 +82,9 @@ var playmateErrorMessages = map[int]string{
 	ErrWalletNotFound:             "钱包不存在",
 	ErrInvalidAmount:             "金额格式错误",
 	ErrCannotFollowSelf:           "不能关注自己",
+	ErrWithdrawalNotFound:         "提现记录不存在",
+	ErrInvalidStatus:              "无效的状态",
+
 	ErrOrderNotFound:             "订单不存在",
 	ErrPlaymateNotFound:          "陪玩不存在",
 	ErrOrderNot抢able:            "订单不可抢",
@@ -92,6 +98,7 @@ var playmateErrorMessages = map[int]string{
 	ErrOrderStatusNotAllowCancel: "该订单状态无法取消",
 	ErrOrderStatusNotAllowAccept: "该订单状态无法接受",
 	ErrOrderStatusNotAllowReject: "该订单状态无法拒绝",
+	Err抢单StatusNotAllowWithdraw: "该抢单状态无法撤回",
 	ErrAppealNotFound:            "申诉不存在",
 	ErrAppealStatusNotUpdatable:  "只能更新待处理状态的申诉",
 	ErrAppealAlreadyProcessed:   "该申诉已处理完成",

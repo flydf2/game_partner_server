@@ -69,7 +69,7 @@ func (UserWallet) TableName() string {
 type Transaction struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
 	UserID      uint      `json:"userId"`
-	Type        string    `json:"type"` // income 或 expense
+	Type        string    `json:"type"` // income, expense, income_pending, expense_pending
 	Amount      float64   `json:"amount"`
 	Description string    `json:"description"`
 	Time        time.Time `json:"time"`
@@ -80,3 +80,5 @@ type Transaction struct {
 func (Transaction) TableName() string {
 	return "game_partner_transactions"
 }
+
+

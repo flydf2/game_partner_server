@@ -282,14 +282,31 @@ func (a *PlaymateApi) GetPlaymateById(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    data  body      model.Playmate  true "陪玩信息"
+// @Param    data  body      request.CreatePlaymateRequest  true "陪玩信息"
 // @Success  200   {object}  response.Response{data=model.Playmate} "创建成功"
 // @Router   /playmate/playmates [post]
 func (a *PlaymateApi) CreatePlaymate(c *gin.Context) {
-	var playmate model.Playmate
-	if err := c.ShouldBindJSON(&playmate); err != nil {
+	var req request.CreatePlaymateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage("参数错误", c)
 		return
+	}
+
+	playmate := model.Playmate{
+		UserID:      req.UserID,
+		Nickname:    req.Nickname,
+		Avatar:      req.Avatar,
+		Price:       req.Price,
+		Tags:        req.Tags,
+		Game:        req.Game,
+		Rank:        req.Rank,
+		Gender:      req.Gender,
+		Description: req.Description,
+		Level:       req.Level,
+		Title:       req.Title,
+		IsOnline:    false,
+		Rating:      0,
+		Likes:       0,
 	}
 
 	createdPlaymate, err := service.ServiceGroupApp.PlaymateService.CreatePlaymate(playmate)
@@ -307,8 +324,8 @@ func (a *PlaymateApi) CreatePlaymate(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    id    path      uint            true "陪玩ID"
-// @Param    data  body      model.Playmate  true "陪玩信息"
+// @Param    id    path      uint                     true "陪玩ID"
+// @Param    data  body      request.UpdatePlaymateRequest  true "陪玩信息"
 // @Success  200   {object}  response.Response{data=model.Playmate} "更新成功"
 // @Router   /playmate/playmates/{id} [put]
 func (a *PlaymateApi) UpdatePlaymate(c *gin.Context) {
@@ -319,14 +336,53 @@ func (a *PlaymateApi) UpdatePlaymate(c *gin.Context) {
 		return
 	}
 
-	var playmate model.Playmate
-	if err := c.ShouldBindJSON(&playmate); err != nil {
+	var req request.UpdatePlaymateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage("参数错误", c)
 		return
 	}
 
-	playmate.ID = uint(id)
-	updatedPlaymate, err := service.ServiceGroupApp.PlaymateService.UpdatePlaymate(playmate)
+	// 先获取现有陪玩信息
+	existingPlaymate, err := service.ServiceGroupApp.PlaymateService.GetPlaymateById(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	// 更新字段
+	if req.Nickname != "" {
+		existingPlaymate.Nickname = req.Nickname
+	}
+	if req.Avatar != "" {
+		existingPlaymate.Avatar = req.Avatar
+	}
+	if req.Price > 0 {
+		existingPlaymate.Price = req.Price
+	}
+	if req.Tags != "" {
+		existingPlaymate.Tags = req.Tags
+	}
+	existingPlaymate.IsOnline = req.IsOnline
+	if req.Game != "" {
+		existingPlaymate.Game = req.Game
+	}
+	if req.Rank != "" {
+		existingPlaymate.Rank = req.Rank
+	}
+	if req.Gender != "" {
+		existingPlaymate.Gender = req.Gender
+	}
+	if req.Description != "" {
+		existingPlaymate.Description = req.Description
+	}
+	if req.Level > 0 {
+		existingPlaymate.Level = req.Level
+	}
+	if req.Title != "" {
+		existingPlaymate.Title = req.Title
+	}
+
+	updatedPlaymate, err := service.ServiceGroupApp.PlaymateService.UpdatePlaymate(existingPlaymate)
 	if err != nil {
 		response.FailWithError(err, c)
 		return
