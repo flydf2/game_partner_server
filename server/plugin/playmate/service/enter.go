@@ -19,6 +19,8 @@ type ServiceGroup struct {
 	UploadService
 	AppealService
 	ExpertOrderSettingService
+	TournamentService
+	LeaderboardService
 }
 
 var ServiceGroupApp = new(ServiceGroup)

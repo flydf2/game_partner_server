@@ -98,9 +98,18 @@ func (s *CommunityService) CreatePost(userId uint, req request.CreatePostRequest
 }
 
 // GetTopicDetail 获取话题详情
-func (s *CommunityService) GetTopicDetail(topicId uint) (map[string]interface{}, error) {
+func (s *CommunityService) GetTopicDetail(topicId uint, topicTitle string) (map[string]interface{}, error) {
 	var topic model.Topic
-	err := global.GVA_DB.First(&topic, topicId).Error
+	var err error
+
+	if topicTitle != "" {
+		// 根据标题查询话题
+		err = global.GVA_DB.Where("title = ?", topicTitle).First(&topic).Error
+	} else {
+		// 根据ID查询话题
+		err = global.GVA_DB.First(&topic, topicId).Error
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -112,11 +121,11 @@ func (s *CommunityService) GetTopicDetail(topicId uint) (map[string]interface{},
 }
 
 // GetTopicPosts 获取话题帖子列表
-func (s *CommunityService) GetTopicPosts(topicId uint, page, pageSize int) ([]model.CommunityPost, int64, error) {
+func (s *CommunityService) GetTopicPosts(topicId uint, topicTitle string, page, pageSize int) ([]model.CommunityPost, int64, error) {
 	var posts []model.CommunityPost
 	var total int64
 
-	// 这里简化处理，实际应该根据话题ID关联查询帖子
+	// 这里简化处理，实际应该根据话题ID或标题关联查询帖子
 	query := global.GVA_DB.Model(&model.CommunityPost{}).Preload("User")
 
 	// 计算总数
@@ -137,7 +146,17 @@ func (s *CommunityService) GetTopicPosts(topicId uint, page, pageSize int) ([]mo
 }
 
 // FollowTopic 关注话题
-func (s *CommunityService) FollowTopic(userId, topicId uint) error {
+func (s *CommunityService) FollowTopic(userId, topicId uint, topicTitle string) error {
+	// 如果提供了话题标题，先根据标题查询话题ID
+	if topicTitle != "" {
+		var topic model.Topic
+		err := global.GVA_DB.Where("title = ?", topicTitle).First(&topic).Error
+		if err != nil {
+			return err
+		}
+		topicId = topic.ID
+	}
+
 	// 检查是否已经关注
 	var count int64
 	global.GVA_DB.Model(&model.UserTopicFollow{}).Where("user_id = ? AND topic_id = ?", userId, topicId).Count(&count)
@@ -153,7 +172,17 @@ func (s *CommunityService) FollowTopic(userId, topicId uint) error {
 }
 
 // UnfollowTopic 取消关注话题
-func (s *CommunityService) UnfollowTopic(userId, topicId uint) error {
+func (s *CommunityService) UnfollowTopic(userId, topicId uint, topicTitle string) error {
+	// 如果提供了话题标题，先根据标题查询话题ID
+	if topicTitle != "" {
+		var topic model.Topic
+		err := global.GVA_DB.Where("title = ?", topicTitle).First(&topic).Error
+		if err != nil {
+			return err
+		}
+		topicId = topic.ID
+	}
+
 	return global.GVA_DB.Where("user_id = ? AND topic_id = ?", userId, topicId).Delete(&model.UserTopicFollow{}).Error
 }
 

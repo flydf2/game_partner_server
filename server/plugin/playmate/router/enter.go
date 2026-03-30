@@ -18,6 +18,8 @@ type RouterGroup struct {
 	UploadRouter
 	TestToolRouter
 	ExpertOrderSettingRouter
+	TournamentRouter
+	LeaderboardRouter
 }
 
 var RouterGroupApp = new(RouterGroup)

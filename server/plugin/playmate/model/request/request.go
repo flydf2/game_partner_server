@@ -294,9 +294,34 @@ type SkillSearch struct {
 
 // LeaderboardSearch 排行榜搜索请求
 type LeaderboardSearch struct {
+	Type     string `json:"type" form:"type"`
 	Game     string `json:"game" form:"game"`
 	Page     int    `json:"page" form:"page"`
 	PageSize int    `json:"pageSize" form:"pageSize"`
+}
+
+// CreateLeaderboardRequest 创建排行榜请求
+type CreateLeaderboardRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Type        string `json:"type" binding:"required,oneof=weekly monthly"`
+	Game        string `json:"game"`
+	Description string `json:"description"`
+	StartTime   string `json:"startTime"`
+	EndTime     string `json:"endTime"`
+	Status      int    `json:"status"`
+	SortOrder   int    `json:"sortOrder"`
+}
+
+// UpdateLeaderboardRequest 更新排行榜请求
+type UpdateLeaderboardRequest struct {
+	Name        string `json:"name"`
+	Type        string `json:"type" binding:"omitempty,oneof=weekly monthly"`
+	Game        string `json:"game"`
+	Description string `json:"description"`
+	StartTime   string `json:"startTime"`
+	EndTime     string `json:"endTime"`
+	Status      int    `json:"status"`
+	SortOrder   int    `json:"sortOrder"`
 }
 
 // CreateBidRequest 创建投标请求
@@ -338,4 +363,22 @@ type UpdatePlaymateRequest struct {
 // ShareOrderRequest 分享订单请求
 type ShareOrderRequest struct {
 	Platform string `json:"platform" binding:"required"`
+}
+
+// TournamentSearch 赛事搜索请求
+type TournamentSearch struct {
+	Status   string `json:"status" form:"status"`
+	Game     string `json:"game" form:"game"`
+	GameID   uint   `json:"gameId" form:"gameId"`
+	Keyword  string `json:"keyword" form:"keyword"`
+	Page     int    `json:"page" form:"page"`
+	PageSize int    `json:"pageSize" form:"pageSize"`
+}
+
+// JoinTournamentRequest 报名参赛请求
+type JoinTournamentRequest struct {
+	TournamentID uint   `json:"tournamentId" binding:"required"`
+	TeamName     string `json:"teamName" binding:"required"`
+	ContactInfo  string `json:"contactInfo"`
+	MembersInfo  string `json:"membersInfo"`
 }

@@ -483,3 +483,117 @@ export const unfollowUser = (userId) => {
     method: 'delete'
   })
 }
+
+// ==================== 排行榜相关 API ====================
+
+/**
+ * 获取排行榜列表
+ * @param {Object} params 查询参数
+ * @param {string} params.type 榜单类型（weekly-周榜, monthly-月榜）
+ * @param {string} params.game 游戏
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 排行榜列表数据
+ */
+export const getLeaderboards = (params) => {
+  return service({
+    url: '/playmate/leaderboards',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取排行榜详情
+ * @param {number} id 排行榜ID
+ * @returns {Promise} 排行榜详情数据
+ */
+export const getLeaderboardById = (id) => {
+  return service({
+    url: `/playmate/leaderboards/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取排行榜及其条目
+ * @param {number} id 排行榜ID
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 排行榜及其条目数据
+ */
+export const getLeaderboardWithItems = (id, params) => {
+  return service({
+    url: `/playmate/leaderboards/${id}/items`,
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 创建排行榜
+ * @param {Object} data 排行榜信息
+ * @param {string} data.name 榜单名称
+ * @param {string} data.type 榜单类型（weekly-周榜, monthly-月榜）
+ * @param {string} data.game 关联游戏
+ * @param {string} data.description 描述
+ * @param {string} data.startTime 开始时间
+ * @param {string} data.endTime 结束时间
+ * @param {number} data.status 状态
+ * @param {number} data.sortOrder 排序顺序
+ * @returns {Promise} 创建结果
+ */
+export const createLeaderboard = (data) => {
+  return service({
+    url: '/playmate/leaderboards',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 更新排行榜
+ * @param {Object} data 排行榜信息
+ * @param {number} data.id 排行榜ID
+ * @returns {Promise} 更新结果
+ */
+export const updateLeaderboard = (data) => {
+  return service({
+    url: `/playmate/leaderboards/${data.id}`,
+    method: 'put',
+    data: data
+  })
+}
+
+/**
+ * 删除排行榜
+ * @param {number} id 排行榜ID
+ * @returns {Promise} 删除结果
+ */
+export const deleteLeaderboard = (id) => {
+  return service({
+    url: `/playmate/leaderboards/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 生成排行榜
+ * @param {number} id 排行榜ID
+ * @returns {Promise} 生成结果
+ */
+export const generateLeaderboard = (id) => {
+  return service({
+    url: `/playmate/leaderboards/${id}/generate`,
+    method: 'post'
+  })
+}

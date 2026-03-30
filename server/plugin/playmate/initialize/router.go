@@ -66,4 +66,10 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化专家订单设置路由
 	router.RouterGroupApp.InitExpertOrderSettingRouter(routerGroup)
+
+	// 初始化赛事路由
+	router.RouterGroupApp.InitTournamentRouter(routerGroup)
+
+	// 初始化排行榜路由
+	router.RouterGroupApp.InitLeaderboardRouter(routerGroup)
 }

@@ -61,5 +61,15 @@ func InitializeDB() {
 		&model.ExpertOrderSetting{},
 		&model.ExpertService{},
 		&model.TodayRecommendation{},
+
+		// 赛事相关
+		&model.Tournament{},
+		&model.TournamentTeam{},
+		&model.TournamentMatch{},
+		&model.TournamentRegistration{},
+
+		// 排行榜相关
+		&model.Leaderboard{},
+		&model.LeaderboardItem{},
 	)
 }
