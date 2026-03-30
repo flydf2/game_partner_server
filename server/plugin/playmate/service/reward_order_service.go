@@ -88,13 +88,20 @@ func (s *RewardOrderService) CreateRewardOrder(userID uint, req request.CreateRe
 	tags, _ := json.Marshal(req.Tags)
 	requirements, _ := json.Marshal(req.Requirements)
 
+	// 确定订单状态：预付订单为待拨付，现付订单为可抢单
+	status := "available"
+	if req.PaymentMethod == "prepay" {
+		status = "pending_funding"
+	}
+
 	order := model.RewardOrder{
 		UserID:        userID,
 		Game:          req.Game,
+		Title:         req.Title,
 		Content:       req.Content,
 		Reward:        req.Reward,
 		PaymentMethod: req.PaymentMethod,
-		Status:        "available",
+		Status:        status,
 		TimeLeft:      req.TimeLeft,
 		GameRank:      req.GameRank,
 		StartTime:     req.StartTime,
@@ -106,7 +113,78 @@ func (s *RewardOrderService) CreateRewardOrder(userID uint, req request.CreateRe
 		UpdatedAt:     time.Now(),
 	}
 
-	if err := global.GVA_DB.Create(&order).Error; err != nil {
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 创建订单
+	if err := tx.Create(&order).Error; err != nil {
+		tx.Rollback()
+		return order, err
+	}
+
+	// 对于预付订单，冻结资金
+	if req.PaymentMethod == "prepay" {
+		// 1. 检查用户钱包是否存在
+		var wallet model.UserWallet
+		result := tx.Where("user_id = ?", userID).First(&wallet)
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				// 如果钱包不存在，创建一个新钱包
+				wallet = model.UserWallet{
+					UserID:       userID,
+					Balance:      0,
+					Frozen:       0,
+					TotalIncome:  0,
+					TotalExpense: 0,
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+				}
+				if err := tx.Create(&wallet).Error; err != nil {
+					tx.Rollback()
+					return order, err
+				}
+			} else {
+				tx.Rollback()
+				return order, result.Error
+			}
+		}
+
+		// 2. 检查用户余额是否足够
+		if wallet.Balance < req.Reward {
+			tx.Rollback()
+			return order, response.NewPlaymateError(response.ErrInsufficientBalance)
+		}
+
+		// 3. 冻结资金
+		wallet.Balance -= req.Reward
+		wallet.Frozen += req.Reward
+		wallet.UpdatedAt = time.Now()
+		if err := tx.Save(&wallet).Error; err != nil {
+			tx.Rollback()
+			return order, err
+		}
+
+		// 4. 创建交易记录
+		transaction := model.Transaction{
+			UserID:      userID,
+			Type:        "expense_pending",
+			Amount:      req.Reward,
+			Description: "悬赏订单预付资金冻结",
+			Time:        time.Now(),
+			CreatedAt:   time.Now(),
+		}
+		if err := tx.Create(&transaction).Error; err != nil {
+			tx.Rollback()
+			return order, err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return order, err
 	}
 
@@ -126,6 +204,9 @@ func (s *RewardOrderService) UpdateRewardOrder(orderID uint, req request.UpdateR
 	// 更新字段
 	if req.Game != "" {
 		order.Game = req.Game
+	}
+	if req.Title != "" {
+		order.Title = req.Title
 	}
 	if req.Content != "" {
 		order.Content = req.Content

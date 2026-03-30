@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"go.uber.org/zap"
@@ -547,11 +546,8 @@ func (s *UserService) ClearHistory(userID uint) error {
 
 // Withdraw 提现
 func (s *UserService) Withdraw(userID uint, req playmateRequest.SubmitWithdrawalRequest) (map[string]interface{}, error) {
-	// 解析金额
-	amount, err := strconv.ParseFloat(req.Amount, 64)
-	if err != nil {
-		return nil, response.NewPlaymateError(response.ErrInvalidAmount)
-	}
+	// 金额已经是 float64 类型，不需要解析
+	amount := req.Amount
 
 	// 检查用户钱包
 	var wallet model.UserWallet
@@ -612,6 +608,25 @@ func (s *UserService) Withdraw(userID uint, req playmateRequest.SubmitWithdrawal
 	// 提交事务
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
+	}
+
+	// 检查是否使用真实的第三方支付平台
+	if !global.GVA_CONFIG.System.UseThirdPartyPayment {
+		// 自动处理提现，模拟批准
+		err := s.ProcessWithdrawal(withdrawal.ID, "approved")
+		if err != nil {
+			// 处理失败不影响提现请求的返回
+			global.GVA_LOG.Error("自动处理提现失败", zap.Error(err))
+		}
+		// 更新返回状态
+		return map[string]interface{}{
+			"withdrawalId":     withdrawal.ID,
+			"amount":           amount,
+			"method":           req.Method,
+			"status":           "approved",
+			"transactionId":    transaction.ID,
+			"remainingBalance": wallet.Balance,
+		}, nil
 	}
 
 	return map[string]interface{}{
@@ -783,12 +798,37 @@ func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest)
 
 	// 处理第三方支付
 	if req.Method == "alipay" || req.Method == "wechat" {
-		// 调用第三方支付接口
-		paymentInfo, err := s.processThirdPartyPayment(userID, orderID, req)
-		if err != nil {
-			return nil, err
+		// 检查是否使用真实的第三方支付平台
+		if global.GVA_CONFIG.System.UseThirdPartyPayment {
+			// 调用第三方支付接口
+			paymentInfo, err := s.processThirdPartyPayment(userID, orderID, req)
+			if err != nil {
+				return nil, err
+			}
+			return paymentInfo, nil
+		} else {
+			// 创建待支付的交易记录
+			transaction := model.Transaction{
+				UserID:      userID,
+				Type:        "income_pending",
+				Amount:      req.Amount,
+				Description: "充值-" + req.Method + "(待支付)-" + orderID,
+				Time:        time.Now(),
+			}
+			if err := global.GVA_DB.Create(&transaction).Error; err != nil {
+				return nil, err
+			}
+
+			// 模拟支付成功，直接构建回调请求
+			result, err := s.HandlePaymentCallback(orderID, "success")
+			if err != nil {
+				return nil, err
+			}
+			// 添加支付链接信息
+			result["paymentUrl"] = "https://example.com/pay?orderId=" + orderID + "&amount=" + fmt.Sprintf("%.2f", req.Amount) + "&method=" + req.Method
+			result["status"] = "success"
+			return result, nil
 		}
-		return paymentInfo, nil
 	}
 
 	// 余额充值（直接到账）
@@ -859,4 +899,84 @@ func (s *UserService) processThirdPartyPayment(userID uint, orderID string, req 
 		"transactionId": transaction.ID,
 		"status":        "pending",
 	}, nil
+}
+
+// HandlePaymentCallback 处理支付回调
+func (s *UserService) HandlePaymentCallback(orderID string, status string) (map[string]interface{}, error) {
+	// 查找待支付的交易记录
+	var transaction model.Transaction
+	if err := global.GVA_DB.Where("type = ? AND description LIKE ?", "income_pending", "%"+orderID+"%").First(&transaction).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.NewPlaymateError(response.ErrOrderNotFound)
+		}
+		return nil, err
+	}
+
+	// 检查交易状态
+	if transaction.Type != "income_pending" {
+		return nil, response.NewPlaymateError(response.ErrOrderStatusNotAllowPay)
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 处理支付成功
+	if status == "success" {
+		// 更新交易记录状态
+		transaction.Type = "income"
+		transaction.Description = "充值-" + transaction.Description
+		if err := tx.Save(&transaction).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// 更新用户钱包
+		var wallet model.UserWallet
+		if err := tx.Where("user_id = ?", transaction.UserID).First(&wallet).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		wallet.Balance += transaction.Amount
+		wallet.TotalIncome += transaction.Amount
+		if err := tx.Save(&wallet).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// 提交事务
+		if err := tx.Commit().Error; err != nil {
+			return nil, err
+		}
+
+		return map[string]interface{}{
+			"orderId":       orderID,
+			"status":        "success",
+			"transactionId": transaction.ID,
+			"balance":       wallet.Balance,
+		}, nil
+	}
+
+	// 处理支付失败
+	if status == "failed" {
+		// 更新交易记录状态
+		transaction.Description = "充值失败-" + transaction.Description
+		if err := tx.Save(&transaction).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// 提交事务
+		if err := tx.Commit().Error; err != nil {
+			return nil, err
+		}
+
+		return map[string]interface{}{
+			"orderId":       orderID,
+			"status":        "failed",
+			"transactionId": transaction.ID,
+		}, nil
+	}
+
+	return nil, response.NewPlaymateError(response.ErrInvalidStatus)
 }

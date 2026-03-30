@@ -30,6 +30,9 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 		userRouter.GET("/transactions", api.ApiGroupApp.UserApi.GetTransactionList)
 	}
 
+	// 支付回调路由（不需要认证）
+	router.GET("/user/payment/callback", api.ApiGroupApp.UserApi.HandlePaymentCallback)
+
 	// 获取用户列表（需要认证）
 	router.GET("/users", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.UserApi.GetUsers)
 

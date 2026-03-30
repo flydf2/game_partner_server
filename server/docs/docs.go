@@ -10809,6 +10809,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/playmate/user/payment/callback": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "处理支付回调",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "订单号",
+                        "name": "orderId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付状态(success/failed)",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "处理成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_flipped-aurora_gin-vue-admin_server_plugin_playmate_model_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/playmate/user/profile": {
             "put": {
                 "security": [
@@ -16164,6 +16215,10 @@ const docTemplate = `{
                 "use-strict-auth": {
                     "description": "使用树形角色分配模式",
                     "type": "boolean"
+                },
+                "use-third-party-payment": {
+                    "description": "使用第三方支付平台",
+                    "type": "boolean"
                 }
             }
         },
@@ -18685,7 +18740,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "amount": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "description": {
                     "type": "string"

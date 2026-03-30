@@ -68,10 +68,10 @@ type SubmitReviewRequest struct {
 
 // SubmitWithdrawalRequest 提交提现请求
 type SubmitWithdrawalRequest struct {
-	Amount      string `json:"amount" binding:"required"`
-	Method      string `json:"method" binding:"required"` // alipay, wechat, bank
-	AccountInfo string `json:"accountInfo" binding:"required"` // 账户信息，如支付宝账号、银行卡号等
-	Description string `json:"description" binding:"omitempty"`
+	Amount      float64 `json:"amount" binding:"required,gt=0"`
+	Method      string  `json:"method" binding:"required"`      // alipay, wechat, bank
+	AccountInfo string  `json:"accountInfo" binding:"required"` // 账户信息，如支付宝账号、银行卡号等
+	Description string  `json:"description" binding:"omitempty"`
 }
 
 // SendMessageRequest 发送消息请求

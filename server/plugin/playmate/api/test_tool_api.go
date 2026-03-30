@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,8 +24,8 @@ func (a *TestToolApi) GetTestTokens(c *gin.Context) {
 	tokens := make([]map[string]interface{}, 0)
 	for token, userID := range cfg.UniversalTokens {
 		tokens = append(tokens, map[string]interface{}{
-			"token":    token,
-			"userId":   userID,
+			"token":       token,
+			"userId":      userID,
 			"description": getUserDescription(userID),
 		})
 	}
@@ -59,7 +59,7 @@ func (a *TestToolApi) VerifyCaptcha(c *gin.Context) {
 	valid := middleware.VerifyCaptcha(req.CaptchaId, req.CaptchaCode)
 
 	response.OkWithDetailed(map[string]interface{}{
-		"valid":   valid,
+		"valid":     valid,
 		"captchaId": req.CaptchaId,
 	}, "验证码验证完成", c)
 }

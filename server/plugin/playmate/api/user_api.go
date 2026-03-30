@@ -576,3 +576,30 @@ func (a *UserApi) GetTransactionList(c *gin.Context) {
 		},
 	}, "获取成功", c)
 }
+
+// HandlePaymentCallback 处理支付回调
+// @Tags     User
+// @Summary  处理支付回调
+// @accept   application/json
+// @Produce  application/json
+// @Param    orderId query    string true "订单号"
+// @Param    status  query    string true "支付状态(success/failed)"
+// @Success  200     {object} response.Response{data=map[string]interface{}} "处理成功"
+// @Router   /playmate/user/payment/callback [get]
+func (a *UserApi) HandlePaymentCallback(c *gin.Context) {
+	orderID := c.Query("orderId")
+	status := c.Query("status")
+
+	if orderID == "" || status == "" {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	result, err := service.ServiceGroupApp.UserService.HandlePaymentCallback(orderID, status)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(result, "处理成功", c)
+}

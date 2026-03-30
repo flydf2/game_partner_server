@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 )
 

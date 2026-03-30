@@ -12,6 +12,7 @@ type RewardOrder struct {
 	global.GVA_MODEL
 	UserID        uint           `json:"userId" gorm:"index"`
 	Game          string         `json:"game" gorm:"size:100;not null"`
+	Title         string         `json:"title" gorm:"size:200"` // 订单标题
 	Content       string         `json:"content" gorm:"type:text;not null"`
 	Reward        float64        `json:"reward" gorm:"type:decimal(10,2);not null"`
 	PaymentMethod string         `json:"paymentMethod" gorm:"size:20;not null"`              // prepay 预付, postpay 现付

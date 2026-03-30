@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"strconv"
 
 	"gorm.io/gorm"
 
@@ -27,10 +26,8 @@ func (s *WithdrawalService) SubmitWithdrawal(userID uint, req request.SubmitWith
 	}
 
 	// 转换金额字符串为float64
-	amount, err := strconv.ParseFloat(req.Amount, 64)
-	if err != nil {
-		return model.Withdrawal{}, response.NewPlaymateError(response.ErrInvalidAmount)
-	}
+	var amount float64
+	amount = req.Amount
 
 	// 检查余额
 	if wallet.Balance < amount {

@@ -13,6 +13,7 @@ type RewardOrderSearch struct {
 // CreateRewardOrderRequest 创建悬赏订单请求
 type CreateRewardOrderRequest struct {
 	Game          string   `json:"game" binding:"required"`
+	Title         string   `json:"title"`
 	Content       string   `json:"content" binding:"required"`
 	Reward        float64  `json:"reward" binding:"required,gt=0"`
 	PaymentMethod string   `json:"paymentMethod" binding:"required,oneof=prepay postpay"`
@@ -28,6 +29,7 @@ type CreateRewardOrderRequest struct {
 // UpdateRewardOrderRequest 更新悬赏订单请求
 type UpdateRewardOrderRequest struct {
 	Game          string   `json:"game"`
+	Title         string   `json:"title"`
 	Content       string   `json:"content"`
 	Reward        float64  `json:"reward" binding:"omitempty,gt=0"`
 	PaymentMethod string   `json:"paymentMethod" binding:"omitempty,oneof=prepay postpay"`

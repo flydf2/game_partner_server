@@ -80,5 +80,3 @@ type Transaction struct {
 func (Transaction) TableName() string {
 	return "game_partner_transactions"
 }
-
-

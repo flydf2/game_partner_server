@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/gin-gonic/gin"
 )
 
 type GameCategoryRouter struct{}

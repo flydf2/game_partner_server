@@ -220,7 +220,7 @@ func (s *CommunityService) DeletePost(userId, postId uint) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// 删除帖子
 	return global.GVA_DB.Delete(&post).Error
 }

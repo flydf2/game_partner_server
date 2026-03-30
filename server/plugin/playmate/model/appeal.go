@@ -12,7 +12,7 @@ type Appeal struct {
 	CreatedAt   time.Time      `json:"createdAt"`
 	UpdatedAt   time.Time      `json:"updatedAt"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
-	UserID      uint           `json:"userId" gorm:"index"` // 申诉用户ID
+	UserID      uint           `json:"userId" gorm:"index"`  // 申诉用户ID
 	OrderID     uint           `json:"orderId" gorm:"index"` // 关联订单ID
 	Type        string         `json:"type"`                 // 申诉类型：order, payment, service, other
 	Title       string         `json:"title"`                // 申诉标题
