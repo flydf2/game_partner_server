@@ -3,13 +3,16 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 )
 
 type OrderRouter struct{}
 
 // InitOrderRouter 初始化订单路由
 func (r *OrderRouter) InitOrderRouter(router *gin.RouterGroup) {
+	// 订单相关路由 - 需要认证
 	orderRouter := router.Group("/orders")
+	orderRouter.Use(middleware.CombinedAuthMiddleware())
 	{
 		orderRouter.GET("", api.ApiGroupApp.OrderApi.GetOrders)
 		orderRouter.GET("/:id", api.ApiGroupApp.OrderApi.GetOrderDetail)

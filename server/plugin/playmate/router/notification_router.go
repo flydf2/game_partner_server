@@ -3,13 +3,16 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 )
 
 type NotificationRouter struct{}
 
 // InitNotificationRouter 初始化通知路由
 func (r *NotificationRouter) InitNotificationRouter(router *gin.RouterGroup) {
+	// 通知相关路由 - 需要认证
 	notificationRouter := router.Group("/notifications")
+	notificationRouter.Use(middleware.CombinedAuthMiddleware())
 	{
 		notificationRouter.GET("", api.ApiGroupApp.NotificationApi.GetNotifications)
 		notificationRouter.GET("/unread-count", api.ApiGroupApp.NotificationApi.GetUnreadCount)
