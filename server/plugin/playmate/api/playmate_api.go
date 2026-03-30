@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
@@ -103,8 +104,12 @@ func (a *PlaymateApi) FollowExpert(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.PlaymateService.FollowExpert(userID, uint(id))
 	if err != nil {
@@ -132,8 +137,12 @@ func (a *PlaymateApi) UnfollowExpert(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.PlaymateService.UnfollowExpert(userID, uint(id))
 	if err != nil {
@@ -462,7 +471,12 @@ func (a *PlaymateApi) AddSkill(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	skill, err := service.ServiceGroupApp.PlaymateService.AddSkill(userID, req)
 	if err != nil {
@@ -586,8 +600,12 @@ func (a *PlaymateApi) GetMatchHistory(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "20"))
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
 	if err != nil {
@@ -619,8 +637,12 @@ func (a *PlaymateApi) GetMatchHistoryMatches(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "20"))
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	histories, total, err := service.ServiceGroupApp.PlaymateService.GetMatchHistory(userID, page, pageSize)
 	if err != nil {

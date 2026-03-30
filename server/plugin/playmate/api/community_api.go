@@ -3,6 +3,7 @@ package api
 import (
 	"strconv"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -129,7 +130,11 @@ func (a *CommunityApi) CommentPost(c *gin.Context) {
 		response.FailWithMessage("参数错误", c)
 		return
 	}
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 	comment, err := service.ServiceGroupApp.CommunityService.CommentPost(userID, uint(postID), req.Content)
 	if err != nil {
 		response.FailWithMessage("评论帖子失败", c)
@@ -154,7 +159,11 @@ func (a *CommunityApi) CreatePost(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	post, err := service.ServiceGroupApp.CommunityService.CreatePost(userID, req)
 	if err != nil {
@@ -246,7 +255,11 @@ func (a *CommunityApi) FollowTopic(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.FollowTopic(userID, uint(topicId)); err != nil {
 		response.FailWithError(err, c)
@@ -273,7 +286,11 @@ func (a *CommunityApi) UnfollowTopic(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.UnfollowTopic(userID, uint(topicId)); err != nil {
 		response.FailWithError(err, c)
@@ -325,7 +342,11 @@ func (a *CommunityApi) CreateBid(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	bid, err := service.ServiceGroupApp.CommunityService.CreateBid(userID, req)
 	if err != nil {
@@ -353,7 +374,11 @@ func (a *CommunityApi) CancelBid(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.CancelBid(userID, uint(bidId)); err != nil {
 		response.FailWithError(err, c)
@@ -380,7 +405,11 @@ func (a *CommunityApi) AcceptBid(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.AcceptBid(userID, uint(bidId)); err != nil {
 		response.FailWithError(err, c)
@@ -407,7 +436,11 @@ func (a *CommunityApi) RejectBid(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.RejectBid(userID, uint(bidId)); err != nil {
 		response.FailWithError(err, c)
@@ -434,7 +467,11 @@ func (a *CommunityApi) CompleteOrder(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1)
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.CommunityService.CompleteOrder(userID, uint(orderId)); err != nil {
 		response.FailWithError(err, c)
@@ -470,7 +507,11 @@ func (a *CommunityApi) GetMyPosts(c *gin.Context) {
 	}
 
 	// 设置当前用户ID
-	userID := uint(1) // 实际项目中应该从认证信息中获取
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	} // 实际项目中应该从认证信息中获取
 	search.UserID = userID
 
 	posts, total, err := service.ServiceGroupApp.CommunityService.GetPosts(search)
@@ -505,7 +546,11 @@ func (a *CommunityApi) DeletePost(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1) // 实际项目中应该从认证信息中获取
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	} // 实际项目中应该从认证信息中获取
 
 	if err := service.ServiceGroupApp.CommunityService.DeletePost(userID, uint(postId)); err != nil {
 		response.FailWithMessage("删除帖子失败", c)

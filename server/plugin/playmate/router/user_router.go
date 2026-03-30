@@ -1,15 +1,18 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/api"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
+	"github.com/gin-gonic/gin"
 )
 
 type UserRouter struct{}
 
 // InitUserRouter 初始化用户路由
 func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
+	// 需要认证的用户路由
 	userRouter := router.Group("/user")
+	userRouter.Use(middleware.CombinedAuthMiddleware())
 	{
 		userRouter.GET("/info", api.ApiGroupApp.UserApi.GetUserInfo)
 		userRouter.PUT("/profile", api.ApiGroupApp.UserApi.UpdateProfile)
@@ -25,14 +28,16 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 		userRouter.GET("/wallet", api.ApiGroupApp.UserApi.GetWallet)
 	}
 
-	// 获取用户列表
-	router.GET("/users", api.ApiGroupApp.UserApi.GetUsers)
+	// 获取用户列表（需要认证）
+	router.GET("/users", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.UserApi.GetUsers)
 
 	authRouter := router.Group("/auth")
 	{
+		// 不需要认证的路由
 		authRouter.POST("/login", api.ApiGroupApp.UserApi.Login)
 		authRouter.POST("/register", api.ApiGroupApp.UserApi.Register)
 		authRouter.POST("/logout", api.ApiGroupApp.UserApi.Logout)
-		authRouter.POST("/refresh", api.ApiGroupApp.UserApi.RefreshToken)
+		// 需要认证的路由
+		authRouter.POST("/refresh", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.UserApi.RefreshToken)
 	}
 }

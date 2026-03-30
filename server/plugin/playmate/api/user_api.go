@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -22,8 +23,11 @@ type UserApi struct{}
 // @Success  200  {object} response.Response{data=model.User} "获取成功"
 // @Router   /playmate/user/info [get]
 func (a *UserApi) GetUserInfo(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	user, err := service.ServiceGroupApp.UserService.GetUserInfo(userID)
 	if err != nil {
@@ -104,8 +108,11 @@ func (a *UserApi) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	user, err := service.ServiceGroupApp.UserService.UpdateProfile(userID, req)
 	if err != nil {
@@ -125,8 +132,11 @@ func (a *UserApi) UpdateProfile(c *gin.Context) {
 // @Success  200  {object} response.Response{data=model.UserSettings} "获取成功"
 // @Router   /playmate/user/settings [get]
 func (a *UserApi) GetSettings(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	settings, err := service.ServiceGroupApp.UserService.GetSettings(userID)
 	if err != nil {
@@ -153,8 +163,11 @@ func (a *UserApi) UpdateSettings(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	settings, err := service.ServiceGroupApp.UserService.UpdateSettings(userID, req)
 	if err != nil {
@@ -168,21 +181,21 @@ func (a *UserApi) UpdateSettings(c *gin.Context) {
 // Logout 用户登出
 // @Tags     Auth
 // @Summary  用户登出
-// @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
 // @Success  200  {object} response.Response{message=string} "登出成功"
 // @Router   /playmate/auth/logout [post]
 func (a *UserApi) Logout(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
-
-	err := service.ServiceGroupApp.UserService.Logout(userID)
-	if err != nil {
-		response.FailWithError(err, c)
-		return
+	userID := middleware.GetCurrentUserID(c)
+	if userID != 0 {
+		// 如果用户已登录，执行登出逻辑
+		err := service.ServiceGroupApp.UserService.Logout(userID)
+		if err != nil {
+			response.FailWithError(err, c)
+			return
+		}
 	}
-
+	// 无论token是否有效，都返回成功（兼容token过期或无效的情况）
 	response.OkWithMessage("登出成功", c)
 }
 
@@ -195,8 +208,11 @@ func (a *UserApi) Logout(c *gin.Context) {
 // @Success  200  {object} response.Response{data=map[string]string} "刷新成功"
 // @Router   /playmate/auth/refresh [post]
 func (a *UserApi) RefreshToken(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	token, err := service.ServiceGroupApp.UserService.RefreshToken(userID)
 	if err != nil {
@@ -219,8 +235,11 @@ func (a *UserApi) RefreshToken(c *gin.Context) {
 // @Success  200  {object} response.Response{message=string} "关注成功"
 // @Router   /playmate/user/following/{userId} [post]
 func (a *UserApi) FollowUser(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	targetUserID, err := strconv.ParseUint(c.Param("userId"), 10, 32)
 	if err != nil {
@@ -247,8 +266,11 @@ func (a *UserApi) FollowUser(c *gin.Context) {
 // @Success  200  {object} response.Response{message=string} "取消关注成功"
 // @Router   /playmate/user/following/{userId} [delete]
 func (a *UserApi) UnfollowUser(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	targetUserID, err := strconv.ParseUint(c.Param("userId"), 10, 32)
 	if err != nil {
@@ -275,8 +297,11 @@ func (a *UserApi) UnfollowUser(c *gin.Context) {
 // @Success  200  {object} response.Response{message=string} "移除成功"
 // @Router   /playmate/user/favorites/{favoriteId} [delete]
 func (a *UserApi) RemoveFavorite(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	favoriteID, err := strconv.ParseUint(c.Param("favoriteId"), 10, 32)
 	if err != nil {
@@ -302,8 +327,11 @@ func (a *UserApi) RemoveFavorite(c *gin.Context) {
 // @Success  200  {object} response.Response{message=string} "清空成功"
 // @Router   /playmate/user/history [delete]
 func (a *UserApi) ClearHistory(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	err := service.ServiceGroupApp.UserService.ClearHistory(userID)
 	if err != nil {
@@ -325,8 +353,11 @@ func (a *UserApi) ClearHistory(c *gin.Context) {
 // @Success  200      {object} response.Response{data=[]model.Playmate,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/following [get]
 func (a *UserApi) GetFollowing(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
@@ -358,8 +389,11 @@ func (a *UserApi) GetFollowing(c *gin.Context) {
 // @Success  200      {object} response.Response{data=[]model.Playmate,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/favorites [get]
 func (a *UserApi) GetFavorites(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
@@ -391,8 +425,11 @@ func (a *UserApi) GetFavorites(c *gin.Context) {
 // @Success  200      {object} response.Response{data=[]model.UserBrowseHistory,pagination=map[string]int64} "获取成功"
 // @Router   /playmate/user/history [get]
 func (a *UserApi) GetBrowseHistory(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
@@ -422,8 +459,11 @@ func (a *UserApi) GetBrowseHistory(c *gin.Context) {
 // @Success  200  {object} response.Response{data=map[string]interface{}} "获取成功"
 // @Router   /playmate/user/wallet [get]
 func (a *UserApi) GetWallet(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.NoAuth("未登录或登录已过期", c)
+		return
+	}
 
 	wallet, transactions, err := service.ServiceGroupApp.UserService.GetWallet(userID)
 	if err != nil {

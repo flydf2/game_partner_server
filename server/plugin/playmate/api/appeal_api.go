@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -104,8 +105,12 @@ func (a *AppealApi) CreateAppeal(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	appeal, err := service.ServiceGroupApp.AppealService.CreateAppeal(userID, req)
 	if err != nil {
@@ -198,8 +203,12 @@ func (a *AppealApi) HandleAppeal(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取处理人ID
-	handlerID := uint(1) // 临时值
+	// 从上下文获取处理人ID
+	handlerID := middleware.GetCurrentUserID(c)
+	if handlerID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	appeal, err := service.ServiceGroupApp.AppealService.HandleAppeal(uint(id), handlerID, req)
 	if err != nil {
@@ -224,8 +233,12 @@ func (a *AppealApi) GetMyAppeals(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	appeals, total, err := service.ServiceGroupApp.AppealService.GetUserAppeals(userID, page, pageSize)
 	if err != nil {

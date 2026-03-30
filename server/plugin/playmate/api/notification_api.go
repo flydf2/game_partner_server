@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -43,8 +44,12 @@ func (a *NotificationApi) GetNotifications(c *gin.Context) {
 		search.PageSize = 10
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	notifications, total, err := service.ServiceGroupApp.NotificationService.GetNotifications(userID, search)
 	if err != nil {
@@ -97,8 +102,12 @@ func (a *NotificationApi) MarkAsRead(c *gin.Context) {
 // @Success  200  {object} response.Response{message=string} "全部标记为已读"
 // @Router   /playmate/notifications/read-all [put]
 func (a *NotificationApi) MarkAllAsRead(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err := service.ServiceGroupApp.NotificationService.MarkAllAsRead(userID)
 	if err != nil {
@@ -118,8 +127,12 @@ func (a *NotificationApi) MarkAllAsRead(c *gin.Context) {
 // @Success  200  {object} response.Response{data=map[string]int64} "获取成功"
 // @Router   /playmate/notifications/unread-count [get]
 func (a *NotificationApi) GetUnreadCount(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	count, err := service.ServiceGroupApp.NotificationService.GetUnreadCount(userID)
 	if err != nil {

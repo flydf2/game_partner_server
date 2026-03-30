@@ -4,13 +4,17 @@ import (
 	"errors"
 	"time"
 
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	systemRequest "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	playmateRequest "github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/google/uuid"
 )
 
 // UserService 用户服务
@@ -62,14 +66,34 @@ func (s *UserService) Login(username, password string) (model.User, string, erro
 		global.GVA_DB.Save(&user)
 	}
 
-	// 生成token（这里简化处理，实际应该使用JWT）
-	token := "mock_token_" + time.Now().String()
+	// 生成JWT token
+	j := utils.NewJWT()
+	claims := j.CreateClaims(systemRequest.BaseClaims{
+		UUID:        uuid.New(),
+		ID:          user.ID,
+		Username:    user.Username,
+		NickName:    user.Nickname,
+		AuthorityId: 0,
+	})
+	token, err := j.CreateToken(claims)
+	if err != nil {
+		return model.User{}, "", err
+	}
+
+	// 检查是否启用了Redis
+	if global.GVA_CONFIG.System.UseRedis {
+		// 将token存入Redis
+		if err := utils.SetRedisJWT(token, user.Username); err != nil {
+			// Redis存储失败不影响登录，但应该记录日志
+			global.GVA_LOG.Error("Redis存储JWT失败", zap.Error(err))
+		}
+	}
 
 	return user, token, nil
 }
 
 // Register 用户注册
-func (s *UserService) Register(req request.RegisterRequest) (model.User, string, error) {
+func (s *UserService) Register(req playmateRequest.RegisterRequest) (model.User, string, error) {
 	// 检查用户名是否已存在
 	var existingUser model.User
 	if err := global.GVA_DB.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
@@ -129,14 +153,34 @@ func (s *UserService) Register(req request.RegisterRequest) (model.User, string,
 		return model.User{}, "", err
 	}
 
-	// 生成token
-	token := "mock_token_" + time.Now().String()
+	// 生成JWT token
+	j := utils.NewJWT()
+	claims := j.CreateClaims(systemRequest.BaseClaims{
+		UUID:        uuid.New(),
+		ID:          user.ID,
+		Username:    user.Username,
+		NickName:    user.Nickname,
+		AuthorityId: 0,
+	})
+	token, err := j.CreateToken(claims)
+	if err != nil {
+		return model.User{}, "", err
+	}
+
+	// 检查是否启用了Redis
+	if global.GVA_CONFIG.System.UseRedis {
+		// 将token存入Redis
+		if err := utils.SetRedisJWT(token, user.Username); err != nil {
+			// Redis存储失败不影响注册，但应该记录日志
+			global.GVA_LOG.Error("Redis存储JWT失败", zap.Error(err))
+		}
+	}
 
 	return user, token, nil
 }
 
 // UpdateProfile 更新个人资料
-func (s *UserService) UpdateProfile(userID uint, req request.UpdateProfileRequest) (model.User, error) {
+func (s *UserService) UpdateProfile(userID uint, req playmateRequest.UpdateProfileRequest) (model.User, error) {
 	var user model.User
 	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -204,7 +248,7 @@ func (s *UserService) GetSettings(userID uint) (model.UserSettings, error) {
 }
 
 // UpdateSettings 更新用户设置
-func (s *UserService) UpdateSettings(userID uint, req request.UpdateSettingsRequest) (model.UserSettings, error) {
+func (s *UserService) UpdateSettings(userID uint, req playmateRequest.UpdateSettingsRequest) (model.UserSettings, error) {
 	var settings model.UserSettings
 	if err := global.GVA_DB.Where("user_id = ?", userID).First(&settings).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -373,8 +417,35 @@ func (s *UserService) GetWallet(userID uint) (model.UserWallet, []model.Transact
 
 // RefreshToken 刷新token
 func (s *UserService) RefreshToken(userID uint) (string, error) {
-	// 生成新token
-	token := "mock_token_" + time.Now().String()
+	// 获取用户信息
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return "", err
+	}
+
+	// 生成新的JWT token
+	j := utils.NewJWT()
+	claims := j.CreateClaims(systemRequest.BaseClaims{
+		ID:       user.ID,
+		Username: user.Username,
+	})
+	token, err := j.CreateToken(claims)
+	if err != nil {
+		return "", err
+	}
+
+	// 检查是否启用了Redis
+	if global.GVA_CONFIG.System.UseRedis {
+		// 将新token存入Redis
+		if err := utils.SetRedisJWT(token, user.Username); err != nil {
+			// Redis存储失败不影响刷新，但应该记录日志
+			global.GVA_LOG.Error("Redis存储JWT失败", zap.Error(err))
+		}
+	}
+
 	return token, nil
 }
 
@@ -473,7 +544,7 @@ func (s *UserService) ClearHistory(userID uint) error {
 }
 
 // Recharge 充值
-func (s *UserService) Recharge(userID uint, req request.RechargeRequest) (map[string]interface{}, error) {
+func (s *UserService) Recharge(userID uint, req playmateRequest.RechargeRequest) (map[string]interface{}, error) {
 	// 检查用户钱包
 	var wallet model.UserWallet
 	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -22,8 +23,12 @@ type MessageApi struct{}
 // @Success  200        {object} response.Response{data=[]map[string]interface{}} "获取成功"
 // @Router   /playmate/conversations [get]
 func (a *MessageApi) GetConversations(c *gin.Context) {
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	conversations, err := service.ServiceGroupApp.MessageService.GetConversations(userID)
 	if err != nil {
@@ -66,8 +71,12 @@ func (a *MessageApi) GetMessages(c *gin.Context) {
 		search.PageSize = 10
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	messages, total, err := service.ServiceGroupApp.MessageService.GetMessages(userID, search)
 	if err != nil {
@@ -102,8 +111,12 @@ func (a *MessageApi) GetChatMessages(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取当前用户ID
-	currentUserID := uint(1) // 临时值
+	// 从上下文获取当前用户ID
+	currentUserID := middleware.GetCurrentUserID(c)
+	if currentUserID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	chatMessages, err := service.ServiceGroupApp.MessageService.GetChatMessages(currentUserID, uint(userId))
 	if err != nil {
@@ -138,8 +151,12 @@ func (a *MessageApi) SendMessage(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取当前用户ID
-	currentUserID := uint(1) // 临时值
+	// 从上下文获取当前用户ID
+	currentUserID := middleware.GetCurrentUserID(c)
+	if currentUserID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	// 设置默认消息类型
 	if req.Type == "" {
@@ -197,8 +214,12 @@ func (a *MessageApi) MarkConversationAsRead(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取当前用户ID
-	currentUserID := uint(1) // 临时值
+	// 从上下文获取当前用户ID
+	currentUserID := middleware.GetCurrentUserID(c)
+	if currentUserID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	if err := service.ServiceGroupApp.MessageService.MarkConversationAsRead(currentUserID, uint(userId)); err != nil {
 		response.FailWithError(err, c)

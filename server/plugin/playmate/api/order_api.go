@@ -5,8 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
 )
 
@@ -45,7 +46,12 @@ func (a *OrderApi) GetOrders(c *gin.Context) {
 		search.PageSize = 10
 	}
 
-	userID := uint(1)
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	orders, total, err := service.ServiceGroupApp.OrderService.GetOrders(userID, search)
 	if err != nil {
@@ -105,8 +111,12 @@ func (a *OrderApi) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	order, err := service.ServiceGroupApp.OrderService.CreateOrder(userID, req)
 	if err != nil {
@@ -165,8 +175,12 @@ func (a *OrderApi) CancelOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.OrderService.CancelOrder(uint(id), userID)
 	if err != nil {
@@ -194,8 +208,12 @@ func (a *OrderApi) ConfirmOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.OrderService.ConfirmOrder(uint(id), userID)
 	if err != nil {
@@ -223,8 +241,12 @@ func (a *OrderApi) AcceptOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.OrderService.AcceptOrder(uint(id), userID)
 	if err != nil {
@@ -252,8 +274,12 @@ func (a *OrderApi) RejectOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	err = service.ServiceGroupApp.OrderService.RejectOrder(uint(id), userID)
 	if err != nil {
@@ -282,8 +308,12 @@ func (a *OrderApi) ShareOrder(c *gin.Context) {
 		return
 	}
 
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	// 绑定请求数据
 	var req map[string]string

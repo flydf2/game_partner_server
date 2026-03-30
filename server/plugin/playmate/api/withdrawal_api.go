@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -24,8 +25,12 @@ func (a *WithdrawalApi) SubmitWithdrawal(c *gin.Context) {
 		response.FailWithMessage("参数错误", c)
 		return
 	}
-	// 这里应该从上下文获取用户ID
-	userID := uint(1) // 临时值
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 	if _, err := service.ServiceGroupApp.WithdrawalService.SubmitWithdrawal(userID, req); err != nil {
 		response.FailWithError(err, c)
 		return
@@ -64,7 +69,12 @@ func (a *WithdrawalApi) GetWithdrawalRecords(c *gin.Context) {
 		search.PageSize = 10
 	}
 
-	userID := uint(1)
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
 
 	withdrawals, total, err := service.ServiceGroupApp.WithdrawalService.GetWithdrawalRecords(userID, search)
 	if err != nil {

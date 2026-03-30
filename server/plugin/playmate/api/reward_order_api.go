@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -65,17 +66,12 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 // @Param    page        query    int     false "页码"
 // @Param    pageSize    query    int     false "每页数量"
 // @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
-// @Router   /playmate/api/reward/my [get]
+// @Router   /playmate/reward/my [get]
 func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 	// 从上下文获取用户ID
-	userID, exists := c.Get("userID")
-	if !exists {
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
 		response.FailWithMessage("未获取到用户ID", c)
-		return
-	}
-	uid, ok := userID.(uint)
-	if !ok {
-		response.FailWithMessage("用户ID类型错误", c)
 		return
 	}
 
@@ -224,14 +220,9 @@ func (a *RewardOrderApi) GrabRewardOrder(c *gin.Context) {
 	}
 
 	// 从上下文获取用户ID
-	userID, exists := c.Get("userID")
-	if !exists {
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
 		response.FailWithMessage("未获取到用户ID", c)
-		return
-	}
-	uid, ok := userID.(uint)
-	if !ok {
-		response.FailWithMessage("用户ID类型错误", c)
 		return
 	}
 	var req request.GrabRewardOrderRequest
@@ -272,14 +263,9 @@ func (a *RewardOrderApi) PublishReward(c *gin.Context) {
 	}
 
 	// 从上下文获取用户ID
-	userID, exists := c.Get("userID")
-	if !exists {
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
 		response.FailWithMessage("未获取到用户ID", c)
-		return
-	}
-	uid, ok := userID.(uint)
-	if !ok {
-		response.FailWithMessage("用户ID类型错误", c)
 		return
 	}
 
@@ -408,14 +394,9 @@ func (a *RewardOrderApi) ShareRewardOrder(c *gin.Context) {
 	}
 
 	// 从上下文获取用户ID
-	userID, exists := c.Get("userID")
-	if !exists {
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
 		response.FailWithMessage("未获取到用户ID", c)
-		return
-	}
-	uid, ok := userID.(uint)
-	if !ok {
-		response.FailWithMessage("用户ID类型错误", c)
 		return
 	}
 
