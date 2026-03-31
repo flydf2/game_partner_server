@@ -71,5 +71,8 @@ func InitializeDB() {
 		// 排行榜相关
 		&model.Leaderboard{},
 		&model.LeaderboardItem{},
+
+		// 专家认证相关
+		&model.ExpertVerification{},
 	)
 }

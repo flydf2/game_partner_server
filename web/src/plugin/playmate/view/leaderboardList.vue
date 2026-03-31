@@ -317,3 +317,231 @@ const itemsLoading = ref(false)
 const leaderboardItems = ref([])
 const itemsPagination = reactive({
   page: 1,
+  pageSize: 10,
+  total: 0
+})
+
+// 获取排行榜列表
+const fetchLeaderboardList = async () => {
+  loading.value = true
+  try {
+    const res = await getLeaderboards({
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      ...searchForm
+    })
+    if (res.code === 0) {
+      leaderboardList.value = res.data.data || []
+      pagination.total = res.data.pagination?.totalCount || 0
+    } else {
+      ElMessage.error(res.msg || '获取排行榜列表失败')
+    }
+  } catch (error) {
+    console.error('获取排行榜列表失败:', error)
+    ElMessage.error('获取排行榜列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 搜索
+const handleSearch = () => {
+  pagination.page = 1
+  fetchLeaderboardList()
+}
+
+// 重置
+const handleReset = () => {
+  searchForm.type = ''
+  searchForm.game = ''
+  pagination.page = 1
+  fetchLeaderboardList()
+}
+
+// 分页
+const handleSizeChange = (size) => {
+  pagination.pageSize = size
+  pagination.page = 1
+  fetchLeaderboardList()
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  fetchLeaderboardList()
+}
+
+// 创建
+const handleCreate = () => {
+  isEdit.value = false
+  dialogTitle.value = '创建排行榜'
+  resetForm()
+  dialogVisible.value = true
+}
+
+// 编辑
+const handleEdit = (row) => {
+  isEdit.value = true
+  dialogTitle.value = '编辑排行榜'
+  Object.assign(formData, row)
+  dialogVisible.value = true
+}
+
+// 重置表单
+const resetForm = () => {
+  formData.id = null
+  formData.name = ''
+  formData.type = 'weekly'
+  formData.game = ''
+  formData.description = ''
+  formData.startTime = ''
+  formData.endTime = ''
+  formData.status = 1
+  formData.sortOrder = 0
+}
+
+// 提交表单
+const handleSubmit = async () => {
+  const valid = await formRef.value?.validate().catch(() => false)
+  if (!valid) return
+
+  try {
+    const api = isEdit.value ? updateLeaderboard : createLeaderboard
+    const res = await api({ ...formData })
+    if (res.code === 0) {
+      ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
+      dialogVisible.value = false
+      fetchLeaderboardList()
+    } else {
+      ElMessage.error(res.msg || (isEdit.value ? '更新失败' : '创建失败'))
+    }
+  } catch (error) {
+    console.error(isEdit.value ? '更新失败:' : '创建失败:', error)
+    ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
+  }
+}
+
+// 删除
+const handleDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除排行榜 "${row.name}" 吗？此操作不可恢复！`,
+      '确认删除',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const res = await deleteLeaderboard(row.id)
+    if (res.code === 0) {
+      ElMessage.success('删除成功')
+      fetchLeaderboardList()
+    } else {
+      ElMessage.error(res.msg || '删除失败')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+// 生成榜单
+const handleGenerate = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要重新生成排行榜 "${row.name}" 吗？`,
+      '确认生成',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }
+    )
+
+    const res = await generateLeaderboard(row.id)
+    if (res.code === 0) {
+      ElMessage.success('生成成功')
+    } else {
+      ElMessage.error(res.msg || '生成失败')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('生成失败:', error)
+      ElMessage.error('生成失败')
+    }
+  }
+}
+
+// 查看详情
+const handleView = async (row) => {
+  currentLeaderboard.value = row
+  viewDialogVisible.value = true
+  itemsPagination.page = 1
+  await fetchLeaderboardItems()
+}
+
+// 获取排行榜条目
+const fetchLeaderboardItems = async () => {
+  if (!currentLeaderboard.value) return
+
+  itemsLoading.value = true
+  try {
+    const res = await getLeaderboardWithItems(currentLeaderboard.value.id, {
+      page: itemsPagination.page,
+      pageSize: itemsPagination.pageSize
+    })
+    if (res.code === 0) {
+      leaderboardItems.value = res.data.items || []
+      itemsPagination.total = res.data.pagination?.totalCount || 0
+    } else {
+      ElMessage.error(res.msg || '获取排行榜条目失败')
+    }
+  } catch (error) {
+    console.error('获取排行榜条目失败:', error)
+    ElMessage.error('获取排行榜条目失败')
+  } finally {
+    itemsLoading.value = false
+  }
+}
+
+// 条目分页
+const handleItemsSizeChange = (size) => {
+  itemsPagination.pageSize = size
+  itemsPagination.page = 1
+  fetchLeaderboardItems()
+}
+
+const handleItemsPageChange = (page) => {
+  itemsPagination.page = page
+  fetchLeaderboardItems()
+}
+
+// 初始化
+onMounted(() => {
+  fetchLeaderboardList()
+})
+</script>
+
+<style scoped>
+.leaderboard-list-container {
+  padding: 20px;
+}
+
+.search-area,
+.operation-area,
+.table-area {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-detail {
+  .detail-header {
+    border-bottom: 1px solid #e4e7ed;
+    padding-bottom: 16px;
+  }
+}
+</style>

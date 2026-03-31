@@ -70,4 +70,18 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 		matchHistoryRouter.GET("/matches", api.ApiGroupApp.PlaymateApi.GetMatchHistoryMatches)
 		matchHistoryRouter.GET("/:id", api.ApiGroupApp.PlaymateApi.GetMatchHistoryById)
 	}
+
+	// 专家认证相关路由
+	verificationRouter := router.Group("/expert-verification")
+	{
+		// 需要认证的路由
+		authRouter := verificationRouter.Group("/")
+		authRouter.Use(middleware.CombinedAuthMiddleware())
+		{
+			authRouter.POST("/apply", api.ApiGroupApp.PlaymateApi.ApplyExpertVerification)
+			authRouter.GET("/status", api.ApiGroupApp.PlaymateApi.GetExpertVerificationStatus)
+			authRouter.PUT("/:id/handle", api.ApiGroupApp.PlaymateApi.HandleExpertVerification)
+			authRouter.GET("/list", api.ApiGroupApp.PlaymateApi.GetExpertVerificationList)
+		}
+	}
 }

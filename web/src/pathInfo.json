@@ -85,6 +85,7 @@
   "/src/plugin/playmate/view/activityList.vue": "ActivityList",
   "/src/plugin/playmate/view/communityList.vue": "CommunityList",
   "/src/plugin/playmate/view/gameList.vue": "GameList",
+  "/src/plugin/playmate/view/leaderboardList.vue": "LeaderboardList",
   "/src/plugin/playmate/view/myRewardOrders.vue": "MyRewardOrders",
   "/src/plugin/playmate/view/orderList.vue": "OrderList",
   "/src/plugin/playmate/view/playmateList.vue": "PlaymateList",

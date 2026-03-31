@@ -382,3 +382,30 @@ type JoinTournamentRequest struct {
 	ContactInfo  string `json:"contactInfo"`
 	MembersInfo  string `json:"membersInfo"`
 }
+
+// ExpertVerificationRequest 专家认证请求
+type ExpertVerificationRequest struct {
+	GameID      uint     `json:"gameId" binding:"required"`
+	GameName    string   `json:"gameName" binding:"required"`
+	Rank        string   `json:"rank" binding:"required"`
+	Positions   []string `json:"positions" binding:"required"`
+	Screenshots []string `json:"screenshots" binding:"required"`
+	VoiceURL    string   `json:"voiceUrl" binding:"required"`
+}
+
+// HandleExpertVerificationRequest 处理专家认证请求
+type HandleExpertVerificationRequest struct {
+	Status string `json:"status" binding:"required,oneof=approved rejected"`
+	Reason string `json:"reason" binding:"omitempty"`
+}
+
+// ExpertVerificationSearch 专家认证搜索请求
+type ExpertVerificationSearch struct {
+	Status    string `json:"status" form:"status"`
+	GameID    uint   `json:"gameId" form:"gameId"`
+	UserID    uint   `json:"userId" form:"userId"`
+	StartTime string `json:"startTime" form:"startTime"`
+	EndTime   string `json:"endTime" form:"endTime"`
+	Page      int    `json:"page" form:"page"`
+	PageSize  int    `json:"pageSize" form:"pageSize"`
+}

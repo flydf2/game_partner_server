@@ -620,3 +620,160 @@ func (s *PlaymateService) UpdateExpertTimeSlots(expertID uint, startTime, endTim
 	setting.RestDays = restDays
 	return global.GVA_DB.Save(&setting).Error
 }
+
+// ApplyExpertVerification 提交专家认证申请
+func (s *PlaymateService) ApplyExpertVerification(userID uint, req request.ExpertVerificationRequest) (model.ExpertVerification, error) {
+	// 检查用户是否已有认证申请
+	var existingVerification model.ExpertVerification
+	result := global.GVA_DB.Where("user_id = ? AND game_id = ?", userID, req.GameID).First(&existingVerification)
+	if result.Error == nil && existingVerification.Status == "pending" {
+		return model.ExpertVerification{}, errors.New("已有待处理的认证申请")
+	}
+
+	// 准备认证申请数据
+	verification := model.ExpertVerification{
+		UserID:      userID,
+		GameID:      req.GameID,
+		GameName:    req.GameName,
+		Rank:        req.Rank,
+		Positions:   strings.Join(req.Positions, ","),
+		Screenshots: strings.Join(req.Screenshots, ","),
+		VoiceURL:    req.VoiceURL,
+		Status:      "pending",
+	}
+
+	// 保存认证申请
+	if err := global.GVA_DB.Create(&verification).Error; err != nil {
+		return model.ExpertVerification{}, err
+	}
+
+	return verification, nil
+}
+
+// GetExpertVerificationStatus 获取专家认证状态
+func (s *PlaymateService) GetExpertVerificationStatus(userID, gameID uint) (model.ExpertVerification, error) {
+	var verification model.ExpertVerification
+	result := global.GVA_DB.Where("user_id = ? AND game_id = ?", userID, gameID).Order("created_at DESC").First(&verification)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return model.ExpertVerification{}, errors.New("未找到认证申请")
+		}
+		return model.ExpertVerification{}, result.Error
+	}
+
+	return verification, nil
+}
+
+// HandleExpertVerification 处理专家认证申请
+func (s *PlaymateService) HandleExpertVerification(verificationID uint, req request.HandleExpertVerificationRequest) (model.ExpertVerification, error) {
+	var verification model.ExpertVerification
+	if err := global.GVA_DB.First(&verification, verificationID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.ExpertVerification{}, errors.New("认证申请不存在")
+		}
+		return model.ExpertVerification{}, err
+	}
+
+	// 更新认证状态
+	verification.Status = req.Status
+	if req.Status == "rejected" {
+		verification.Reason = req.Reason
+	}
+
+	if err := global.GVA_DB.Save(&verification).Error; err != nil {
+		return model.ExpertVerification{}, err
+	}
+
+	// 如果认证通过，创建或更新专家信息
+	if req.Status == "approved" {
+		// 检查是否已存在专家信息
+		var playmate model.Playmate
+		result := global.GVA_DB.Where("user_id = ?", verification.UserID).First(&playmate)
+
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				// 创建新的专家信息
+				playmate = model.Playmate{
+					UserID:      verification.UserID,
+					Game:        verification.GameName,
+					Rank:        verification.Rank,
+					IsOnline:    false,
+					Rating:      0,
+					Likes:       0,
+				}
+				if err := global.GVA_DB.Create(&playmate).Error; err != nil {
+					return verification, err
+				}
+			} else {
+				return verification, result.Error
+			}
+		} else {
+			// 更新现有专家信息
+			playmate.Game = verification.GameName
+			playmate.Rank = verification.Rank
+			if err := global.GVA_DB.Save(&playmate).Error; err != nil {
+				return verification, err
+			}
+		}
+	}
+
+	return verification, nil
+}
+
+// GetExpertVerificationList 获取专家认证列表
+func (s *PlaymateService) GetExpertVerificationList(userID uint, search request.ExpertVerificationSearch) ([]model.ExpertVerification, int64, error) {
+	var verifications []model.ExpertVerification
+	var total int64
+
+	db := global.GVA_DB
+	query := db.Model(&model.ExpertVerification{})
+
+	// 应用过滤条件
+	if search.Status != "" {
+		query = query.Where("status = ?", search.Status)
+	}
+
+	if search.GameID > 0 {
+		query = query.Where("game_id = ?", search.GameID)
+	}
+
+	// 如果提供了用户ID，则只返回该用户的认证申请
+	if userID > 0 {
+		query = query.Where("user_id = ?", userID)
+	} else if search.UserID > 0 {
+		query = query.Where("user_id = ?", search.UserID)
+	}
+
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
+	}
+
+	// 计算总数
+	query.Count(&total)
+
+	// 应用分页
+	page := search.Page
+	if page <= 0 {
+		page = 1
+	}
+
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	offset := (page - 1) * pageSize
+	query = query.Offset(offset).Limit(pageSize).Order("created_at DESC")
+
+	// 执行查询
+	if err := query.Find(&verifications).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return verifications, total, nil
+}
