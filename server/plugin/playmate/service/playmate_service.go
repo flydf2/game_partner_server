@@ -651,9 +651,9 @@ func (s *PlaymateService) ApplyExpertVerification(userID uint, req request.Exper
 }
 
 // GetExpertVerificationStatus 获取专家认证状态
-func (s *PlaymateService) GetExpertVerificationStatus(userID, gameID uint) (model.ExpertVerification, error) {
+func (s *PlaymateService) GetExpertVerificationStatus(userID uint, game string) (model.ExpertVerification, error) {
 	var verification model.ExpertVerification
-	result := global.GVA_DB.Where("user_id = ? AND game_id = ?", userID, gameID).Order("created_at DESC").First(&verification)
+	result := global.GVA_DB.Where("user_id = ? AND game_name = ?", userID, game).Order("created_at DESC").First(&verification)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -663,6 +663,38 @@ func (s *PlaymateService) GetExpertVerificationStatus(userID, gameID uint) (mode
 	}
 
 	return verification, nil
+}
+
+// CancelExpertVerification 撤销专家认证申请
+func (s *PlaymateService) CancelExpertVerification(userID, verificationID uint) error {
+	// 查找认证申请
+	var verification model.ExpertVerification
+	result := global.GVA_DB.First(&verification, verificationID)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return errors.New("认证申请不存在")
+		}
+		return result.Error
+	}
+
+	// 检查是否是申请的用户
+	if verification.UserID != userID {
+		return errors.New("无权限撤销此认证申请")
+	}
+
+	// 检查认证状态是否为pending
+	if verification.Status != "pending" {
+		return errors.New("只能撤销待处理的认证申请")
+	}
+
+	// 更新认证状态为cancelled
+	verification.Status = "cancelled"
+	if err := global.GVA_DB.Save(&verification).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // HandleExpertVerification 处理专家认证申请

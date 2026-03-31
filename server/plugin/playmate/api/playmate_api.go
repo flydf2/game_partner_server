@@ -780,12 +780,44 @@ func (a *PlaymateApi) ApplyExpertVerification(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    gameId  query     uint    true "游戏ID"
+// @Param    game  query     string  true "游戏名称"
 // @Success  200     {object}  response.Response{data=model.ExpertVerification} "获取成功"
 // @Router   /playmate/expert-verification/status [get]
 func (a *PlaymateApi) GetExpertVerificationStatus(c *gin.Context) {
-	gameIDStr := c.Query("gameId")
-	gameID, err := strconv.ParseUint(gameIDStr, 10, 32)
+	game := c.Query("game")
+	if game == "" {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+
+	verification, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationStatus(userID, game)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(verification, "获取成功", c)
+}
+
+// CancelExpertVerification 撤销专家认证申请
+// @Tags     Playmate
+// @Summary  撤销专家认证申请
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "认证申请ID"
+// @Success  200  {object} response.Response{message=string} "撤销成功"
+// @Router   /playmate/expert-verification/{id}/cancel [post]
+func (a *PlaymateApi) CancelExpertVerification(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
 		response.FailWithMessage("参数错误", c)
 		return
@@ -798,13 +830,13 @@ func (a *PlaymateApi) GetExpertVerificationStatus(c *gin.Context) {
 		return
 	}
 
-	verification, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationStatus(userID, uint(gameID))
+	err = service.ServiceGroupApp.PlaymateService.CancelExpertVerification(userID, uint(id))
 	if err != nil {
 		response.FailWithError(err, c)
 		return
 	}
 
-	response.OkWithDetailed(verification, "获取成功", c)
+	response.OkWithMessage("撤销成功", c)
 }
 
 // HandleExpertVerification 处理专家认证申请
@@ -840,6 +872,56 @@ func (a *PlaymateApi) HandleExpertVerification(c *gin.Context) {
 	response.OkWithDetailed(verification, "处理成功", c)
 }
 
+// GetMyExpertVerification 获取当前用户的专家认证申请
+// @Tags     Playmate
+// @Summary  获取当前用户的专家认证申请
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    status    query    string  false "状态"
+// @Param    gameId    query    uint    false "游戏ID"
+// @Param    startTime query    string  false "开始时间"
+// @Param    endTime   query    string  false "结束时间"
+// @Param    page      query    int     false "页码"
+// @Param    pageSize  query    int     false "每页数量"
+// @Success  200       {object}  response.Response{data=[]model.ExpertVerification, pagination=map[string]int64} "获取成功"
+// @Router   /playmate/expert-verification/my [get]
+func (a *PlaymateApi) GetMyExpertVerification(c *gin.Context) {
+	var search request.ExpertVerificationSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取用户ID
+	userID := middleware.GetCurrentUserID(c)
+	if userID == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+
+	verifications, total, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationList(userID, search)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	// 处理pageSize为0的情况，避免除以零错误
+	pageSize := search.PageSize
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": verifications,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
 // GetExpertVerificationList 获取专家认证列表
 // @Tags     Playmate
 // @Summary  获取专家认证列表
@@ -854,7 +936,7 @@ func (a *PlaymateApi) HandleExpertVerification(c *gin.Context) {
 // @Param    page      query    int     false "页码"
 // @Param    pageSize  query    int     false "每页数量"
 // @Success  200       {object}  response.Response{data=[]model.ExpertVerification, pagination=map[string]int64} "获取成功"
-// @Router   /playmate/expert-verification/list [get]
+// @Router   /playmate/expert-verification [get]
 func (a *PlaymateApi) GetExpertVerificationList(c *gin.Context) {
 	var search request.ExpertVerificationSearch
 	if err := c.ShouldBindQuery(&search); err != nil {
@@ -862,7 +944,10 @@ func (a *PlaymateApi) GetExpertVerificationList(c *gin.Context) {
 		return
 	}
 
-	verifications, total, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationList(search)
+	// 从上下文获取用户ID（管理员可以查看所有用户的认证申请）
+	_ = middleware.GetCurrentUserID(c)
+
+	verifications, total, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationList(0, search)
 	if err != nil {
 		response.FailWithError(err, c)
 		return
