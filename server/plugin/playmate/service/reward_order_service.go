@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -24,15 +25,18 @@ func (s *RewardOrderService) GetRewardOrders(search request.RewardOrderSearch) (
 	db := global.GVA_DB.Model(&model.RewardOrder{})
 
 	// 过滤条件
-	if search.Status != "" {
-		db = db.Where("status = ?", search.Status)
-	}
-	if search.Game != "" {
-		db = db.Where("game = ?", search.Game)
-	}
-	if search.Keyword != "" {
-		db = db.Where("content LIKE ?", "%"+search.Keyword+"%")
-	}
+if search.Status != "" {
+	db = db.Where("status = ?", search.Status)
+}
+if search.Game != "" {
+	db = db.Where("game = ?", search.Game)
+}
+if search.PaymentMethod != "" {
+	db = db.Where("payment_method = ?", search.PaymentMethod)
+}
+if search.Keyword != "" {
+	db = db.Where("content LIKE ?", "%"+search.Keyword+"%")
+}
 
 	// 计算总数
 	if err := db.Count(&total).Error; err != nil {
@@ -84,6 +88,12 @@ func (s *RewardOrderService) GetRewardOrderDetail(orderID uint) (model.RewardOrd
 
 // CreateRewardOrder 创建悬赏订单
 func (s *RewardOrderService) CreateRewardOrder(userID uint, req request.CreateRewardOrderRequest) (model.RewardOrder, error) {
+	global.GVA_LOG.Info("开始创建悬赏订单", 
+		zap.Uint("userID", userID), 
+		zap.String("game", req.Game), 
+		zap.Float64("reward", req.Reward),
+	)
+	
 	// 将标签和要求转换为逗号分隔的字符串
 	tags, _ := json.Marshal(req.Tags)
 	requirements, _ := json.Marshal(req.Requirements)
@@ -185,9 +195,17 @@ func (s *RewardOrderService) CreateRewardOrder(userID uint, req request.CreateRe
 	}
 
 	if err := tx.Commit().Error; err != nil {
+		global.GVA_LOG.Error("创建悬赏订单失败", 
+			zap.Uint("userID", userID), 
+			zap.Error(err),
+		)
 		return order, err
 	}
 
+	global.GVA_LOG.Info("创建悬赏订单成功", 
+		zap.Uint("orderID", order.ID), 
+		zap.Uint("userID", userID),
+	)
 	return order, nil
 }
 
@@ -248,26 +266,52 @@ func (s *RewardOrderService) DeleteRewardOrder(orderID uint) error {
 
 // GrabRewardOrder 抢单
 func (s *RewardOrderService) GrabRewardOrder(orderID, userID uint, req request.GrabRewardOrderRequest) error {
+	global.GVA_LOG.Info("开始抢单", 
+		zap.Uint("orderID", orderID), 
+		zap.Uint("userID", userID),
+	)
+	
 	// 检查订单是否存在
 	var order model.RewardOrder
 	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			global.GVA_LOG.Warn("订单不存在", 
+				zap.Uint("orderID", orderID), 
+				zap.Uint("userID", userID),
+			)
 			return response.NewPlaymateError(response.ErrOrderNotFound)
 		}
+		global.GVA_LOG.Error("查询订单失败", 
+			zap.Uint("orderID", orderID), 
+			zap.Error(err),
+		)
 		return err
 	}
 
 	// 检查订单状态
 	if order.Status != "available" {
-		return response.NewPlaymateError(response.ErrOrderNot抢able)
+		global.GVA_LOG.Warn("订单不可抢", 
+			zap.Uint("orderID", orderID), 
+			zap.String("status", order.Status),
+		)
+		return response.NewPlaymateError(response.ErrOrderNotGrabble)
 	}
 
 	// 检查是否已经抢过单
 	var existingApplicant model.RewardOrderApplicant
 	result := global.GVA_DB.Where("order_id = ? AND user_id = ?", orderID, userID).First(&existingApplicant)
 	if result.Error == nil {
-		return response.NewPlaymateError(response.ErrAlready抢edOrder)
+		global.GVA_LOG.Warn("已经抢过此订单", 
+			zap.Uint("orderID", orderID), 
+			zap.Uint("userID", userID),
+		)
+		return response.NewPlaymateError(response.ErrAlreadyGrabbedOrder)
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		global.GVA_LOG.Error("查询抢单记录失败", 
+			zap.Uint("orderID", orderID), 
+			zap.Uint("userID", userID), 
+			zap.Error(result.Error),
+		)
 		return result.Error
 	}
 
@@ -283,9 +327,19 @@ func (s *RewardOrderService) GrabRewardOrder(orderID, userID uint, req request.G
 	}
 
 	if err := global.GVA_DB.Create(&applicant).Error; err != nil {
+		global.GVA_LOG.Error("创建抢单申请失败", 
+			zap.Uint("orderID", orderID), 
+			zap.Uint("userID", userID), 
+			zap.Error(err),
+		)
 		return err
 	}
 
+	global.GVA_LOG.Info("抢单成功", 
+		zap.Uint("orderID", orderID), 
+		zap.Uint("userID", userID), 
+		zap.Uint("applicantID", applicant.ID),
+	)
 	return nil
 }
 
@@ -348,14 +402,14 @@ func (s *RewardOrderService) SelectApplicant(orderID, applicantID uint) error {
 	var applicant model.RewardOrderApplicant
 	if err := global.GVA_DB.First(&applicant, applicantID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.NewPlaymateError(response.Err抢单ApplicationNotFound)
+			return response.NewPlaymateError(response.ErrGrabOrderApplicationNotFound)
 		}
 		return err
 	}
 
 	// 检查抢单申请是否属于该订单
 	if applicant.OrderID != orderID {
-		return response.NewPlaymateError(response.Err抢单ApplicationNotMatch)
+		return response.NewPlaymateError(response.ErrGrabOrderApplicationNotMatch)
 	}
 
 	// 开始事务
@@ -571,7 +625,7 @@ func (s *RewardOrderService) GetGrabOrderDetail(grabOrderID, userID uint) (map[s
 	var applicant model.RewardOrderApplicant
 	if err := global.GVA_DB.First(&applicant, grabOrderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, response.NewPlaymateError(response.Err抢单ApplicationNotFound)
+			return nil, response.NewPlaymateError(response.ErrGrabOrderApplicationNotFound)
 		}
 		return nil, err
 	}
@@ -665,7 +719,7 @@ func (s *RewardOrderService) WithdrawGrabOrder(grabOrderID, userID uint) error {
 	var applicant model.RewardOrderApplicant
 	if err := global.GVA_DB.First(&applicant, grabOrderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.NewPlaymateError(response.Err抢单ApplicationNotFound)
+			return response.NewPlaymateError(response.ErrGrabOrderApplicationNotFound)
 		}
 		return err
 	}
@@ -677,12 +731,89 @@ func (s *RewardOrderService) WithdrawGrabOrder(grabOrderID, userID uint) error {
 
 	// 检查抢单状态是否可以撤回
 	if applicant.Status != "pending" && applicant.Status != "approved" {
-		return response.NewPlaymateError(response.Err抢单StatusNotAllowWithdraw)
+		return response.NewPlaymateError(response.ErrGrabOrderStatusNotAllowWithdraw)
 	}
 
 	// 更新抢单申请状态为已撤回
 	applicant.Status = "withdrawn"
 	if err := global.GVA_DB.Save(&applicant).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CancelRewardOrder 取消悬赏订单
+func (s *RewardOrderService) CancelRewardOrder(orderID, userID uint) error {
+	// 检查订单是否存在
+	var order model.RewardOrder
+	if err := global.GVA_DB.First(&order, orderID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewPlaymateError(response.ErrOrderNotFound)
+		}
+		return err
+	}
+
+	// 检查订单是否属于当前用户
+	if order.UserID != userID {
+		return response.NewPlaymateError(response.ErrUnauthorizedOperation)
+	}
+
+	// 检查订单状态是否可以取消
+	if order.Status == "completed" || order.Status == "cancelled" || order.Status == "expired" {
+		return response.NewPlaymateError(response.ErrOrderStatusNotAllowCancel)
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 对于预付订单，解冻资金
+	if order.PaymentMethod == "prepay" {
+		// 1. 查找用户钱包
+		var wallet model.UserWallet
+		if err := tx.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 2. 解冻资金
+		wallet.Balance += order.Reward
+		wallet.Frozen -= order.Reward
+		wallet.UpdatedAt = time.Now()
+		if err := tx.Save(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 3. 创建交易记录
+		transaction := model.Transaction{
+			UserID:      userID,
+			Type:        "refund",
+			Amount:      order.Reward,
+			Description: "悬赏订单取消，预付资金解冻",
+			Time:        time.Now(),
+			CreatedAt:   time.Now(),
+		}
+		if err := tx.Create(&transaction).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// 更新订单状态为已取消
+	order.Status = "cancelled"
+	order.UpdatedAt = time.Now()
+	if err := tx.Save(&order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return err
 	}
 

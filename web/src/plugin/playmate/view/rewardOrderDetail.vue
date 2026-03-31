@@ -36,6 +36,12 @@
     <div v-if="rewardStore.isLoading" class="loading-state">
       <el-skeleton :rows="10" animated />
     </div>
+    
+    <!-- 错误状态 -->
+    <div v-else-if="rewardStore.error" class="error-state">
+      <el-empty description="获取订单详情失败" />
+      <el-button @click="fetchOrderDetail">重新加载</el-button>
+    </div>
 
     <!-- 订单详情 -->
     <template v-else-if="rewardStore.currentOrder">
@@ -150,6 +156,8 @@
                 v-for="applicant in rewardStore.applicants" 
                 :key="applicant.id"
                 class="applicant-item"
+                @mouseenter="showApplicantDetails(applicant.id)"
+                @mouseleave="hideApplicantDetails"
               >
                 <div class="applicant-info">
                   <el-avatar :size="50" :src="applicant.avatar || defaultAvatar" />
@@ -157,15 +165,22 @@
                     <div class="applicant-header">
                       <span class="name">{{ applicant.name }}</span>
                       <el-tag size="small" type="success">Lv.{{ applicant.level }}</el-tag>
+                      <el-tag v-if="applicant.verified" size="small" type="info">已认证</el-tag>
                     </div>
                     <div class="applicant-stats">
                       <span class="rating">
                         <el-icon><Star /></el-icon>
-                        {{ applicant.rating }}
+                        {{ applicant.rating || 0 }}
                       </span>
-                      <span class="order-count">{{ applicant.orderCount }}单</span>
+                      <span class="order-count">{{ applicant.orderCount || 0 }}单</span>
+                      <span class="success-rate" v-if="applicant.successRate">
+                        成功率 {{ applicant.successRate }}%
+                      </span>
                     </div>
-                    <p class="specialty">{{ applicant.specialty }}</p>
+                    <p class="specialty">{{ applicant.specialty || '暂无特长' }}</p>
+                    <p class="recommendation" v-if="applicant.recommendation">
+                      <strong>推荐理由：</strong>{{ applicant.recommendation }}
+                    </p>
                     <div class="badges" v-if="applicant.badges">
                       <el-tag 
                         v-for="(badge, idx) in applicant.badges" 
@@ -182,6 +197,7 @@
                 <el-button 
                   type="primary" 
                   @click="handleSelectApplicant(applicant.id)"
+                  :loading="selectingApplicant === applicant.id"
                 >
                   选择TA
                 </el-button>
@@ -367,6 +383,20 @@ const shareForm = ref({
   platform: 'wechat'
 })
 
+// 抢单者详情
+const selectedApplicant = ref(null)
+const selectingApplicant = ref(null)
+
+// 显示抢单者详情
+const showApplicantDetails = (applicantId) => {
+  selectedApplicant.value = applicantId
+}
+
+// 隐藏抢单者详情
+const hideApplicantDetails = () => {
+  selectedApplicant.value = null
+}
+
 // 计算属性：按钮显示控制
 const canGrab = computed(() => {
   return rewardStore.currentOrder?.status === 'available'
@@ -470,6 +500,9 @@ const handleSelectApplicant = async (applicantId) => {
       type: 'warning'
     })
 
+    // 设置加载状态
+    selectingApplicant.value = applicantId
+    
     await rewardStore.selectApplicantAction(rewardStore.currentOrder.id, applicantId)
     ElMessage.success('选择成功')
     // 刷新订单详情
@@ -478,6 +511,9 @@ const handleSelectApplicant = async (applicantId) => {
     if (error !== 'cancel') {
       ElMessage.error(error.message || '选择失败')
     }
+  } finally {
+    // 重置加载状态
+    selectingApplicant.value = null
   }
 }
 
@@ -561,6 +597,15 @@ onMounted(() => {
 
 .loading-state {
   padding: 40px;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
 }
 
 .order-info-card,
@@ -718,6 +763,7 @@ onMounted(() => {
   margin-bottom: 8px;
   font-size: 14px;
   color: #909399;
+  flex-wrap: wrap;
 }
 
 .applicant-stats .rating {
@@ -727,10 +773,22 @@ onMounted(() => {
   color: #e6a23c;
 }
 
+.success-rate {
+  color: #67c23a;
+  font-weight: 500;
+}
+
 .specialty {
   margin: 0 0 8px 0;
   font-size: 14px;
   color: #606266;
+}
+
+.recommendation {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.4;
 }
 
 .badges {

@@ -1,6 +1,9 @@
 package api
 
 import (
+	"strconv"
+
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -59,15 +62,126 @@ func (a *GameCategoryApi) GetCategories(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept   application/json
 // @Produce  application/json
-// @Param    category path     string true "分类ID"
+// @Param    id path     string true "分类ID"
 // @Success  200  {object} response.Response{data=[]model.Game} "根据分类获取游戏列表成功"
-// @Router   /playmate/game-categories/{category}/games [get]
+// @Router   /playmate/game-categories/{id}/games [get]
 func (a *GameCategoryApi) GetGamesByCategory(c *gin.Context) {
-	category := c.Param("category")
+	category := c.Param("id")
 	games, err := service.ServiceGroupApp.GameCategoryService.GetGamesByCategory(category)
 	if err != nil {
 		response.FailWithMessage("根据分类获取游戏列表失败", c)
 		return
 	}
 	response.OkWithData(games, c)
+}
+
+// GetCategoryById 根据ID获取游戏分类
+// @Tags     GameCategory
+// @Summary  根据ID获取游戏分类
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "分类ID"
+// @Success  200  {object} response.Response{data=model.GameCategory} "获取成功"
+// @Router   /playmate/game-categories/{id} [get]
+func (a *GameCategoryApi) GetCategoryById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	category, err := service.ServiceGroupApp.GameCategoryService.GetCategoryById(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(category, "获取成功", c)
+}
+
+// CreateCategory 创建游戏分类
+// @Tags     GameCategory
+// @Summary  创建游戏分类
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      model.GameCategory  true "分类信息"
+// @Success  200   {object}  response.Response{data=model.GameCategory} "创建成功"
+// @Router   /playmate/game-categories [post]
+func (a *GameCategoryApi) CreateCategory(c *gin.Context) {
+	var category model.GameCategory
+	if err := c.ShouldBindJSON(&category); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	createdCategory, err := service.ServiceGroupApp.GameCategoryService.CreateCategory(category)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(createdCategory, "创建成功", c)
+}
+
+// UpdateCategory 更新游戏分类
+// @Tags     GameCategory
+// @Summary  更新游戏分类
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id    path      uint              true "分类ID"
+// @Param    data  body      model.GameCategory  true "分类信息"
+// @Success  200   {object}  response.Response{data=model.GameCategory} "更新成功"
+// @Router   /playmate/game-categories/{id} [put]
+func (a *GameCategoryApi) UpdateCategory(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	var category model.GameCategory
+	if err := c.ShouldBindJSON(&category); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	category.ID = uint(id)
+	updatedCategory, err := service.ServiceGroupApp.GameCategoryService.UpdateCategory(category)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(updatedCategory, "更新成功", c)
+}
+
+// DeleteCategory 删除游戏分类
+// @Tags     GameCategory
+// @Summary  删除游戏分类
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id  path      uint    true "分类ID"
+// @Success  200 {object}  response.Response{message=string} "删除成功"
+// @Router   /playmate/game-categories/{id} [delete]
+func (a *GameCategoryApi) DeleteCategory(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.GameCategoryService.DeleteCategory(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("删除成功", c)
 }

@@ -72,4 +72,7 @@ func InitializeRouter(routerGroup *gin.RouterGroup) {
 
 	// 初始化排行榜路由
 	router.RouterGroupApp.InitLeaderboardRouter(routerGroup)
+
+	// 初始化统计分析路由
+	router.RouterGroupApp.InitStatsRouter(routerGroup)
 }

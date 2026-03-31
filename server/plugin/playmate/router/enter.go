@@ -20,6 +20,7 @@ type RouterGroup struct {
 	ExpertOrderSettingRouter
 	TournamentRouter
 	LeaderboardRouter
+	StatsRouter
 }
 
 var RouterGroupApp = new(RouterGroup)

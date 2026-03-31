@@ -968,3 +968,108 @@ func (a *PlaymateApi) GetExpertVerificationList(c *gin.Context) {
 		},
 	}, "获取成功", c)
 }
+
+// GetExpertVerificationById 根据ID获取专家认证详情
+// @Tags     Playmate
+// @Summary  根据ID获取专家认证详情
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "认证申请ID"
+// @Success  200  {object} response.Response{data=model.ExpertVerification} "获取成功"
+// @Router   /playmate/expert-verification/{id} [get]
+func (a *PlaymateApi) GetExpertVerificationById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	verification, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationById(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(verification, "获取成功", c)
+}
+
+// BatchHandleExpertVerification 批量处理专家认证申请
+// @Tags     Playmate
+// @Summary  批量处理专家认证申请
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.BatchHandleExpertVerificationRequest  true "批量处理信息"
+// @Success  200   {object}  response.Response{message=string} "处理成功"
+// @Router   /playmate/expert-verification/batch-handle [post]
+func (a *PlaymateApi) BatchHandleExpertVerification(c *gin.Context) {
+	var req request.BatchHandleExpertVerificationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err := service.ServiceGroupApp.PlaymateService.BatchHandleExpertVerification(req)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("处理成功", c)
+}
+
+// ExportExpertVerification 导出专家认证列表
+// @Tags     Playmate
+// @Summary  导出专家认证列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/vnd.ms-excel
+// @Param    status    query    string  false "状态"
+// @Param    gameId    query    uint    false "游戏ID"
+// @Param    userId    query    uint    false "用户ID"
+// @Param    startTime query    string  false "开始时间"
+// @Param    endTime   query    string  false "结束时间"
+// @Success  200       {file}    file    "导出成功"
+// @Router   /playmate/expert-verification/export [get]
+func (a *PlaymateApi) ExportExpertVerification(c *gin.Context) {
+	var search request.ExpertVerificationSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	excelData, err := service.ServiceGroupApp.PlaymateService.ExportExpertVerification(search)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	c.Header("Content-Type", "application/vnd.ms-excel")
+	c.Header("Content-Disposition", "attachment; filename=expert_verification.xlsx")
+	c.Data(200, "application/vnd.ms-excel", excelData)
+}
+
+// GetExpertVerificationStats 获取专家认证统计数据
+// @Tags     Playmate
+// @Summary  获取专家认证统计数据
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    startTime query    string  false "开始时间"
+// @Param    endTime   query    string  false "结束时间"
+// @Success  200       {object}  response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/expert-verification/stats [get]
+func (a *PlaymateApi) GetExpertVerificationStats(c *gin.Context) {
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+
+	stats, err := service.ServiceGroupApp.PlaymateService.GetExpertVerificationStats(startTime, endTime)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(stats, "获取成功", c)
+}

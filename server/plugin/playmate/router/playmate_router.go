@@ -84,6 +84,10 @@ func (r *PlaymateRouter) InitPlaymateRouter(router *gin.RouterGroup) {
 			authRouter.POST("/:id/cancel", api.ApiGroupApp.PlaymateApi.CancelExpertVerification)
 			authRouter.GET("/my", api.ApiGroupApp.PlaymateApi.GetMyExpertVerification)
 			authRouter.GET("", api.ApiGroupApp.PlaymateApi.GetExpertVerificationList)
+			authRouter.GET("/:id", api.ApiGroupApp.PlaymateApi.GetExpertVerificationById)
+			authRouter.POST("/batch-handle", api.ApiGroupApp.PlaymateApi.BatchHandleExpertVerification)
+			authRouter.GET("/export", api.ApiGroupApp.PlaymateApi.ExportExpertVerification)
+			authRouter.GET("/stats", api.ApiGroupApp.PlaymateApi.GetExpertVerificationStats)
 		}
 	}
 }

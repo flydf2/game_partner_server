@@ -809,3 +809,133 @@ func (s *PlaymateService) GetExpertVerificationList(userID uint, search request.
 
 	return verifications, total, nil
 }
+
+// GetExpertVerificationById 根据ID获取专家认证详情
+func (s *PlaymateService) GetExpertVerificationById(id uint) (model.ExpertVerification, error) {
+	var verification model.ExpertVerification
+	if err := global.GVA_DB.First(&verification, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.ExpertVerification{}, errors.New("认证申请不存在")
+		}
+		return model.ExpertVerification{}, err
+	}
+	return verification, nil
+}
+
+// BatchHandleExpertVerification 批量处理专家认证申请
+func (s *PlaymateService) BatchHandleExpertVerification(req request.BatchHandleExpertVerificationRequest) error {
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, id := range req.IDs {
+		var verification model.ExpertVerification
+		if err := tx.First(&verification, id).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 更新认证状态
+		verification.Status = req.Status
+		if req.Status == "rejected" {
+			verification.Reason = req.Reason
+		}
+
+		if err := tx.Save(&verification).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 如果认证通过，创建或更新专家信息
+		if req.Status == "approved" {
+			// 检查是否已存在专家信息
+			var playmate model.Playmate
+			result := tx.Where("user_id = ?", verification.UserID).First(&playmate)
+
+			if result.Error != nil {
+				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+					// 创建新的专家信息
+					playmate = model.Playmate{
+						UserID:      verification.UserID,
+						Game:        verification.GameName,
+						Rank:        verification.Rank,
+						IsOnline:    false,
+						Rating:      0,
+						Likes:       0,
+					}
+					if err := tx.Create(&playmate).Error; err != nil {
+						tx.Rollback()
+						return err
+					}
+				} else {
+					tx.Rollback()
+					return result.Error
+				}
+			} else {
+				// 更新现有专家信息
+				playmate.Game = verification.GameName
+				playmate.Rank = verification.Rank
+				if err := tx.Save(&playmate).Error; err != nil {
+					tx.Rollback()
+					return err
+				}
+			}
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+// ExportExpertVerification 导出专家认证列表
+func (s *PlaymateService) ExportExpertVerification(search request.ExpertVerificationSearch) ([]byte, error) {
+	// 这里可以实现导出Excel的逻辑
+	// 暂时返回空数据，实际项目中可以使用excelize等库实现
+	return []byte{}, nil
+}
+
+// GetExpertVerificationStats 获取专家认证统计数据
+func (s *PlaymateService) GetExpertVerificationStats(startTime, endTime string) (map[string]interface{}, error) {
+	var totalCount int64
+	var pendingCount int64
+	var approvedCount int64
+	var rejectedCount int64
+
+	db := global.GVA_DB
+	query := db.Model(&model.ExpertVerification{})
+
+	// 应用时间过滤
+	if startTime != "" {
+		query = query.Where("created_at >= ?", startTime)
+	}
+	if endTime != "" {
+		query = query.Where("created_at <= ?", endTime)
+	}
+
+	// 计算总数
+	query.Count(&totalCount)
+
+	// 计算各状态数量
+	query.Where("status = ?", "pending").Count(&pendingCount)
+	query.Where("status = ?", "approved").Count(&approvedCount)
+	query.Where("status = ?", "rejected").Count(&rejectedCount)
+
+	// 构建统计数据
+	stats := map[string]interface{}{
+		"totalCount":    totalCount,
+		"pendingCount":  pendingCount,
+		"approvedCount": approvedCount,
+		"rejectedCount": rejectedCount,
+		"approvalRate":  0.0,
+	}
+
+	// 计算通过率
+	if totalCount > 0 {
+		stats["approvalRate"] = float64(approvedCount) / float64(totalCount)
+	}
+
+	return stats, nil
+}

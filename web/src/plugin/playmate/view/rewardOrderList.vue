@@ -19,6 +19,7 @@
             <el-option label="绝地求生" value="绝地求生" />
             <el-option label="原神" value="原神" />
             <el-option label="CS:GO" value="CS:GO" />
+            <el-option label="金铲铲之战" value="金铲铲之战" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -26,13 +27,43 @@
             <el-option label="可抢单" value="available" />
             <el-option label="进行中" value="ongoing" />
             <el-option label="已完成" value="completed" />
+            <el-option label="已取消" value="cancelled" />
+            <el-option label="已过期" value="expired" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="支付方式">
+          <el-select v-model="filterForm.paymentMethod" placeholder="支付方式" clearable style="width: 120px">
+            <el-option label="预付" value="prepay" />
+            <el-option label="现付" value="postpay" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关键词">
+          <el-input
+            v-model="filterForm.keyword"
+            placeholder="搜索订单内容"
+            clearable
+            style="width: 200px"
+            @keyup.enter="handleSearch"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
+      
+      <!-- 快速筛选 -->
+      <div class="quick-filter" v-if="filterForm.status !== 'available'">
+        <el-button
+          v-for="filter in quickFilters"
+          :key="filter.value"
+          :type="filterForm.status === filter.value ? 'primary' : 'default'"
+          @click="handleQuickFilter(filter.value)"
+          size="small"
+        >
+          {{ filter.label }}
+        </el-button>
+      </div>
     </el-card>
 
     <!-- 订单列表 -->
@@ -128,8 +159,20 @@ const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726
 // 筛选表单
 const filterForm = ref({
   game: '',
-  status: 'available'
+  status: 'available',
+  paymentMethod: '',
+  keyword: ''
 })
+
+// 快速筛选选项
+const quickFilters = ref([
+  { label: '全部', value: '' },
+  { label: '可抢单', value: 'available' },
+  { label: '进行中', value: 'ongoing' },
+  { label: '已完成', value: 'completed' },
+  { label: '已取消', value: 'cancelled' },
+  { label: '已过期', value: 'expired' }
+])
 
 // 分页
 const currentPage = ref(1)
@@ -142,11 +185,20 @@ const fetchOrders = async () => {
       page: currentPage.value,
       pageSize: pageSize.value,
       game: filterForm.value.game,
-      status: filterForm.value.status
+      status: filterForm.value.status,
+      paymentMethod: filterForm.value.paymentMethod,
+      keyword: filterForm.value.keyword
     })
   } catch (error) {
     ElMessage.error('获取订单列表失败')
   }
+}
+
+// 快速筛选
+const handleQuickFilter = (status) => {
+  filterForm.value.status = status
+  currentPage.value = 1
+  fetchOrders()
 }
 
 // 状态映射
@@ -192,7 +244,9 @@ const handleSearch = () => {
 const handleReset = () => {
   filterForm.value = {
     game: '',
-    status: 'available'
+    status: 'available',
+    paymentMethod: '',
+    keyword: ''
   }
   currentPage.value = 1
   fetchOrders()
@@ -249,6 +303,13 @@ onMounted(() => {
 
 .filter-card {
   margin-bottom: 20px;
+}
+
+.quick-filter {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .order-list-card {

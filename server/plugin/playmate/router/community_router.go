@@ -16,6 +16,7 @@ func (r *CommunityRouter) InitCommunityRouter(router *gin.RouterGroup) {
 		communityRouter.GET("/posts", api.ApiGroupApp.CommunityApi.GetPosts)
 		communityRouter.GET("/posts/:postId", api.ApiGroupApp.CommunityApi.GetPostDetail)
 		communityRouter.GET("/posts/:postId/bids", api.ApiGroupApp.CommunityApi.GetBids)
+		communityRouter.GET("/posts/:postId/comments", api.ApiGroupApp.CommunityApi.GetPostComments)
 		communityRouter.GET("/topics/:topicId", api.ApiGroupApp.CommunityApi.GetTopicDetail)
 		communityRouter.GET("/topics/:topicId/posts", api.ApiGroupApp.CommunityApi.GetTopicPosts)
 

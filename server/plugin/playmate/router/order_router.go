@@ -23,5 +23,10 @@ func (r *OrderRouter) InitOrderRouter(router *gin.RouterGroup) {
 		orderRouter.POST("/:id/accept", api.ApiGroupApp.OrderApi.AcceptOrder)
 		orderRouter.POST("/:id/reject", api.ApiGroupApp.OrderApi.RejectOrder)
 		orderRouter.POST("/:id/share", api.ApiGroupApp.OrderApi.ShareOrder)
+		// 新增管理员功能路由
+		orderRouter.GET("/all", api.ApiGroupApp.OrderApi.GetAllOrders)
+		orderRouter.POST("/batch-handle", api.ApiGroupApp.OrderApi.BatchHandleOrders)
+		orderRouter.GET("/stats", api.ApiGroupApp.OrderApi.GetOrderStats)
+		orderRouter.GET("/export", api.ApiGroupApp.OrderApi.ExportOrders)
 	}
 }

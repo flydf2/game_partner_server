@@ -597,3 +597,416 @@ export const generateLeaderboard = (id) => {
     method: 'post'
   })
 }
+
+// ==================== 游戏分类相关 API ====================
+
+/**
+ * 获取游戏分类列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @returns {Promise} 游戏分类列表数据
+ */
+export const getGameCategories = (params) => {
+  return service({
+    url: '/playmate/game-categories',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取游戏分类详情
+ * @param {number} id 游戏分类ID
+ * @returns {Promise} 游戏分类详情数据
+ */
+export const getGameCategoryById = (id) => {
+  return service({
+    url: `/playmate/game-categories/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 创建游戏分类
+ * @param {Object} data 游戏分类信息
+ * @param {string} data.name 分类名称
+ * @param {string} data.description 分类描述
+ * @param {number} data.sortOrder 排序顺序
+ * @returns {Promise} 创建结果
+ */
+export const createGameCategory = (data) => {
+  return service({
+    url: '/playmate/game-categories',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 更新游戏分类
+ * @param {Object} data 游戏分类信息
+ * @param {number} data.id 游戏分类ID
+ * @returns {Promise} 更新结果
+ */
+export const updateGameCategory = (data) => {
+  return service({
+    url: `/playmate/game-categories/${data.id}`,
+    method: 'put',
+    data: data
+  })
+}
+
+/**
+ * 删除游戏分类
+ * @param {number} id 游戏分类ID
+ * @returns {Promise} 删除结果
+ */
+export const deleteGameCategory = (id) => {
+  return service({
+    url: `/playmate/game-categories/${id}`,
+    method: 'delete'
+  })
+}
+
+// ==================== 专家认证相关 API ====================
+
+/**
+ * 获取专家认证列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @param {string} params.status 状态
+ * @param {string} params.game 游戏
+ * @returns {Promise} 专家认证列表数据
+ */
+export const getExpertVerifications = (params) => {
+  return service({
+    url: '/playmate/experts/verifications',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取专家认证详情
+ * @param {number} id 专家认证ID
+ * @returns {Promise} 专家认证详情数据
+ */
+export const getExpertVerificationById = (id) => {
+  return service({
+    url: `/playmate/experts/verifications/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 批量处理专家认证
+ * @param {Object} data 批量处理参数
+ * @param {Array<number>} data.ids 认证ID列表
+ * @param {string} data.status 处理状态
+ * @param {string} data.reason 处理原因
+ * @returns {Promise} 处理结果
+ */
+export const batchHandleExpertVerification = (data) => {
+  return service({
+    url: '/playmate/experts/verifications/batch',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 导出专家认证数据
+ * @param {Object} params 导出参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.status 状态
+ * @returns {Promise} 导出结果
+ */
+export const exportExpertVerification = (params) => {
+  return service({
+    url: '/playmate/experts/verifications/export',
+    method: 'get',
+    params: params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 获取专家认证统计
+ * @param {Object} params 统计参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @returns {Promise} 统计结果
+ */
+export const getExpertVerificationStats = (params) => {
+  return service({
+    url: '/playmate/experts/verifications/stats',
+    method: 'get',
+    params: params
+  })
+}
+
+// ==================== 订单管理相关 API ====================
+
+/**
+ * 获取所有订单列表
+ * @param {Object} params 查询参数
+ * @param {number} params.page 页码
+ * @param {number} params.pageSize 每页数量
+ * @param {string} params.status 订单状态
+ * @param {string} params.game 游戏
+ * @param {string} params.orderNumber 订单号
+ * @returns {Promise} 订单列表数据
+ */
+export const getAllOrders = (params) => {
+  return service({
+    url: '/playmate/orders/all',
+    method: 'get',
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      ...params
+    }
+  })
+}
+
+/**
+ * 批量处理订单
+ * @param {Object} data 批量处理参数
+ * @param {Array<number>} data.ids 订单ID列表
+ * @param {string} data.status 处理状态
+ * @param {string} data.reason 处理原因
+ * @returns {Promise} 处理结果
+ */
+export const batchHandleOrders = (data) => {
+  return service({
+    url: '/playmate/orders/batch',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 获取订单统计
+ * @param {Object} params 统计参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.game 游戏
+ * @returns {Promise} 统计结果
+ */
+export const getOrderStats = (params) => {
+  return service({
+    url: '/playmate/orders/stats',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 导出订单数据
+ * @param {Object} params 导出参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.status 状态
+ * @returns {Promise} 导出结果
+ */
+export const exportOrders = (params) => {
+  return service({
+    url: '/playmate/orders/export',
+    method: 'get',
+    params: params,
+    responseType: 'blob'
+  })
+}
+
+// ==================== 用户管理相关 API ====================
+
+/**
+ * 获取用户详情
+ * @param {number} id 用户ID
+ * @returns {Promise} 用户详情数据
+ */
+export const getUserById = (id) => {
+  return service({
+    url: `/playmate/users/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 禁用用户
+ * @param {number} id 用户ID
+ * @returns {Promise} 禁用结果
+ */
+export const disableUser = (id) => {
+  return service({
+    url: `/playmate/users/${id}/disable`,
+    method: 'post'
+  })
+}
+
+/**
+ * 启用用户
+ * @param {number} id 用户ID
+ * @returns {Promise} 启用结果
+ */
+export const enableUser = (id) => {
+  return service({
+    url: `/playmate/users/${id}/enable`,
+    method: 'post'
+  })
+}
+
+/**
+ * 重置用户密码
+ * @param {number} id 用户ID
+ * @param {Object} data 重置参数
+ * @param {string} data.password 新密码
+ * @returns {Promise} 重置结果
+ */
+export const resetPassword = (id, data) => {
+  return service({
+    url: `/playmate/users/${id}/reset-password`,
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 获取用户统计
+ * @param {Object} params 统计参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @returns {Promise} 统计结果
+ */
+export const getUserStats = (params) => {
+  return service({
+    url: '/playmate/users/stats',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 导出用户数据
+ * @param {Object} params 导出参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @returns {Promise} 导出结果
+ */
+export const exportUsers = (params) => {
+  return service({
+    url: '/playmate/users/export',
+    method: 'get',
+    params: params,
+    responseType: 'blob'
+  })
+}
+
+// ==================== 统计分析相关 API ====================
+
+/**
+ * 获取仪表盘统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @returns {Promise} 仪表盘统计数据
+ */
+export const getDashboardStats = (params) => {
+  return service({
+    url: '/playmate/stats/dashboard',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取订单统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.game 游戏
+ * @param {string} params.status 状态
+ * @returns {Promise} 订单统计数据
+ */
+export const getOrderStatsDetail = (params) => {
+  return service({
+    url: '/playmate/stats/orders',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取用户统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @returns {Promise} 用户统计数据
+ */
+export const getUserStatsDetail = (params) => {
+  return service({
+    url: '/playmate/stats/users',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取专家统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.game 游戏
+ * @returns {Promise} 专家统计数据
+ */
+export const getExpertStats = (params) => {
+  return service({
+    url: '/playmate/stats/experts',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取收入统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.game 游戏
+ * @returns {Promise} 收入统计数据
+ */
+export const getRevenueStats = (params) => {
+  return service({
+    url: '/playmate/stats/revenue',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取趋势统计数据
+ * @param {Object} params 查询参数
+ * @param {string} params.type 统计类型: orders, users, revenue, experts
+ * @param {string} params.startTime 开始时间
+ * @param {string} params.endTime 结束时间
+ * @param {string} params.interval 时间间隔: day, week, month
+ * @returns {Promise} 趋势统计数据
+ */
+export const getTrendStats = (params) => {
+  return service({
+    url: '/playmate/stats/trend',
+    method: 'get',
+    params: params
+  })
+}

@@ -84,6 +84,8 @@
   "/src/plugin/email/view/index.vue": "Email",
   "/src/plugin/playmate/view/activityList.vue": "ActivityList",
   "/src/plugin/playmate/view/communityList.vue": "CommunityList",
+  "/src/plugin/playmate/view/expertVerificationList.vue": "ExpertVerificationList",
+  "/src/plugin/playmate/view/gameCategoryList.vue": "GameCategoryList",
   "/src/plugin/playmate/view/gameList.vue": "GameList",
   "/src/plugin/playmate/view/leaderboardList.vue": "LeaderboardList",
   "/src/plugin/playmate/view/myRewardOrders.vue": "MyRewardOrders",
@@ -95,6 +97,7 @@
   "/src/plugin/playmate/view/rewardOrderList.vue": "RewardOrderList",
   "/src/plugin/playmate/view/rewardOrderPayment.vue": "RewardOrderPayment",
   "/src/plugin/playmate/view/rewardOrderPublish.vue": "RewardOrderPublish",
+  "/src/plugin/playmate/view/statsDashboard.vue": "StatsDashboard",
   "/src/plugin/playmate/view/userList.vue": "UserList",
   "/src/plugin/playmate/view/withdrawalList.vue": "WithdrawalList"
 }

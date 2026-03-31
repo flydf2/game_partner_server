@@ -603,3 +603,199 @@ func (a *UserApi) HandlePaymentCallback(c *gin.Context) {
 
 	response.OkWithDetailed(result, "处理成功", c)
 }
+
+// GetUserById 根据ID获取用户详情（管理员）
+// @Tags     User
+// @Summary  根据ID获取用户详情（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "用户ID"
+// @Success  200  {object} response.Response{data=model.User} "获取成功"
+// @Router   /playmate/users/{id} [get]
+func (a *UserApi) GetUserById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	user, err := service.ServiceGroupApp.UserService.GetUserById(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(user, "获取成功", c)
+}
+
+// UpdateUser 更新用户信息（管理员）
+// @Tags     User
+// @Summary  更新用户信息（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id    path      uint                     true "用户ID"
+// @Param    data  body      request.UpdateUserRequest  true "用户信息"
+// @Success  200   {object}  response.Response{data=model.User} "更新成功"
+// @Router   /playmate/users/{id} [put]
+func (a *UserApi) UpdateUser(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	var req request.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	user, err := service.ServiceGroupApp.UserService.UpdateUser(uint(id), req)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(user, "更新成功", c)
+}
+
+// DisableUser 禁用用户（管理员）
+// @Tags     User
+// @Summary  禁用用户（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "用户ID"
+// @Success  200  {object} response.Response{message=string} "禁用成功"
+// @Router   /playmate/users/{id}/disable [post]
+func (a *UserApi) DisableUser(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.UserService.DisableUser(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("禁用成功", c)
+}
+
+// EnableUser 启用用户（管理员）
+// @Tags     User
+// @Summary  启用用户（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "用户ID"
+// @Success  200  {object} response.Response{message=string} "启用成功"
+// @Router   /playmate/users/{id}/enable [post]
+func (a *UserApi) EnableUser(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err = service.ServiceGroupApp.UserService.EnableUser(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("启用成功", c)
+}
+
+// ResetPassword 重置用户密码（管理员）
+// @Tags     User
+// @Summary  重置用户密码（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id   path      uint    true "用户ID"
+// @Success  200  {object} response.Response{data=map[string]string} "重置成功"
+// @Router   /playmate/users/{id}/reset-password [post]
+func (a *UserApi) ResetPassword(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	newPassword, err := service.ServiceGroupApp.UserService.ResetPassword(uint(id))
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"password": newPassword,
+	}, "重置成功", c)
+}
+
+// GetUserStats 获取用户统计数据
+// @Tags     User
+// @Summary  获取用户统计数据
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    startTime query    string  false "开始时间"
+// @Param    endTime   query    string  false "结束时间"
+// @Success  200       {object}  response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/users/stats [get]
+func (a *UserApi) GetUserStats(c *gin.Context) {
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+
+	stats, err := service.ServiceGroupApp.UserService.GetUserStats(startTime, endTime)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(stats, "获取成功", c)
+}
+
+// ExportUsers 导出用户列表
+// @Tags     User
+// @Summary  导出用户列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/vnd.ms-excel
+// @Param    keyword    query    string  false "关键词"
+// @Param    vipLevel   query    int     false "VIP等级"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Success  200        {file}    file    "导出成功"
+// @Router   /playmate/users/export [get]
+func (a *UserApi) ExportUsers(c *gin.Context) {
+	keyword := c.Query("keyword")
+	vipLevelStr := c.Query("vipLevel")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+
+	vipLevel := 0
+	if vipLevelStr != "" {
+		vipLevel, _ = strconv.Atoi(vipLevelStr)
+	}
+
+	excelData, err := service.ServiceGroupApp.UserService.ExportUsers(keyword, vipLevel, startTime, endTime)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	c.Header("Content-Type", "application/vnd.ms-excel")
+	c.Header("Content-Disposition", "attachment; filename=users.xlsx")
+	c.Data(200, "application/vnd.ms-excel", excelData)
+}

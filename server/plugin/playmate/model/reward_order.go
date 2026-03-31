@@ -11,12 +11,12 @@ import (
 type RewardOrder struct {
 	global.GVA_MODEL
 	UserID        uint           `json:"userId" gorm:"index"`
-	Game          string         `json:"game" gorm:"size:100;not null"`
+	Game          string         `json:"game" gorm:"size:100;not null;index"`
 	Title         string         `json:"title" gorm:"size:200"` // 订单标题
 	Content       string         `json:"content" gorm:"type:text;not null"`
 	Reward        float64        `json:"reward" gorm:"type:decimal(10,2);not null"`
-	PaymentMethod string         `json:"paymentMethod" gorm:"size:20;not null"`              // prepay 预付, postpay 现付
-	Status        string         `json:"status" gorm:"size:20;not null;default:'available'"` // available 可抢单, ongoing 进行中, completed 已完成, draft 草稿, cancelled 已取消, expired 已过期
+	PaymentMethod string         `json:"paymentMethod" gorm:"size:20;not null;index"`              // prepay 预付, postpay 现付
+	Status        string         `json:"status" gorm:"size:20;not null;default:'available';index"` // available 可抢单, ongoing 进行中, completed 已完成, draft 草稿, cancelled 已取消, expired 已过期
 	TimeLeft      string         `json:"timeLeft" gorm:"size:50;not null"`
 	GameRank      string         `json:"gameRank" gorm:"size:50;not null"`
 	StartTime     string         `json:"startTime" gorm:"size:50;not null"`
@@ -24,7 +24,7 @@ type RewardOrder struct {
 	Location      string         `json:"location" gorm:"size:255;not null"`
 	Tags          string         `json:"tags" gorm:"type:text"`         // 以逗号分隔的标签
 	Requirements  string         `json:"requirements" gorm:"type:text"` // 以逗号分隔的要求
-	CreatedAt     time.Time      `json:"createdAt"`
+	CreatedAt     time.Time      `json:"createdAt" gorm:"index"`
 	UpdatedAt     time.Time      `json:"updatedAt"`
 	DeletedAt     gorm.DeletedAt `json:"-" gorm:"index"`
 }

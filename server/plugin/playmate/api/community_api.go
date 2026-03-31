@@ -113,13 +113,14 @@ func (a *CommunityApi) LikePost(c *gin.Context) {
 // @accept   application/json
 // @Produce  application/json
 // @Param    postId path     string true "帖子ID"
-// @Param    data  body     map[string]string true "评论内容"
+// @Param    data  body     map[string]interface{} true "评论内容"
 // @Success  200  {object} response.Response{data=model.Comment,msg=string} "评论成功"
 // @Router   /playmate/community/posts/{postId}/comments [post]
 func (a *CommunityApi) CommentPost(c *gin.Context) {
 	postId := c.Param("postId")
 	var req struct {
-		Content string `json:"content" binding:"required"`
+		Content  string `json:"content" binding:"required"`
+		ParentID *uint  `json:"parentId"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage("参数错误", c)
@@ -135,12 +136,57 @@ func (a *CommunityApi) CommentPost(c *gin.Context) {
 		response.FailWithMessage("未获取到用户ID", c)
 		return
 	}
-	comment, err := service.ServiceGroupApp.CommunityService.CommentPost(userID, uint(postID), req.Content)
+	comment, err := service.ServiceGroupApp.CommunityService.CommentPost(userID, uint(postID), req.Content, req.ParentID)
 	if err != nil {
 		response.FailWithMessage("评论帖子失败", c)
 		return
 	}
 	response.OkWithData(comment, c)
+}
+
+// GetPostComments 获取帖子评论列表
+// @Tags     Community
+// @Summary  获取帖子评论列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    postId path     string true "帖子ID"
+// @Param    page     query    int     false "页码"
+// @Param    pageSize query    int     false "每页数量"
+// @Success  200  {object} response.Response{data=[]model.Comment,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/community/posts/{postId}/comments [get]
+func (a *CommunityApi) GetPostComments(c *gin.Context) {
+	postIdStr := c.Param("postId")
+	postId, err := strconv.ParseUint(postIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	// 设置默认值
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	comments, total, err := service.ServiceGroupApp.CommunityService.GetPostComments(uint(postId), page, pageSize)
+	if err != nil {
+		response.FailWithMessage("获取评论列表失败", c)
+		return
+	}
+	response.OkWithDetailed(gin.H{
+		"data": comments,
+		"pagination": gin.H{
+			"currentPage": page,
+			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
 }
 
 // CreatePost 创建帖子

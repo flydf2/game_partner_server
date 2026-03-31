@@ -28,14 +28,17 @@ func (CommunityPost) TableName() string {
 
 // Comment 评论模型
 type Comment struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-	PostID    uint           `json:"postId"`
-	UserID    uint           `json:"userId"`
-	Content   string         `json:"content"`
-	Likes     int            `json:"likes"`
+	ID           uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time      `json:"createdAt"`
+	UpdatedAt    time.Time      `json:"updatedAt"`
+	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	PostID       uint           `json:"postId"`
+	UserID       uint           `json:"userId"`
+	User         User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
+	Content      string         `json:"content"`
+	Likes        int            `json:"likes"`
+	ParentID     *uint          `json:"parentId"` // 被引用的评论ID
+	ParentComment *Comment      `gorm:"foreignKey:ParentID;constraint:OnDelete:CASCADE" json:"parentComment,omitempty"` // 被引用的评论
 }
 
 // TableName 设置Comment表名

@@ -26,6 +26,11 @@ func GetApis() []model.SysApi {
 		{Path: "/experts/:id/follow", Method: "POST", Description: "关注专家", ApiGroup: "playmate"},
 		{Path: "/experts/:id/follow", Method: "DELETE", Description: "取消关注专家", ApiGroup: "playmate"},
 		{Path: "/experts/:id/reviews", Method: "GET", Description: "获取专家评价", ApiGroup: "playmate"},
+		{Path: "/experts/verifications", Method: "GET", Description: "获取专家认证列表", ApiGroup: "playmate"},
+		{Path: "/experts/verifications/:id", Method: "GET", Description: "获取专家认证详情", ApiGroup: "playmate"},
+		{Path: "/experts/verifications/batch", Method: "POST", Description: "批量处理专家认证", ApiGroup: "playmate"},
+		{Path: "/experts/verifications/export", Method: "GET", Description: "导出专家认证数据", ApiGroup: "playmate"},
+		{Path: "/experts/verifications/stats", Method: "GET", Description: "获取专家认证统计", ApiGroup: "playmate"},
 
 		// 用户相关API
 		{Path: "/user/info", Method: "GET", Description: "获取用户信息", ApiGroup: "playmate"},
@@ -40,12 +45,24 @@ func GetApis() []model.SysApi {
 		{Path: "/auth/register", Method: "POST", Description: "用户注册", ApiGroup: "playmate"},
 		{Path: "/auth/logout", Method: "POST", Description: "用户登出", ApiGroup: "playmate"},
 		{Path: "/auth/refresh", Method: "POST", Description: "刷新令牌", ApiGroup: "playmate"},
+		{Path: "/users", Method: "GET", Description: "获取用户列表", ApiGroup: "playmate"},
+		{Path: "/users/:id", Method: "GET", Description: "获取用户详情", ApiGroup: "playmate"},
+		{Path: "/users/:id", Method: "PUT", Description: "更新用户", ApiGroup: "playmate"},
+		{Path: "/users/:id/disable", Method: "POST", Description: "禁用用户", ApiGroup: "playmate"},
+		{Path: "/users/:id/enable", Method: "POST", Description: "启用用户", ApiGroup: "playmate"},
+		{Path: "/users/:id/reset-password", Method: "POST", Description: "重置用户密码", ApiGroup: "playmate"},
+		{Path: "/users/stats", Method: "GET", Description: "获取用户统计", ApiGroup: "playmate"},
+		{Path: "/users/export", Method: "GET", Description: "导出用户数据", ApiGroup: "playmate"},
 
 		// 订单相关API
 		{Path: "/orders", Method: "GET", Description: "获取订单列表", ApiGroup: "playmate"},
 		{Path: "/orders/:id", Method: "GET", Description: "获取订单详情", ApiGroup: "playmate"},
 		{Path: "/orders", Method: "POST", Description: "创建订单", ApiGroup: "playmate"},
 		{Path: "/orders/:id/confirmation", Method: "GET", Description: "获取订单确认", ApiGroup: "playmate"},
+		{Path: "/orders/all", Method: "GET", Description: "获取所有订单列表", ApiGroup: "playmate"},
+		{Path: "/orders/batch", Method: "POST", Description: "批量处理订单", ApiGroup: "playmate"},
+		{Path: "/orders/stats", Method: "GET", Description: "获取订单统计", ApiGroup: "playmate"},
+		{Path: "/orders/export", Method: "GET", Description: "导出订单数据", ApiGroup: "playmate"},
 
 		// 通知相关API
 		{Path: "/notifications", Method: "GET", Description: "获取通知列表", ApiGroup: "playmate"},
@@ -78,7 +95,19 @@ func GetApis() []model.SysApi {
 		// 分类相关API
 		{Path: "/categories", Method: "GET", Description: "获取分类列表", ApiGroup: "playmate"},
 		{Path: "/game-categories", Method: "GET", Description: "获取游戏分类", ApiGroup: "playmate"},
+		{Path: "/game-categories/:id", Method: "GET", Description: "获取游戏分类详情", ApiGroup: "playmate"},
+		{Path: "/game-categories", Method: "POST", Description: "创建游戏分类", ApiGroup: "playmate"},
+		{Path: "/game-categories/:id", Method: "PUT", Description: "更新游戏分类", ApiGroup: "playmate"},
+		{Path: "/game-categories/:id", Method: "DELETE", Description: "删除游戏分类", ApiGroup: "playmate"},
 		{Path: "/game-categories/:category/games", Method: "GET", Description: "获取分类游戏", ApiGroup: "playmate"},
+
+		// 统计分析API
+		{Path: "/stats/dashboard", Method: "GET", Description: "获取仪表盘统计数据", ApiGroup: "playmate"},
+		{Path: "/stats/orders", Method: "GET", Description: "获取订单统计数据", ApiGroup: "playmate"},
+		{Path: "/stats/users", Method: "GET", Description: "获取用户统计数据", ApiGroup: "playmate"},
+		{Path: "/stats/experts", Method: "GET", Description: "获取专家统计数据", ApiGroup: "playmate"},
+		{Path: "/stats/revenue", Method: "GET", Description: "获取收入统计数据", ApiGroup: "playmate"},
+		{Path: "/stats/trend", Method: "GET", Description: "获取趋势统计数据", ApiGroup: "playmate"},
 	}
 }
 
@@ -289,6 +318,51 @@ func GetMenus() []model.SysBaseMenu {
 			Meta: model.Meta{
 				Title:     "活动管理",
 				Icon:      "calendar",
+				KeepAlive: true,
+				CloseTab:  false,
+			},
+		},
+		// 子菜单：游戏分类管理
+		{
+			Path:      "gameCategoryList",
+			Name:      "gameCategoryList",
+			Hidden:    false,
+			Component: "plugin/playmate/view/gameCategoryList.vue",
+			Sort:      9,
+			ParentId:  1,
+			Meta: model.Meta{
+				Title:     "游戏分类管理",
+				Icon:      "category",
+				KeepAlive: true,
+				CloseTab:  false,
+			},
+		},
+		// 子菜单：专家认证管理
+		{
+			Path:      "expertVerificationList",
+			Name:      "expertVerificationList",
+			Hidden:    false,
+			Component: "plugin/playmate/view/expertVerificationList.vue",
+			Sort:      10,
+			ParentId:  1,
+			Meta: model.Meta{
+				Title:     "专家认证管理",
+				Icon:      "identity",
+				KeepAlive: true,
+				CloseTab:  false,
+			},
+		},
+		// 子菜单：统计分析
+		{
+			Path:      "statsDashboard",
+			Name:      "statsDashboard",
+			Hidden:    false,
+			Component: "plugin/playmate/view/statsDashboard.vue",
+			Sort:      11,
+			ParentId:  1,
+			Meta: model.Meta{
+				Title:     "统计分析",
+				Icon:      "data-analysis",
 				KeepAlive: true,
 				CloseTab:  false,
 			},

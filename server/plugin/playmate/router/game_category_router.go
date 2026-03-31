@@ -12,6 +12,10 @@ func (r *GameCategoryRouter) InitGameCategoryRouter(router *gin.RouterGroup) {
 	gameCategoryRouter := router.Group("/game-categories")
 	{
 		gameCategoryRouter.GET("", api.ApiGroupApp.GameCategoryApi.GetCategories)
-		gameCategoryRouter.GET("/:category/games", api.ApiGroupApp.GameCategoryApi.GetGamesByCategory)
+		gameCategoryRouter.GET("/:id", api.ApiGroupApp.GameCategoryApi.GetCategoryById)
+		gameCategoryRouter.POST("", api.ApiGroupApp.GameCategoryApi.CreateCategory)
+		gameCategoryRouter.PUT("/:id", api.ApiGroupApp.GameCategoryApi.UpdateCategory)
+		gameCategoryRouter.DELETE("/:id", api.ApiGroupApp.GameCategoryApi.DeleteCategory)
+		gameCategoryRouter.GET("/:id/games", api.ApiGroupApp.GameCategoryApi.GetGamesByCategory)
 	}
 }

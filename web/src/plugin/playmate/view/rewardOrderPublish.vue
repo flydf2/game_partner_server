@@ -45,7 +45,11 @@
             maxlength="500"
             show-word-limit
             style="width: 500px"
+            @input="handleContentInput"
           />
+          <div class="content-tip" v-if="form.content.length > 0">
+            {{ form.content.length }}/500 字
+          </div>
         </el-form-item>
 
         <!-- 悬赏金额 -->
@@ -86,7 +90,7 @@
         </el-form-item>
 
         <!-- 标签 -->
-        <el-form-item label="标签">
+        <el-form-item label="标签" prop="tags">
           <el-select
             v-model="form.tags"
             multiple
@@ -103,7 +107,7 @@
               :value="tag"
             />
           </el-select>
-          <div class="form-tip">添加标签可以让更多大神看到您的订单</div>
+          <div class="form-tip">添加标签可以让更多大神看到您的订单（最多5个标签）</div>
         </el-form-item>
 
         <!-- 要求 -->
@@ -224,16 +228,26 @@ const rules = {
   ],
   reward: [
     { required: true, message: '请输入悬赏金额', trigger: 'blur' },
-    { type: 'number', min: 1, message: '金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 1, message: '金额必须大于0', trigger: 'blur' },
+    { type: 'number', max: 10000, message: '金额不能超过10000元', trigger: 'blur' }
   ],
   paymentMethod: [
     { required: true, message: '请选择支付方式', trigger: 'change' }
+  ],
+  tags: [
+    { required: true, message: '请至少添加一个标签', trigger: 'change' },
+    { type: 'array', max: 5, message: '最多添加5个标签', trigger: 'change' }
   ]
 }
 
 // 成功对话框
 const successDialogVisible = ref(false)
 const publishedOrderId = ref(null)
+
+// 内容输入处理
+const handleContentInput = () => {
+  // 可以在这里添加额外的输入处理逻辑
+}
 
 // 添加要求
 const addRequirement = () => {
@@ -269,9 +283,11 @@ const handleSubmit = async () => {
     if (result) {
       publishedOrderId.value = result.orderId
       successDialogVisible.value = true
+    } else {
+      ElMessage.error('发布失败，请稍后重试')
     }
   } catch (error) {
-    ElMessage.error(error.message || '发布失败')
+    ElMessage.error(error.message || '发布失败，请检查网络连接')
   }
 }
 
@@ -342,6 +358,13 @@ const handleContinuePublish = () => {
   margin-top: 8px;
   font-size: 12px;
   color: #909399;
+}
+
+.content-tip {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #409eff;
+  text-align: right;
 }
 
 .requirements-list {

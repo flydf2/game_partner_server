@@ -464,3 +464,181 @@ func (s *OrderService) ShareOrder(orderID, userID uint, platform string) (map[st
 
 	return shareData, nil
 }
+
+// GetAllOrders 获取所有订单列表（管理员）
+func (s *OrderService) GetAllOrders(search request.OrderSearch) ([]model.Order, int64, error) {
+	var orders []model.Order
+	var total int64
+
+	query := global.GVA_DB.Model(&model.Order{})
+
+	// 应用搜索条件
+	if search.Status != "" && search.Status != "all" {
+		query = query.Where("status = ?", search.Status)
+	}
+	if search.Game != "" {
+		query = query.Where("game = ?", search.Game)
+	}
+	if search.StartTime != "" {
+		query = query.Where("created_at >= ?", search.StartTime)
+	}
+	if search.EndTime != "" {
+		query = query.Where("created_at <= ?", search.EndTime)
+	}
+	if search.MinAmount > 0 {
+		query = query.Where("amount >= ?", search.MinAmount)
+	}
+	if search.MaxAmount > 0 {
+		query = query.Where("amount <= ?", search.MaxAmount)
+	}
+	if search.Quantity > 0 {
+		query = query.Where("quantity = ?", search.Quantity)
+	}
+	if search.UserID > 0 {
+		query = query.Where("user_id = ?", search.UserID)
+	}
+	if search.PlaymateID > 0 {
+		query = query.Where("playmate_id = ?", search.PlaymateID)
+	}
+	if search.Keyword != "" {
+		query = query.Where("game LIKE ? OR skill LIKE ? OR order_number LIKE ?", "%"+search.Keyword+"%", "%"+search.Keyword+"%", "%"+search.Keyword+"%")
+	}
+
+	// 计算总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页
+	offset := (search.Page - 1) * search.PageSize
+
+	// 执行查询
+	if err := query.Offset(offset).Limit(search.PageSize).Order("created_at DESC").Find(&orders).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return orders, total, nil
+}
+
+// BatchHandleOrders 批量处理订单
+func (s *OrderService) BatchHandleOrders(req request.BatchHandleOrdersRequest) error {
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, id := range req.IDs {
+		var order model.Order
+		if err := tx.First(&order, id).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 更新订单状态
+		order.Status = req.Status
+		if err := tx.Save(&order).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// 如果订单被拒绝或取消，需要退款
+		if req.Status == "rejected" || req.Status == "cancelled" {
+			// 退款逻辑：将金额退回用户钱包
+			var wallet model.UserWallet
+			if err := tx.Where("user_id = ?", order.UserID).First(&wallet).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+
+			// 增加余额
+			wallet.Balance += order.Amount
+			if err := tx.Save(&wallet).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+
+			// 创建退款交易记录
+			transaction := model.Transaction{
+				UserID:      order.UserID,
+				Type:        "refund",
+				Amount:      order.Amount,
+				Description: "订单" + req.Status + "退款",
+				Time:        time.Now(),
+			}
+			if err := tx.Create(&transaction).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+// GetOrderStats 获取订单统计数据
+func (s *OrderService) GetOrderStats(startTime, endTime, game string) (map[string]interface{}, error) {
+	var totalCount int64
+	var totalAmount float64
+	var pendingCount int64
+	var completedCount int64
+	var cancelledCount int64
+	var acceptedCount int64
+	var rejectedCount int64
+
+	query := global.GVA_DB.Model(&model.Order{})
+
+	// 应用时间过滤
+	if startTime != "" {
+		query = query.Where("created_at >= ?", startTime)
+	}
+	if endTime != "" {
+		query = query.Where("created_at <= ?", endTime)
+	}
+
+	// 应用游戏过滤
+	if game != "" {
+		query = query.Where("game = ?", game)
+	}
+
+	// 计算总数
+	query.Count(&totalCount)
+
+	// 计算总金额
+	query.Select("COALESCE(SUM(amount), 0) as total_amount").Scan(&totalAmount)
+
+	// 计算各状态数量
+	query.Where("status = ?", "pending").Count(&pendingCount)
+	query.Where("status = ?", "completed").Count(&completedCount)
+	query.Where("status = ?", "cancelled").Count(&cancelledCount)
+	query.Where("status = ?", "accepted").Count(&acceptedCount)
+	query.Where("status = ?", "rejected").Count(&rejectedCount)
+
+	// 构建统计数据
+	stats := map[string]interface{}{
+		"totalCount":    totalCount,
+		"totalAmount":   totalAmount,
+		"pendingCount":  pendingCount,
+		"completedCount": completedCount,
+		"cancelledCount": cancelledCount,
+		"acceptedCount":  acceptedCount,
+		"rejectedCount":  rejectedCount,
+		"completionRate": 0.0,
+	}
+
+	// 计算完成率
+	if totalCount > 0 {
+		stats["completionRate"] = float64(completedCount) / float64(totalCount)
+	}
+
+	return stats, nil
+}
+
+// ExportOrders 导出订单列表
+func (s *OrderService) ExportOrders(search request.OrderSearch) ([]byte, error) {
+	// 这里可以实现导出Excel的逻辑
+	// 暂时返回空数据，实际项目中可以使用excelize等库实现
+	return []byte{}, nil
+}

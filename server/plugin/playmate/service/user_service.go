@@ -980,3 +980,216 @@ func (s *UserService) HandlePaymentCallback(orderID string, status string) (map[
 
 	return nil, response.NewPlaymateError(response.ErrInvalidStatus)
 }
+
+// GetUserById 根据ID获取用户详情（管理员）
+func (s *UserService) GetUserById(userID uint) (model.User, error) {
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.User{}, response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return model.User{}, err
+	}
+
+	// 从钱包中获取最新的余额
+	var wallet model.UserWallet
+	if err := global.GVA_DB.Where("user_id = ?", userID).First(&wallet).Error; err == nil {
+		// 更新用户余额为钱包余额
+		user.Balance = wallet.Balance
+		// 保存更新后的用户信息
+		global.GVA_DB.Save(&user)
+	}
+
+	return user, nil
+}
+
+// UpdateUser 更新用户信息（管理员）
+func (s *UserService) UpdateUser(userID uint, req playmateRequest.UpdateUserRequest) (model.User, error) {
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.User{}, response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return model.User{}, err
+	}
+
+	// 开始事务
+	tx := global.GVA_DB.Begin()
+
+	// 更新字段
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.Nickname != "" {
+		user.Nickname = req.Nickname
+	}
+	if req.Phone != "" {
+		// 检查手机号是否已被其他用户使用
+		var existingUser model.User
+		if err := tx.Where("phone = ? AND id != ?", req.Phone, userID).First(&existingUser).Error; err == nil {
+			tx.Rollback()
+			return model.User{}, response.NewPlaymateError(response.ErrPhoneAlreadyRegistered)
+		}
+		user.Phone = req.Phone
+	}
+	if req.Avatar != "" {
+		user.Avatar = req.Avatar
+	}
+	if req.Gender != "" {
+		user.Gender = req.Gender
+	}
+	if req.Birthday != "" {
+		user.Birthday = req.Birthday
+	}
+	if req.Bio != "" {
+		user.Bio = req.Bio
+	}
+	if req.Location != "" {
+		user.Location = req.Location
+	}
+	if req.VipLevel > 0 {
+		user.VipLevel = req.VipLevel
+	}
+	if req.CouponCount >= 0 {
+		user.CouponCount = req.CouponCount
+	}
+
+	if err := tx.Save(&user).Error; err != nil {
+		tx.Rollback()
+		return model.User{}, err
+	}
+
+	// 如果更新了余额，同时更新钱包
+	if req.Balance >= 0 {
+		var wallet model.UserWallet
+		if err := tx.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// 创建新钱包
+				wallet = model.UserWallet{
+					UserID:       userID,
+					Balance:      req.Balance,
+					Frozen:       0,
+					TotalIncome:  0,
+					TotalExpense: 0,
+				}
+				if err := tx.Create(&wallet).Error; err != nil {
+					tx.Rollback()
+					return model.User{}, err
+				}
+			} else {
+				tx.Rollback()
+				return model.User{}, err
+			}
+		} else {
+			// 更新钱包余额
+			wallet.Balance = req.Balance
+			if err := tx.Save(&wallet).Error; err != nil {
+				tx.Rollback()
+				return model.User{}, err
+			}
+		}
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return model.User{}, err
+	}
+
+	return user, nil
+}
+
+// DisableUser 禁用用户（管理员）
+func (s *UserService) DisableUser(userID uint) error {
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return err
+	}
+
+	// 这里可以添加禁用逻辑，例如更新用户状态字段
+	// 暂时返回成功
+	return nil
+}
+
+// EnableUser 启用用户（管理员）
+func (s *UserService) EnableUser(userID uint) error {
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return err
+	}
+
+	// 这里可以添加启用逻辑，例如更新用户状态字段
+	// 暂时返回成功
+	return nil
+}
+
+// ResetPassword 重置用户密码（管理员）
+func (s *UserService) ResetPassword(userID uint) (string, error) {
+	var user model.User
+	if err := global.GVA_DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", response.NewPlaymateError(response.ErrUserNotFound)
+		}
+		return "", err
+	}
+
+	// 生成新密码
+	newPassword := utils.RandomString(8)
+
+	// 加密密码
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	// 更新密码
+	user.Password = string(hashedPassword)
+	if err := global.GVA_DB.Save(&user).Error; err != nil {
+		return "", err
+	}
+
+	return newPassword, nil
+}
+
+// GetUserStats 获取用户统计数据
+func (s *UserService) GetUserStats(startTime, endTime string) (map[string]interface{}, error) {
+	var totalUsers int64
+	var newUsers int64
+	var activeUsers int64
+
+	query := global.GVA_DB.Model(&model.User{})
+
+	// 计算总用户数
+	query.Count(&totalUsers)
+
+	// 计算新用户数（在指定时间范围内注册的用户）
+	if startTime != "" {
+		query.Where("created_at >= ?", startTime).Count(&newUsers)
+	}
+
+	// 计算活跃用户数（在指定时间范围内有交易记录的用户）
+	if startTime != "" {
+		global.GVA_DB.Model(&model.Transaction{}).Where("created_at >= ?", startTime).Distinct("user_id").Count(&activeUsers)
+	}
+
+	// 构建统计数据
+	stats := map[string]interface{}{
+		"totalUsers":  totalUsers,
+		"newUsers":    newUsers,
+		"activeUsers": activeUsers,
+	}
+
+	return stats, nil
+}
+
+// ExportUsers 导出用户列表
+func (s *UserService) ExportUsers(keyword string, vipLevel int, startTime, endTime string) ([]byte, error) {
+	// 这里可以实现导出Excel的逻辑
+	// 暂时返回空数据，实际项目中可以使用excelize等库实现
+	return []byte{}, nil
+}

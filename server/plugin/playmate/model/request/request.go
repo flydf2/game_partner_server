@@ -98,16 +98,25 @@ type ActivitySearch struct {
 
 // OrderSearch 订单搜索请求
 type OrderSearch struct {
-	Status    string  `json:"status" form:"status"`
-	Game      string  `json:"game" form:"game"`
-	StartTime string  `json:"startTime" form:"startTime"`
-	EndTime   string  `json:"endTime" form:"endTime"`
-	MinAmount float64 `json:"minAmount" form:"minAmount"`
-	MaxAmount float64 `json:"maxAmount" form:"maxAmount"`
-	Quantity  int     `json:"quantity" form:"quantity"`
-	Keyword   string  `json:"keyword" form:"keyword"`
-	Page      int     `json:"page" form:"page"`
-	PageSize  int     `json:"pageSize" form:"pageSize"`
+	Status     string  `json:"status" form:"status"`
+	Game       string  `json:"game" form:"game"`
+	StartTime  string  `json:"startTime" form:"startTime"`
+	EndTime    string  `json:"endTime" form:"endTime"`
+	MinAmount  float64 `json:"minAmount" form:"minAmount"`
+	MaxAmount  float64 `json:"maxAmount" form:"maxAmount"`
+	Quantity   int     `json:"quantity" form:"quantity"`
+	UserID     uint    `json:"userId" form:"userId"`
+	PlaymateID uint    `json:"playmateId" form:"playmateId"`
+	Keyword    string  `json:"keyword" form:"keyword"`
+	Page       int     `json:"page" form:"page"`
+	PageSize   int     `json:"pageSize" form:"pageSize"`
+}
+
+// BatchHandleOrdersRequest 批量处理订单请求
+type BatchHandleOrdersRequest struct {
+	IDs    []uint `json:"ids" binding:"required"`
+	Status string `json:"status" binding:"required,oneof=pending completed cancelled accepted rejected"`
+	Reason string `json:"reason" binding:"omitempty"`
 }
 
 // CategorySearch 分类搜索请求
@@ -278,6 +287,22 @@ type RechargeRequest struct {
 	NotifyURL string  `json:"notifyUrl" binding:"omitempty"`
 }
 
+// UpdateUserRequest 更新用户信息请求（管理员）
+type UpdateUserRequest struct {
+	Username    string  `json:"username" binding:"omitempty"`
+	Nickname    string  `json:"nickname" binding:"omitempty"`
+	Phone       string  `json:"phone" binding:"omitempty"`
+	Avatar      string  `json:"avatar" binding:"omitempty"`
+	Gender      string  `json:"gender" binding:"omitempty"`
+	Birthday    string  `json:"birthday" binding:"omitempty"`
+	Bio         string  `json:"bio" binding:"omitempty"`
+	Location    string  `json:"location" binding:"omitempty"`
+	VipLevel    int     `json:"vipLevel" binding:"omitempty,min=0"`
+	Balance     float64 `json:"balance" binding:"omitempty,min=0"`
+	CouponCount int     `json:"couponCount" binding:"omitempty,min=0"`
+	Status      string  `json:"status" binding:"omitempty,oneof=active disabled"`
+}
+
 // SendSmsCodeRequest 发送短信验证码请求
 type SendSmsCodeRequest struct {
 	Phone string `json:"phone" binding:"required"`
@@ -408,4 +433,11 @@ type ExpertVerificationSearch struct {
 	EndTime   string `json:"endTime" form:"endTime"`
 	Page      int    `json:"page" form:"page"`
 	PageSize  int    `json:"pageSize" form:"pageSize"`
+}
+
+// BatchHandleExpertVerificationRequest 批量处理专家认证申请请求
+type BatchHandleExpertVerificationRequest struct {
+	IDs    []uint `json:"ids" binding:"required"`
+	Status string `json:"status" binding:"required,oneof=approved rejected"`
+	Reason string `json:"reason" binding:"omitempty"`
 }

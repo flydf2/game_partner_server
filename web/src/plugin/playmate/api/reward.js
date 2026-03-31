@@ -7,6 +7,8 @@ import service from '@/utils/request'
  * @param {number} params.pageSize 每页数量
  * @param {string} params.status 订单状态
  * @param {string} params.game 游戏
+ * @param {string} params.paymentMethod 支付方式
+ * @param {string} params.keyword 关键词
  * @returns {Promise} 订单列表数据
  */
 export const getRewardOrders = (params = {}) => {
@@ -149,5 +151,19 @@ export const confirmService = (orderId, data) => {
     url: `/playmate/api/reward/${orderId}/confirm`,
     method: 'post',
     data
+  })
+}
+
+/**
+ * 分享订单
+ * @param {number} orderId 订单ID
+ * @param {string} platform 分享平台
+ * @returns {Promise} 分享结果
+ */
+export const shareRewardOrder = (orderId, platform) => {
+  return service({
+    url: `/playmate/api/reward/${orderId}/share`,
+    method: 'post',
+    data: { platform }
   })
 }

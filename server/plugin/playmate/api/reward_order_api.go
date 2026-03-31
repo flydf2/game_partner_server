@@ -489,3 +489,37 @@ func (a *RewardOrderApi) WithdrawGrabOrder(c *gin.Context) {
 		"message": "申请已撤回",
 	}, "操作成功", c)
 }
+
+// CancelRewardOrder 取消悬赏订单
+// @Tags     RewardOrder
+// @Summary  取消悬赏订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    orderId   path      uint  true "订单ID"
+// @Success  200       {object} response.Response{data=map[string]string,msg=string} "取消成功"
+// @Router   /playmate/reward/{orderId}/cancel [post]
+func (a *RewardOrderApi) CancelRewardOrder(c *gin.Context) {
+	orderIdStr := c.Param("orderId")
+	orderId, err := strconv.ParseUint(orderIdStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取用户ID
+	uid := middleware.GetCurrentUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("未获取到用户ID", c)
+		return
+	}
+
+	if err := service.ServiceGroupApp.RewardOrderService.CancelRewardOrder(uint(orderId), uid); err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"message": "订单已取消",
+	}, "取消成功", c)
+}

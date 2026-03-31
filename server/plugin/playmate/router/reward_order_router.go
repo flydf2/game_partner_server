@@ -39,6 +39,8 @@ func (r *RewardOrderRouter) InitRewardOrderRouter(Router *gin.RouterGroup) {
 		rewardOrderRouter.POST("/:orderId/confirm", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.ConfirmService)
 		// 分享悬赏订单
 		rewardOrderRouter.POST("/:orderId/share", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.ShareRewardOrder)
+		// 取消订单
+		rewardOrderRouter.POST("/:orderId/cancel", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.RewardOrderApi.CancelRewardOrder)
 	}
 
 	// 抢单相关路由

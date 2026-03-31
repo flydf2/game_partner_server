@@ -60,11 +60,12 @@ func (s *CommunityService) LikePost(postId uint) error {
 }
 
 // CommentPost 评论帖子
-func (s *CommunityService) CommentPost(userId, postId uint, content string) (model.Comment, error) {
+func (s *CommunityService) CommentPost(userId, postId uint, content string, parentId *uint) (model.Comment, error) {
 	comment := model.Comment{
-		PostID:  postId,
-		UserID:  userId,
-		Content: content,
+		PostID:   postId,
+		UserID:   userId,
+		Content:  content,
+		ParentID: parentId,
 	}
 	err := global.GVA_DB.Create(&comment).Error
 	if err == nil {
@@ -72,6 +73,30 @@ func (s *CommunityService) CommentPost(userId, postId uint, content string) (mod
 		global.GVA_DB.Model(&model.CommunityPost{}).Where("id = ?", postId).Update("comments", gorm.Expr("comments + 1"))
 	}
 	return comment, err
+}
+
+// GetPostComments 获取帖子评论列表
+func (s *CommunityService) GetPostComments(postId uint, page, pageSize int) ([]model.Comment, int64, error) {
+	var comments []model.Comment
+	var total int64
+
+	query := global.GVA_DB.Model(&model.Comment{}).Where("post_id = ?", postId).Preload("User").Preload("ParentComment").Preload("ParentComment.User")
+
+	// 计算总数
+	query.Count(&total)
+
+	// 分页
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	offset := (page - 1) * pageSize
+
+	// 获取数据
+	err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&comments).Error
+	return comments, total, err
 }
 
 // CreatePost 创建帖子

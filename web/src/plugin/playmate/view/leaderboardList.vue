@@ -260,7 +260,7 @@ import {
   deleteLeaderboard,
   generateLeaderboard,
   getLeaderboardWithItems
-} from '../api/playmate.js'
+} from '@/api/plugin/playmate.js'
 import { formatDate } from '@/utils/format'
 
 // 搜索表单

@@ -35,6 +35,18 @@ func (r *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 
 	// 获取用户列表（需要认证）
 	router.GET("/users", middleware.CombinedAuthMiddleware(), api.ApiGroupApp.UserApi.GetUsers)
+	// 新增管理员用户管理路由
+	usersRouter := router.Group("/users")
+	usersRouter.Use(middleware.CombinedAuthMiddleware())
+	{
+		usersRouter.GET("/:id", api.ApiGroupApp.UserApi.GetUserById)
+		usersRouter.PUT("/:id", api.ApiGroupApp.UserApi.UpdateUser)
+		usersRouter.POST("/:id/disable", api.ApiGroupApp.UserApi.DisableUser)
+		usersRouter.POST("/:id/enable", api.ApiGroupApp.UserApi.EnableUser)
+		usersRouter.POST("/:id/reset-password", api.ApiGroupApp.UserApi.ResetPassword)
+		usersRouter.GET("/stats", api.ApiGroupApp.UserApi.GetUserStats)
+		usersRouter.GET("/export", api.ApiGroupApp.UserApi.ExportUsers)
+	}
 
 	authRouter := router.Group("/auth")
 	{

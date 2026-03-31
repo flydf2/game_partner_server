@@ -52,3 +52,36 @@ func (s *GameCategoryService) GetGamesByCategory(category string) ([]model.Game,
 
 	return games, nil
 }
+
+// GetCategoryById 根据ID获取游戏分类
+func (s *GameCategoryService) GetCategoryById(id uint) (model.GameCategory, error) {
+	var category model.GameCategory
+	if err := global.GVA_DB.First(&category, id).Error; err != nil {
+		return category, err
+	}
+	return category, nil
+}
+
+// CreateCategory 创建游戏分类
+func (s *GameCategoryService) CreateCategory(category model.GameCategory) (model.GameCategory, error) {
+	if err := global.GVA_DB.Create(&category).Error; err != nil {
+		return category, err
+	}
+	return category, nil
+}
+
+// UpdateCategory 更新游戏分类
+func (s *GameCategoryService) UpdateCategory(category model.GameCategory) (model.GameCategory, error) {
+	if err := global.GVA_DB.Save(&category).Error; err != nil {
+		return category, err
+	}
+	return category, nil
+}
+
+// DeleteCategory 删除游戏分类
+func (s *GameCategoryService) DeleteCategory(id uint) error {
+	if err := global.GVA_DB.Delete(&model.GameCategory{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}

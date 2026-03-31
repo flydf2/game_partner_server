@@ -331,3 +331,137 @@ func (a *OrderApi) ShareOrder(c *gin.Context) {
 
 	response.OkWithDetailed(shareData, "分享成功", c)
 }
+
+// GetAllOrders 获取所有订单列表（管理员）
+// @Tags     Order
+// @Summary  获取所有订单列表（管理员）
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    status     query    string  false "订单状态"
+// @Param    game       query    string  false "游戏"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Param    minAmount  query    number  false "最小金额"
+// @Param    maxAmount  query    number  false "最大金额"
+// @Param    userId     query    uint    false "用户ID"
+// @Param    playmateId query    uint    false "陪玩ID"
+// @Param    keyword    query    string  false "关键词"
+// @Param    page       query    int     false "页码"
+// @Param    pageSize   query    int     false "每页数量"
+// @Success  200        {object} response.Response{data=[]model.Order,pagination=map[string]int64} "获取成功"
+// @Router   /playmate/orders/all [get]
+func (a *OrderApi) GetAllOrders(c *gin.Context) {
+	var search request.OrderSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 设置默认值
+	if search.Page <= 0 {
+		search.Page = 1
+	}
+	if search.PageSize <= 0 {
+		search.PageSize = 10
+	}
+
+	orders, total, err := service.ServiceGroupApp.OrderService.GetAllOrders(search)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"data": orders,
+		"pagination": gin.H{
+			"currentPage": search.Page,
+			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
+			"totalCount":  total,
+		},
+	}, "获取成功", c)
+}
+
+// BatchHandleOrders 批量处理订单
+// @Tags     Order
+// @Summary  批量处理订单
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      request.BatchHandleOrdersRequest  true "批量处理信息"
+// @Success  200   {object}  response.Response{message=string} "处理成功"
+// @Router   /playmate/orders/batch-handle [post]
+func (a *OrderApi) BatchHandleOrders(c *gin.Context) {
+	var req request.BatchHandleOrdersRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	err := service.ServiceGroupApp.OrderService.BatchHandleOrders(req)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithMessage("处理成功", c)
+}
+
+// GetOrderStats 获取订单统计数据
+// @Tags     Order
+// @Summary  获取订单统计数据
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    startTime query    string  false "开始时间"
+// @Param    endTime   query    string  false "结束时间"
+// @Param    game      query    string  false "游戏"
+// @Success  200       {object}  response.Response{data=map[string]interface{}} "获取成功"
+// @Router   /playmate/orders/stats [get]
+func (a *OrderApi) GetOrderStats(c *gin.Context) {
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	game := c.Query("game")
+
+	stats, err := service.ServiceGroupApp.OrderService.GetOrderStats(startTime, endTime, game)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	response.OkWithDetailed(stats, "获取成功", c)
+}
+
+// ExportOrders 导出订单列表
+// @Tags     Order
+// @Summary  导出订单列表
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/vnd.ms-excel
+// @Param    status     query    string  false "订单状态"
+// @Param    game       query    string  false "游戏"
+// @Param    startTime  query    string  false "开始时间"
+// @Param    endTime    query    string  false "结束时间"
+// @Param    minAmount  query    number  false "最小金额"
+// @Param    maxAmount  query    number  false "最大金额"
+// @Param    userId     query    uint    false "用户ID"
+// @Param    playmateId query    uint    false "陪玩ID"
+// @Success  200        {file}    file    "导出成功"
+// @Router   /playmate/orders/export [get]
+func (a *OrderApi) ExportOrders(c *gin.Context) {
+	var search request.OrderSearch
+	if err := c.ShouldBindQuery(&search); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	excelData, err := service.ServiceGroupApp.OrderService.ExportOrders(search)
+	if err != nil {
+		response.FailWithError(err, c)
+		return
+	}
+
+	c.Header("Content-Type", "application/vnd.ms-excel")
+	c.Header("Content-Disposition", "attachment; filename=orders.xlsx")
+	c.Data(200, "application/vnd.ms-excel", excelData)
+}

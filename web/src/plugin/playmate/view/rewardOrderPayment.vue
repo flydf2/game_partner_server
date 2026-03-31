@@ -119,7 +119,7 @@
             </template>
             <div class="tips-list">
               <p><el-icon><Lock /></el-icon> 支付过程全程加密保护</p>
-              <p><el-icon><Shield /></el-icon> 资金由平台托管，服务完成后结算</p>
+              <p><el-icon><Lock /></el-icon> 资金由平台托管，服务完成后结算</p>
               <p><el-icon><Timer /></el-icon> 订单有效期24小时</p>
             </div>
           </el-card>
@@ -163,7 +163,6 @@ import {
   Wallet,
   CreditCard,
   Lock,
-  Shield,
   Timer,
   CircleCheck
 } from '@element-plus/icons-vue'

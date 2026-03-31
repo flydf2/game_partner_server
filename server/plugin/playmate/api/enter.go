@@ -21,6 +21,7 @@ type ApiGroup struct {
 	ExpertOrderSettingApi
 	TournamentApi
 	LeaderboardApi
+	StatsApi
 }
 
 var ApiGroupApp = new(ApiGroup)
