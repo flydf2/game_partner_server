@@ -1,5 +1,6 @@
 ### 功能描述以及必要性描述
-
+mysql  密码 12345678
+mysql  账号 root
 ---
 name: gin-vue-admin
 description: |

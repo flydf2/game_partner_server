@@ -283,3 +283,142 @@ func (a *ExpertOrderSettingApi) DeleteTodayRecommendation(c *gin.Context) {
 
 	response.OkWithMessage("删除成功", c)
 }
+
+// ToggleServiceStatus 切换服务启用状态
+// @Tags     ExpertOrderSetting
+// @Summary  切换服务启用状态
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id  path      uint  true  "服务ID"
+// @Success  200 {object}  response.Response{data=model.ExpertService} "操作成功"
+// @Router   /playmate/expert/order-settings/services/{id}/status [put]
+func (a *ExpertOrderSettingApi) ToggleServiceStatus(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	service, err := svc.ServiceGroupApp.ExpertOrderSettingService.ToggleServiceStatus(uint(id))
+	if err != nil {
+		response.FailWithMessage("切换服务状态失败: "+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(service, "操作成功", c)
+}
+
+// ToggleRecommendationStatus 切换推荐启用状态
+// @Tags     ExpertOrderSetting
+// @Summary  切换推荐启用状态
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    id  path      uint  true  "推荐ID"
+// @Success  200 {object}  response.Response{data=model.TodayRecommendation} "操作成功"
+// @Router   /playmate/expert/order-settings/today-recommendations/{id}/status [put]
+func (a *ExpertOrderSettingApi) ToggleRecommendationStatus(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	recommendation, err := svc.ServiceGroupApp.ExpertOrderSettingService.ToggleRecommendationStatus(uint(id))
+	if err != nil {
+		response.FailWithMessage("切换推荐状态失败: "+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(recommendation, "操作成功", c)
+}
+
+// UpdateOrderSettingStatus 更新订单设置状态
+// @Tags     ExpertOrderSetting
+// @Summary  更新订单设置状态
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      model.ExpertOrderSetting  true  "订单设置状态信息"
+// @Success  200   {object}  response.Response{data=model.ExpertOrderSetting} "更新成功"
+// @Router   /playmate/expert/order-settings/status [put]
+func (a *ExpertOrderSettingApi) UpdateOrderSettingStatus(c *gin.Context) {
+	var setting model.ExpertOrderSetting
+	if err := c.ShouldBindJSON(&setting); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取当前用户ID作为专家ID
+	expertID := uint(1)
+	setting.ExpertID = expertID
+
+	updatedSetting, err := svc.ServiceGroupApp.ExpertOrderSettingService.UpdateOrderSetting(&setting)
+	if err != nil {
+		response.FailWithMessage("更新订单设置状态失败: "+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(updatedSetting, "更新成功", c)
+}
+
+// UpdateTimeSlots 更新时间槽设置
+// @Tags     ExpertOrderSetting
+// @Summary  更新时间槽设置
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      model.ExpertOrderSetting  true  "时间槽设置信息"
+// @Success  200   {object}  response.Response{data=model.ExpertOrderSetting} "更新成功"
+// @Router   /playmate/expert/order-settings/time-slots [put]
+func (a *ExpertOrderSettingApi) UpdateTimeSlots(c *gin.Context) {
+	var setting model.ExpertOrderSetting
+	if err := c.ShouldBindJSON(&setting); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取当前用户ID作为专家ID
+	expertID := uint(1)
+	setting.ExpertID = expertID
+
+	updatedSetting, err := svc.ServiceGroupApp.ExpertOrderSettingService.UpdateOrderSetting(&setting)
+	if err != nil {
+		response.FailWithMessage("更新时间槽设置失败: "+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(updatedSetting, "更新成功", c)
+}
+
+// UpdateAutoReply 更新自动回复设置
+// @Tags     ExpertOrderSetting
+// @Summary  更新自动回复设置
+// @Security ApiKeyAuth
+// @accept   application/json
+// @Produce  application/json
+// @Param    data  body      model.ExpertOrderSetting  true  "自动回复设置信息"
+// @Success  200   {object}  response.Response{data=model.ExpertOrderSetting} "更新成功"
+// @Router   /playmate/expert/order-settings/auto-reply [put]
+func (a *ExpertOrderSettingApi) UpdateAutoReply(c *gin.Context) {
+	var setting model.ExpertOrderSetting
+	if err := c.ShouldBindJSON(&setting); err != nil {
+		response.FailWithMessage("参数错误", c)
+		return
+	}
+
+	// 从上下文获取当前用户ID作为专家ID
+	expertID := uint(1)
+	setting.ExpertID = expertID
+
+	updatedSetting, err := svc.ServiceGroupApp.ExpertOrderSettingService.UpdateOrderSetting(&setting)
+	if err != nil {
+		response.FailWithMessage("更新自动回复设置失败: "+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(updatedSetting, "更新成功", c)
+}

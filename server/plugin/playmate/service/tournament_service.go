@@ -70,7 +70,7 @@ func (s *TournamentService) GetTournamentByID(id uint) (model.Tournament, error)
 func (s *TournamentService) GetTournamentTeams(tournamentID uint) ([]model.TournamentTeam, error) {
 	var teams []model.TournamentTeam
 	if err := global.GVA_DB.Where("tournament_id = ?", tournamentID).
-		Order("CASE WHEN rank = '冠军' THEN 1 WHEN rank = '亚军' THEN 2 WHEN rank = '季军' THEN 3 ELSE 4 END, id ASC").
+		Order("CASE WHEN `rank` = '冠军' THEN 1 WHEN `rank` = '亚军' THEN 2 WHEN `rank` = '季军' THEN 3 ELSE 4 END, id ASC").
 		Find(&teams).Error; err != nil {
 		return nil, err
 	}

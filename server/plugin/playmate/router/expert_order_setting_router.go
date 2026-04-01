@@ -14,17 +14,22 @@ func (r *ExpertOrderSettingRouter) InitExpertOrderSettingRouter(router *gin.Rout
 		// 订单设置
 		orderSettingRouter.GET("", api.ApiGroupApp.ExpertOrderSettingApi.GetOrderSetting)
 		orderSettingRouter.PUT("", api.ApiGroupApp.ExpertOrderSettingApi.UpdateOrderSetting)
+		orderSettingRouter.PUT("/status", api.ApiGroupApp.ExpertOrderSettingApi.UpdateOrderSettingStatus)
+		orderSettingRouter.PUT("/time-slots", api.ApiGroupApp.ExpertOrderSettingApi.UpdateTimeSlots)
+		orderSettingRouter.PUT("/auto-reply", api.ApiGroupApp.ExpertOrderSettingApi.UpdateAutoReply)
 
 		// 服务管理
 		orderSettingRouter.GET("/services", api.ApiGroupApp.ExpertOrderSettingApi.GetExpertServices)
 		orderSettingRouter.POST("/services", api.ApiGroupApp.ExpertOrderSettingApi.CreateExpertService)
 		orderSettingRouter.PUT("/services/:id", api.ApiGroupApp.ExpertOrderSettingApi.UpdateExpertService)
 		orderSettingRouter.DELETE("/services/:id", api.ApiGroupApp.ExpertOrderSettingApi.DeleteExpertService)
+		orderSettingRouter.PUT("/services/:id/status", api.ApiGroupApp.ExpertOrderSettingApi.ToggleServiceStatus)
 
 		// 今日推荐
 		orderSettingRouter.GET("/today-recommendations", api.ApiGroupApp.ExpertOrderSettingApi.GetTodayRecommendations)
 		orderSettingRouter.POST("/today-recommendations", api.ApiGroupApp.ExpertOrderSettingApi.CreateTodayRecommendation)
 		orderSettingRouter.PUT("/today-recommendations/:id", api.ApiGroupApp.ExpertOrderSettingApi.UpdateTodayRecommendation)
 		orderSettingRouter.DELETE("/today-recommendations/:id", api.ApiGroupApp.ExpertOrderSettingApi.DeleteTodayRecommendation)
+		orderSettingRouter.PUT("/today-recommendations/:id/status", api.ApiGroupApp.ExpertOrderSettingApi.ToggleRecommendationStatus)
 	}
 }
