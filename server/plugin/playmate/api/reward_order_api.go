@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/middleware"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/model/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/playmate/service"
@@ -24,7 +26,7 @@ type RewardOrderApi struct{}
 // @Param    pageSize    query    int     false "每页数量"
 // @Param    status      query    string  false "订单状态"
 // @Param    game        query    string  false "游戏"
-// @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
+// @Success  200         {object} response.Response{data=[]map[string]interface{},pagination=map[string]int64} "获取成功"
 // @Router   /playmate/reward [get]
 func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 	var search request.RewardOrderSearch
@@ -47,8 +49,51 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 		return
 	}
 
+	// 构建包含用户信息的响应数据
+	responseData := make([]map[string]interface{}, len(orders))
+	for i, order := range orders {
+		// 查询用户信息
+		var user model.User
+		global.GVA_DB.First(&user, order.UserID)
+
+		// 如果用户不存在，使用默认值
+		userName := user.Nickname
+		if userName == "" {
+			userName = user.Username
+		}
+		if userName == "" {
+			userName = "用户" + strconv.Itoa(int(order.UserID))
+		}
+		userAvatar := user.Avatar
+		if userAvatar == "" {
+			userAvatar = "https://randomuser.me/api/portraits/men/32.jpg"
+		}
+
+		responseData[i] = gin.H{
+			"id":     order.ID,
+			"userId": order.UserID,
+			"user": gin.H{
+				"id":       order.UserID,
+				"name":     userName,
+				"avatar":   userAvatar,
+				"level":    user.VipLevel,
+				"nickname": user.Nickname,
+			},
+			"game":          order.Game,
+			"title":         order.Title,
+			"content":       order.Content,
+			"reward":        order.Reward,
+			"paymentMethod": order.PaymentMethod,
+			"status":        order.Status,
+			"timeLeft":      order.TimeLeft,
+			"tags":          order.Tags,
+			"requirements":  order.Requirements,
+			"createdAt":     order.CreatedAt,
+		}
+	}
+
 	response.OkWithDetailed(gin.H{
-		"data": orders,
+		"data": responseData,
 		"pagination": gin.H{
 			"currentPage": search.Page,
 			"totalPages":  (total + int64(search.PageSize) - 1) / int64(search.PageSize),
@@ -65,7 +110,7 @@ func (a *RewardOrderApi) GetRewardOrders(c *gin.Context) {
 // @Produce  application/json
 // @Param    page        query    int     false "页码"
 // @Param    pageSize    query    int     false "每页数量"
-// @Success  200         {object} response.Response{data=[]model.RewardOrder,pagination=map[string]int64} "获取成功"
+// @Success  200         {object} response.Response{data=[]map[string]interface{},pagination=map[string]int64} "获取成功"
 // @Router   /playmate/reward/my [get]
 func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 	// 从上下文获取用户ID
@@ -84,8 +129,51 @@ func (a *RewardOrderApi) GetMyRewardOrders(c *gin.Context) {
 		return
 	}
 
+	// 构建包含用户信息的响应数据
+	responseData := make([]map[string]interface{}, len(orders))
+	for i, order := range orders {
+		// 查询用户信息
+		var user model.User
+		global.GVA_DB.First(&user, order.UserID)
+
+		// 如果用户不存在，使用默认值
+		userName := user.Nickname
+		if userName == "" {
+			userName = user.Username
+		}
+		if userName == "" {
+			userName = "用户" + strconv.Itoa(int(order.UserID))
+		}
+		userAvatar := user.Avatar
+		if userAvatar == "" {
+			userAvatar = "https://randomuser.me/api/portraits/men/32.jpg"
+		}
+
+		responseData[i] = gin.H{
+			"id":     order.ID,
+			"userId": order.UserID,
+			"user": gin.H{
+				"id":       order.UserID,
+				"name":     userName,
+				"avatar":   userAvatar,
+				"level":    user.VipLevel,
+				"nickname": user.Nickname,
+			},
+			"game":          order.Game,
+			"title":         order.Title,
+			"content":       order.Content,
+			"reward":        order.Reward,
+			"paymentMethod": order.PaymentMethod,
+			"status":        order.Status,
+			"timeLeft":      order.TimeLeft,
+			"tags":          order.Tags,
+			"requirements":  order.Requirements,
+			"createdAt":     order.CreatedAt,
+		}
+	}
+
 	response.OkWithDetailed(gin.H{
-		"data": orders,
+		"data": responseData,
 		"pagination": gin.H{
 			"currentPage": page,
 			"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
